@@ -126,6 +126,7 @@ flutter:
     - assets/svg/payments.svg
     - assets/svg/profile_data.svg
     - assets/svg/transfer_money.svg
+    - assets/svg/face_scanner.svg
     - .env
   
   fonts:

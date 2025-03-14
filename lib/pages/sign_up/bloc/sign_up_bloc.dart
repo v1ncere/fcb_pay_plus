@@ -8,8 +8,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../repository/repository.dart';
@@ -32,6 +32,7 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
           usernameController: TextEditingController(),
           passwordController: TextEditingController(),
           confirmPasswordController: TextEditingController(),
+          zipCodeController: TextEditingController(),
         )) {
     on<EmailChanged>(_onEmailChanged);
     on<FirstNameChanged>(_onFirstNameChanged);
@@ -41,9 +42,10 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     on<PasswordChanged>(_onPasswordChanged);
     on<ConfirmPasswordChanged>(_onConfirmPasswordChanged);
     on<UserImageChanged>(_onUserImageChanged);
-    //
+    on<ProvinceChanged>(_onProvinceChanged);
+    on<CityMunicipalityChanged>(_onCityMunicipalityChanged);
+    on<BarangayChanged>(_onBarangayChanged);
     on<LostDataRetrieved>(_onLostDataRetrieved);
-    //
     on<EmailTextErased>(_onEmailTextErased);
     on<FirstNameTextErased>(_onFirstNameTextErased);
     on<LastNameTextErased>(_onLastNameTextErased);
@@ -51,10 +53,15 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     on<UsernameTextErased>(_onUsernameTextErased);
     on<PasswordTextErased>(_onPasswordTextErased);
     on<ConfirmPasswordTextErased>(_onConfirmPasswordTextErased);
-    //
+    on<ZipCodeErased>(_onZipCodeErased);
     on<PasswordObscured>(_onPasswordObscured);
     on<ConfirmPasswordObscured>(_onConfirmPasswordObscured);
-    //
+    on<ProvinceFetched>(_onProvinceFetched);
+    on<MunicipalFetched>(_onMunicipalFetched);
+    on<BarangayFetched>(_onBarangayFetched);
+    on<ZipCodeFetched>(_onZipCodeFetched);
+    on<ZipCodeChanged>(_onZipCodeChanged);
+    on<StatusRefreshed>(_onStatusRefreshed);
     on<FormSubmitted>(_onFormSubmitted);
     on<HandleSignUp>(_onHandleSignUp);
     on<HandleSignupResult>(_onHandleSignupResult);
@@ -62,7 +69,6 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     on<AuthSignupStepConfirmed>(_onAuthSignupStepConfirmed);
     on<AuthSignupStepDone>(_onAuthSignupStepDone);
     on<HydrateStateChanged>(_onHydrateStateChanged);
-    on<ProvinceDropdownFetched>(_onProvinceDropdownFetched);
   }
   final TextRecognizer textRecognizer = TextRecognizer();
   final ImagePicker _picker = ImagePicker();
@@ -95,6 +101,22 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
 
   void _onConfirmPasswordChanged(ConfirmPasswordChanged event, Emitter<SignUpState> emit) {
     emit(state.copyWith(confirmPassword: ConfirmedPassword.dirty(password: event.password, value: event.confirmPassword)));
+  }
+
+  void _onProvinceChanged(ProvinceChanged event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(province: Name.dirty(event.province)));
+  }
+
+  void _onCityMunicipalityChanged(CityMunicipalityChanged event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(cityMunicipality: Name.dirty(event.cityMunicipality)));
+  }
+
+  void _onBarangayChanged(BarangayChanged event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(barangay: Name.dirty(event.barangay)));
+  }
+
+  void _onZipCodeChanged(ZipCodeChanged event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(zipCode: Integer.dirty(event.zipCode)));
   }
 
   Future<void> _onUserImageChanged(UserImageChanged event, Emitter<SignUpState> emit) async {
@@ -168,6 +190,11 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(confirmPassword: const ConfirmedPassword.pure(password: '')));
   }
 
+  void _onZipCodeErased(ZipCodeErased event, Emitter<SignUpState> emit) {
+    state.zipCodeController.clear();
+    emit(state.copyWith(zipCode: const Integer.pure()));
+  }
+
   void _onPasswordObscured(PasswordObscured event, Emitter<SignUpState> emit) {
     emit(state.copyWith(obscurePassword: !state.obscurePassword));
   }
@@ -179,6 +206,90 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
   // ====================================================================================
   void _onImageUploadProgressed(ImageUploadProgressed event, Emitter<SignUpState> emit) {
     emit(state.copyWith(progress: event.progress));
+  }
+
+  Future<void> _onProvinceFetched(ProvinceFetched event, Emitter<SignUpState> emit) async {
+    emit(state.copyWith(provinceStatus: Status.loading));
+    try {
+      final url = Uri.https(dotenv.get("ADDRESS_HOST"), '/api/provinces.json');
+      final response = await http.get(url);
+      // 
+      if (response.statusCode == 200) {
+        final List<dynamic> parsed = json.decode(response.body);
+        final provincies = parsed.map((e) => Province.fromJson(e)).toList();
+        provincies.sort((a, b) => a.name.compareTo(b.name));
+        final noneProvince = Province("", "N/A", "", "");
+        emit(state.copyWith(provinceStatus: Status.success, provinceList: [noneProvince, ...provincies]));
+      } else {
+        emit(state.copyWith(provinceStatus: Status.failure, message: response.body));
+      }
+    } catch (e) {
+      emit(state.copyWith(provinceStatus: Status.failure, message: e.toString()));
+    }
+  }
+
+  Future<void> _onMunicipalFetched(MunicipalFetched event, Emitter<SignUpState> emit) async {
+    emit(state.copyWith(cityMunicipalStatus: Status.loading));
+    try {
+      if (event.provinceCode.isEmpty) {
+        final url = Uri.https(dotenv.get("ADDRESS_HOST"), '/api/cities-municipalities.json');
+        final response = await http.get(url);
+        if (response.statusCode == 200) {
+          final List<dynamic> parsed = json.decode(response.body);
+          final municipalities = parsed.map((e) => CityMunicipality.fromJson(e)).toList();
+          final newMunicipalities = municipalities.where((e) => e.provinceCode == false).toList()
+          ..sort((a, b) => a.name.compareTo(b.name));
+          emit(state.copyWith(cityMunicipalStatus: Status.success, cityMunicipalityList: newMunicipalities));
+        } else {
+          emit(state.copyWith(cityMunicipalStatus: Status.failure, message: response.body));
+        }
+      } else {
+        final url = Uri.https(dotenv.get("ADDRESS_HOST"), '/api/provinces/${event.provinceCode}/cities-municipalities.json');
+        final response = await http.get(url);
+        if (response.statusCode == 200) {
+          final List<dynamic> parsed = json.decode(response.body);
+          final municipalities = parsed.map((e) => CityMunicipality.fromJson(e)).toList();
+          municipalities.sort((a, b) => a.name.compareTo(b.name));
+          emit(state.copyWith(cityMunicipalStatus: Status.success, cityMunicipalityList: municipalities));
+        } else {
+          emit(state.copyWith(cityMunicipalStatus: Status.failure, message: response.body));
+        }
+      }
+    } catch (e) {
+      emit(state.copyWith(cityMunicipalStatus: Status.failure, message: e.toString()));
+    }
+  }
+
+  Future<void> _onBarangayFetched(BarangayFetched event, Emitter<SignUpState> emit) async {
+    emit(state.copyWith(barangayStatus: Status.loading));
+    try {
+      if (event.municipalityCode.isEmpty) return;
+      final url = Uri.https(dotenv.get("ADDRESS_HOST"), '/api/cities-municipalities/${event.municipalityCode}/barangays.json');
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonResponse = json.decode(response.body);
+        final barangays = jsonResponse.map((e) => Barangay.fromJson(e)).toList();
+        barangays.sort((a, b) => a.name.compareTo(b.name));
+        emit(state.copyWith(barangayStatus: Status.success, barangayList: barangays));
+      } else {
+        emit(state.copyWith(barangayStatus: Status.failure, message: response.body));
+      }
+    } catch (e) {
+      emit(state.copyWith(barangayStatus: Status.failure, message: e.toString()));
+    }
+  }
+
+  void _onZipCodeFetched(ZipCodeFetched event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(zipCodeStatus: Status.success));
+  }
+
+  void _onStatusRefreshed(StatusRefreshed event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(
+      barangayStatus: Status.initial, 
+      barangayList: [],
+      zipCodeStatus: Status.initial,
+      zipCode: Integer.pure(),
+    ));
   }
 
   Future<void> _onFormSubmitted(FormSubmitted event, Emitter<SignUpState> emit) async {
@@ -220,6 +331,7 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
             AuthUserAttributeKey.familyName: state.lastName.value.trim(),
             AuthUserAttributeKey.givenName: state.firstName.value.trim(),
             AuthUserAttributeKey.profile: event.url,
+            AuthUserAttributeKey.address: "${state.barangay.value.trim()}, ${state.cityMunicipality.value.trim()}, ${state.province.value.trim()}, ${state.zipCode.value.trim()}"
           });
       if (result != null) {
         add(const HydrateStateChanged(isHydrated: false));
@@ -260,17 +372,6 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
 
   void _onHydrateStateChanged(HydrateStateChanged event, Emitter<SignUpState> emit) {
     emit(state.copyWith(isHydrated: event.isHydrated));
-  }
-
-  Future<void> _onProvinceDropdownFetched(ProvinceDropdownFetched event, Emitter<SignUpState> emit) async {
-    Uri url = Uri.https(dotenv.get("ADDRESS_HOST"), dotenv.get("ADDRESS_PATH"));
-    http.Response response = await http.get(url);
-    if (response.statusCode == 200) {
-      final jsonResponse = base64.decode(response.body) as List<Map<String, dynamic>>;
-      final name = jsonResponse.map((item) => item['name'] as String).toList();
-    } else {
-      
-    }
   }
 
   // UTILITY METHODS ===========================================================

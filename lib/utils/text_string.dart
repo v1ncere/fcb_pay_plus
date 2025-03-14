@@ -50,8 +50,10 @@ class TextString {
   static const String error = 'Oops! Something went wrong.';
   static const String empty = 'Empty';
   static const String dynamicEmptyFields = 'Oops! You forgot something. Please fill in this field.';
+  static const String pageError = 'Oops! Something went wrong. Click here to refresh.';
   static const String dynamicAmountInvalid = 'Amount is invalid. Please try again.';
   static const String dynamicAmountRequired = 'Amount is required';
+  static const String faceLivenessFailed = 'Face verification failed. Please ensure your face is clearly visible and try again.';
   // IMAGE
   static const String imageNote = 'Note: Please hold your credit card near your chest and take a picture of yourself with it, ensuring the card is readable by the app. This will verify your existing account.';
   static const String imageError = 'Image is not a valid FCB Pitakard';

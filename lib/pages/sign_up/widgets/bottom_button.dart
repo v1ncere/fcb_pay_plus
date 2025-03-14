@@ -85,7 +85,7 @@ class BottomButton extends StatelessWidget {
       case ButtonName.leading:
         return step <= 0 ? 'CANCEL' : 'BACK';
       case ButtonName.trailing:
-        return step >= 2 ? 'SUBMIT' : 'NEXT';
+        return step >= 4 ? 'SUBMIT' : 'NEXT';
     }
   }
   
@@ -120,6 +120,18 @@ class BottomButton extends StatelessWidget {
             }
             break;
           case 2:
+            if (state.province.isValid && state.cityMunicipality.isValid && state.barangay.isValid && state.zipCode.isValid) {
+              context.read<SignUpStepperCubit>().stepContinued();
+            } else {
+              _showFailureSnackbar(context, TextString.incompleteForm);
+            }
+          case 3:
+            if (state.userImage != null) {
+              context.read<SignUpStepperCubit>().stepContinued();
+            } else {
+              _showFailureSnackbar(context, TextString.incompleteForm);
+            }
+          case 4:
             if (state.userImage != null) {
               context.read<SignUpBloc>().add(FormSubmitted());
             } else {

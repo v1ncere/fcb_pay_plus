@@ -37,14 +37,14 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
           AWSHeaders.contentType: 'application/json',
         },
       );
-
       final signedRequest = await signer.sign(request, credentialScope: scope);
       final resp = signedRequest.send();
       final respBody = await resp.response;
 
       if (respBody.statusCode == 200) {
         final map = jsonDecode(await respBody.decodeBody()) as Map<String, dynamic>;
-        emit(state.copyWith(sessionStatus: Status.success, sessionId: map["sessionId"] as String));
+        final sessionId = map["sessionId"] as String;
+        emit(state.copyWith(sessionStatus: Status.success, sessionId: sessionId));
       } else {
         emit(state.copyWith(sessionStatus: Status.failure, message:'Error: ${await respBody.decodeBody()}'));
       }
@@ -114,7 +114,12 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
         final map = jsonDecode(await respBody.decodeBody()) as Map<String, dynamic>;
         final rawBytes = map["ReferenceImage"]["Bytes"] as Map<String, dynamic>;
         final confidence = map["Confidence"] as double;
-        emit(state.copyWith(resultStatus: Status.success, rawBytes: mapBlobSorter(rawBytes), confidence: confidence));
+        
+        if (confidence > 90.00) {
+          emit(state.copyWith(resultStatus: Status.success, rawBytes: mapBlobSorter(rawBytes), confidence: confidence));
+        } else {
+          emit(state.copyWith(resultStatus: Status.failure, message: TextString.faceLivenessFailed));
+        }
       } else {
         emit(state.copyWith(resultStatus: Status.failure, message:'Error: ${await respBody.decodeBody()}'));
       }

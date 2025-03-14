@@ -1,53 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../widgets/custom_widgets/custom_widgets.dart';
+import '../../../utils/utils.dart';
+import '../../../widgets/widgets.dart';
+import '../sign_up.dart';
 
 class ProvinceDropdown extends StatelessWidget {
   const ProvinceDropdown({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DropdownBloc, DropdownState>(
+    return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
-        if (state.status.isLoading) {
+        if (state.provinceStatus.isLoading) {
           return const Padding(
-            padding: EdgeInsets.only(top: 5.0 , bottom: 5.0),
+            padding: EdgeInsets.only(top: 5.0),
             child: ShimmerRectLoading()
           );
         }
-        if (state.status.isSuccess) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 5.0 , bottom: 5.0),
-            child: CustomDropdownButton(
-              value: null,
-              hint: Text(widget.title!),
-              onChanged: (value) {
-                context.read<WidgetsBloc>().add(DynamicWidgetsValueChanged(
-                  id: widget.id,
-                  title: widget.title!,
-                  type: widget.dataType!,
-                  value: value!
-                ));
-              },
-              validator: (value) {
-                return value == null
-                ? 'Please select an option.'
-                : null;
-              },
-              items: state.dropdowns.map((item) {
-                return DropdownMenuItem<String> (
-                  value: item.toString(),
-                  child: Text(item.replaceAll('_', ' ')),
-                  onTap: () => context.read<WidgetsBloc>().add(ExtraWidgetFetched(item.toString())),
-                );
-              }).toList()
-            )
+        if (state.provinceStatus.isSuccess) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Province', style: Theme.of(context).textTheme.labelLarge),
+              DropdownButtonHideUnderline(
+                child: ButtonTheme(
+                  alignedDropdown: true, // this will align the menu to the button
+                  child: DropdownButtonFormField(
+                    value: null,
+                    hint: Text("Select Province"),
+                    onChanged: (value) => context.read<SignUpBloc>().add(ProvinceChanged(value!)),
+                    validator: (value) {
+                      return value == null
+                      ? 'Please select an option.'
+                      : null;
+                    },
+                    items: state.provinceList.map((e) {
+                      return DropdownMenuItem<String> (
+                        value: fixEncoding(e.name),
+                        child: Text(fixEncoding(e.name)),
+                        onTap: () {
+                          context.read<SignUpBloc>().add(MunicipalFetched(e.code));
+                          context.read<SignUpBloc>().add(StatusRefreshed());
+                        },
+                      );
+                    }).toList()
+                  ),
+                ),
+              ),
+            ],
           );
         }
-        if (state.status.isFailure) {
+        if (state.provinceStatus.isFailure) {
           return Center(
-            child: Text(state.message)
+            child: TextButton(
+              child: Text(
+                TextString.pageError,
+                textAlign: TextAlign.center,
+              ),
+              onPressed: () => context.read<SignUpBloc>().add(ProvinceFetched()),
+            )
           );
         }
         else {

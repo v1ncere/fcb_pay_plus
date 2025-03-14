@@ -14,15 +14,12 @@ class AccountTypeDropdown extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Please choose the type of product',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            Text('Please choose the type of product', style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 10),
             DropdownButtonHideUnderline(
               child: ButtonTheme(
                 alignedDropdown: true, // this will align the menu to the button
-                child: DropdownButtonFormField(    
+                child: DropdownButtonFormField(
                   hint: const Text('Select a product'),
                   borderRadius: BorderRadius.circular(15),
                   decoration: const InputDecoration(

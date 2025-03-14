@@ -8,6 +8,7 @@ export 'src/dynamic_textfield.dart';
 export 'src/email.dart';
 export 'src/filter_pop_up_menu.dart';
 export 'src/institution_dropdown.dart';
+export 'src/integer.dart';
 export 'src/message.dart';
 export 'src/mobile_number.dart';
 export 'src/name.dart';

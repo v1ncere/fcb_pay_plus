@@ -56,8 +56,7 @@ final class PasswordChanged extends SignUpEvent {
 }
 
 final class ConfirmPasswordChanged extends SignUpEvent {
-  const ConfirmPasswordChanged(
-      {required this.confirmPassword, required this.password});
+  const ConfirmPasswordChanged({required this.confirmPassword, required this.password});
   final String confirmPassword;
   final String password;
 
@@ -73,6 +72,38 @@ final class UserImageChanged extends SignUpEvent {
   List<Object> get props => [image];
 }
 
+final class ProvinceChanged extends SignUpEvent {
+  const ProvinceChanged(this.province);
+  final String province;
+
+  @override
+  List<Object> get props => [province];
+}
+
+final class CityMunicipalityChanged extends SignUpEvent{
+  const CityMunicipalityChanged(this.cityMunicipality);
+  final String cityMunicipality;
+
+  @override
+  List<Object> get props => [cityMunicipality];
+}
+
+final class BarangayChanged extends SignUpEvent {
+  const BarangayChanged(this.barangay);
+  final String barangay;
+
+  @override
+  List<Object> get props => [barangay];
+}
+
+final  class ZipCodeChanged extends SignUpEvent {
+  const ZipCodeChanged(this.zipCode);
+  final String zipCode;
+
+  @override
+  List<Object> get props => [zipCode];
+}
+//
 final class EmailTextErased extends SignUpEvent {}
 
 final class FirstNameTextErased extends SignUpEvent {}
@@ -87,13 +118,13 @@ final class PasswordTextErased extends SignUpEvent {}
 
 final class ConfirmPasswordTextErased extends SignUpEvent {}
 
+final class ZipCodeErased extends SignUpEvent {}
+
 final class PasswordObscured extends SignUpEvent {}
 
 final class ConfirmPasswordObscured extends SignUpEvent {}
 
 final class LostDataRetrieved extends SignUpEvent {}
-
-final class ProvinceDropdownFetched extends SignUpEvent {}
 
 final class FormSubmissionFailed extends SignUpEvent {
   const FormSubmissionFailed(this.error);
@@ -110,6 +141,28 @@ final class UploadImageProgressed extends SignUpEvent {
   @override
   List<Object> get props => [progress];
 }
+
+final class ProvinceFetched extends SignUpEvent {}
+
+final class MunicipalFetched extends SignUpEvent {
+  const MunicipalFetched(this.provinceCode);
+  final String provinceCode;
+
+  @override
+  List<Object> get props => [provinceCode];
+}
+
+final class BarangayFetched extends SignUpEvent {
+  const BarangayFetched(this.municipalityCode);
+  final String municipalityCode;
+
+  @override
+  List<Object> get props => [municipalityCode];
+}
+
+final class ZipCodeFetched extends SignUpEvent {}
+
+final class StatusRefreshed extends SignUpEvent {}
 
 final class FormSubmitted extends SignUpEvent {}
 

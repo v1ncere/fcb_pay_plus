@@ -55,7 +55,7 @@ class SignUpView extends StatelessWidget {
     return <Step>[
       Step(
         title: shrink,
-        content: const FirstScreen(),
+        content: const FourthScreen(),
         isActive: step == 0,
         state: getStepState(0, step, state)
       ),
@@ -70,6 +70,18 @@ class SignUpView extends StatelessWidget {
         content: const ThirdScreen(),
         isActive: step == 2,
         state: getStepState(2, step, state)
+      ),
+      Step(
+        title: shrink,
+        content: const FifthScreen(),
+        isActive: step == 3,
+        state: getStepState(3, step, state)
+      ),
+      Step(
+        title: shrink,
+        content: const FifthScreen(),
+        isActive: step == 4,
+        state: getStepState(4, step, state)
       ),
     ];
   }
@@ -89,8 +101,16 @@ class SignUpView extends StatelessWidget {
           ? StepState.indexed 
           : StepState.editing;
         case 2:
-          return (state.userImage != null) 
+          return (state.province.isPure && state.cityMunicipality.isPure && state.barangay.isPure && state.zipCode.isPure) 
           ? StepState.indexed 
+          : StepState.editing;
+        case 3:
+          return (state.userImage != null)
+          ? StepState.indexed 
+          : StepState.editing;
+        case 4:
+          return (state.userImage != null)
+          ? StepState.indexed
           : StepState.editing;
         default:
           return StepState.indexed;
@@ -106,7 +126,15 @@ class SignUpView extends StatelessWidget {
           ? StepState.complete
           : StepState.error;
         case 2:
-          return (state.userImage != null) 
+          return (state.province.isValid && state.cityMunicipality.isValid && state.barangay.isValid && state.zipCode.isValid) 
+          ? StepState.complete
+          : StepState.error;
+        case 3:
+          return (state.userImage != null)
+          ? StepState.complete
+          : StepState.error;
+        case 4:
+          return (state.userImage != null)
           ? StepState.complete
           : StepState.error;
         default:

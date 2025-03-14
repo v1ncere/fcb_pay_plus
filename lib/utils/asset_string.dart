@@ -8,6 +8,7 @@ class AssetString {
   static const String loginLogo  = 'assets/svg/login.svg';
   static const String creditCardPayment  = 'assets/svg/credit_card_payment.svg';
   static const String creditCardPayment2  = 'assets/svg/credit_card_payments.svg';
+  static const String faceScanner = 'assets/svg/face_scanner.svg';
   static const String mobilePay  = 'assets/svg/mobile_pay.svg';
   static const String onlineBanking  = 'assets/svg/online_banking.svg';
   static const String onlinePayments  = 'assets/svg/online_payments.svg';

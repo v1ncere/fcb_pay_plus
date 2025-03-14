@@ -30,9 +30,12 @@ class SignUpPage extends StatelessWidget {
         BlocProvider(create: (context) => SignUpBloc(
           amplifyAuth: AmplifyAuth(),
           amplifyStorage: AmplifyStorage()
-        )..add(LostDataRetrieved())),
-        BlocProvider(create: (context) => SignUpStepperCubit(length: 3)), // length starts at 1
-      ], 
+        )
+        ..add(LostDataRetrieved())
+        ..add(ProvinceFetched())),
+        BlocProvider(create: (context) => SignUpStepperCubit(length: 5)), // length starts at 1
+        BlocProvider(create: (context) => FaceLivenessBloc())
+      ],
       child: const SignUpView()
     );
   }

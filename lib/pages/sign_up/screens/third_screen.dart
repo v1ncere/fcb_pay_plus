@@ -1,39 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
-import '../../../utils/utils.dart';
 import '../widgets/widgets.dart';
 
-class ThirdScreen extends StatefulWidget {
+class ThirdScreen extends StatelessWidget {
   const ThirdScreen({super.key});
-
-  @override
-  State<ThirdScreen> createState() => _ThirdScreen();
-}
-
-class _ThirdScreen extends State<ThirdScreen> {
-  final ImagePicker picker = ImagePicker();
-
+  
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          UserImage(picker: picker),
-          const SizedBox(height: 5),
-          const Text(
-            TextString.imageNote,
-            textAlign: TextAlign.justify, 
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black45,
-              fontWeight: FontWeight.w500
-            )
-          )
-        ]
-      )
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Your Address', style: Theme.of(context).textTheme.headlineSmall),
+        SizedBox(height: 30),
+        ProvinceDropdown(),
+        SizedBox(height: 20),
+        MunicipalityDropdown(),
+        SizedBox(height: 20),
+        BaranggayDropdown(),
+        SizedBox(height: 20),
+        ZipCodeTextfield()
+      ]
     );
   }
 }
