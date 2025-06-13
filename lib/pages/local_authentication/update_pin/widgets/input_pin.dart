@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../utils/utils.dart';
-import '../../../../widgets/widgets.dart';
 import '../../local_authentication.dart';
 
 class InputPin extends StatelessWidget {

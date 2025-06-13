@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/widgets/widgets.dart';
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
-import '../account_viewer.dart';
 import '../widgets/widgets.dart';
 
 class AccountViewerView extends StatelessWidget {
@@ -20,7 +18,7 @@ class AccountViewerView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            account.category!.toUpperCase(),
+            accountTypeNameString(account.type!).toUpperCase(),
             style: TextStyle(
               color: ColorString.jewel,
               fontWeight: FontWeight.w700
@@ -34,20 +32,17 @@ class AccountViewerView extends StatelessWidget {
           ],
           automaticallyImplyLeading: false
         ),
-        body: RefreshIndicator(
-          onRefresh: () async => context.read<AccountsBloc>().add(AccountsRefreshed(account)),
-          child: ListView(
-            children: [
-              const CarouselSliderView(),
-              const SizedBox(height: 10),
-              const AccountDetailsView(),
-              const SizedBox(height: 10),
-              const ActionButtonView(),
-              const SizedBox(height: 20),
-              TransactionHistoryView(account: account),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.25)
-            ]
-          )
+        body: ListView(
+          children: [
+            const CarouselSliderView(),
+            const SizedBox(height: 10),
+            const AccountDetailsView(),
+            const SizedBox(height: 10),
+            const ActionButtonView(),
+            const SizedBox(height: 20),
+            TransactionHistoryView(account: account),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.25)
+          ]
         )
       )
     );

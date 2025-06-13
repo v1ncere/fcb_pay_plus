@@ -12,43 +12,51 @@ part 'payment_buttons_event.dart';
 part 'payment_buttons_state.dart';
 
 class PaymentButtonsBloc extends Bloc<PaymentButtonsEvent, PaymentButtonsState> {
-  PaymentButtonsBloc() : super(PaymentButtonsLoading()) {
+  PaymentButtonsBloc() : super(PaymentButtonsState()) {
+    on<PaymentButtonsUserIdFetched>(_onPaymentButtonsUserIdFetched);
     on<PaymentButtonsFetched>(_onPaymentButtonsFetched);
     on<PaymentButtonsRefreshed>(_onPaymentButtonsRefreshed);
-    on<PaymentButtonsFailed>(_onPaymentButtonsFailed);
+  }
+
+  Future<void> _onPaymentButtonsUserIdFetched(PaymentButtonsUserIdFetched event, Emitter<PaymentButtonsState> emit) async {
+    emit(state.copyWith(userStatus: Status.initial));
+    try {
+      final authUser = await Amplify.Auth.getCurrentUser();
+      emit(state.copyWith(userStatus: Status.success, uid: authUser.userId));
+    } on AuthException catch (e) {
+      emit(state.copyWith(status: Status.failure, message: e.message));
+    } catch (e) {
+      emit(state.copyWith(status: Status.failure, message: TextString.error));
+    }
   }
 
   Future<void> _onPaymentButtonsFetched(PaymentButtonsFetched event, Emitter<PaymentButtonsState> emit) async {
-    final internetStatus = await checkNetworkStatus();
-    if (internetStatus) {
-      try {
-        final request = ModelQueries.list(Button.classType, where: Button.TYPE.eq('payment'));
-        final response = await Amplify.API.query(request: request).response;
-        final items = response.data?.items;
+    emit(state.copyWith(status: Status.loading));
+    try {
+      final request = ModelQueries.list(Button.classType, where: Button.TYPE.eq('payment'));
+      final response = await Amplify.API.query(request: request).response;
+      final items = response.data?.items;
 
-        if (items != null && items.isNotEmpty) {
-          final buttons = items.whereType<Button>().toList();
-          buttons.sort((a, b) => a.position!.compareTo(b.position!));
-          emit(PaymentButtonsSuccess(buttons));
+      if (items != null && !response.hasErrors) {
+        final buttonList = items.whereType<Button>().toList();
+        
+        if (buttonList.isNotEmpty) {
+          buttonList.sort((a, b) => a.position!.compareTo(b.position!));
+          emit(state.copyWith(status: Status.success, buttons: buttonList));
         } else {
-          emit(const PaymentButtonsError(message: TextString.empty));
+          emit(state.copyWith(status: Status.failure, message: TextString.empty));
         }
-      } on ApiException catch (e) {
-        emit(PaymentButtonsError(message: e.message));
-      } catch (e) {
-        emit(PaymentButtonsError(message: e.toString()));
+      } else {
+        emit(state.copyWith(status: Status.failure, message: response.errors.first.message));
       }
-    } else {
-      emit(const PaymentButtonsError(message: 'disconnected...'));
+    } on ApiException catch (e) {
+      emit(state.copyWith(status: Status.failure, message: e.message));
+    } catch (_) {
+      emit(state.copyWith(status: Status.failure, message: TextString.error));
     }
   }
 
   void _onPaymentButtonsRefreshed(PaymentButtonsRefreshed event, Emitter<PaymentButtonsState> emit) {
-    emit(PaymentButtonsLoading());
-    add(PaymentButtonsRefreshed());
-  }
-
-  void _onPaymentButtonsFailed(PaymentButtonsFailed event, Emitter<PaymentButtonsState> emit) {
-    emit(PaymentButtonsError(message: event.message));
+    add(PaymentButtonsFetched());
   }
 }

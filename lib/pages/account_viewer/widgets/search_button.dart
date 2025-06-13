@@ -24,12 +24,12 @@ class SearchButton extends StatelessWidget {
               )
             ]
           ),
-          onPressed: () {
-            context.read<TransactionHistoryBloc>().add(TransactionHistoryLoaded(
-              accountID: account.accountNumber,
+          onPressed: () => context.read<TransactionHistoryBloc>().add(
+            TransactionFetched(
+              accountNumber: account.accountNumber, 
               searchQuery: state.searchQuery.value
-            ));
-          }
+            )
+          )
         );
       }
     );

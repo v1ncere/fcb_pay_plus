@@ -7,6 +7,8 @@ sealed class TransferButtonsEvent extends Equatable {
   List<Object> get props => [];
 }
 
+final class TransferButtonUserIdFetched extends TransferButtonsEvent {}
+
 final class TransferButtonsFetched extends TransferButtonsEvent {}
 
 final class TransferButtonsRefreshed extends TransferButtonsEvent {}

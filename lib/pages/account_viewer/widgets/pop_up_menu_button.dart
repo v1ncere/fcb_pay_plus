@@ -13,7 +13,7 @@ class PopUpMenuButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<FilterBloc, FilterState>(
       builder: (context, state) {
-        if (state.filterStatus.isLoading) {
+        if (state.status.isLoading) {
           return const Padding(
             padding: EdgeInsets.only(left: 14, right: 14),
             child: SizedBox(
@@ -23,7 +23,7 @@ class PopUpMenuButton extends StatelessWidget {
             )
           );
         }
-        if (state.filterStatus.isSuccess) {
+        if (state.status.isSuccess) {
           return BlocSelector<CarouselCubit, CarouselState, Account>(
             selector: (state) => state.account,
             builder: (_, account) {
@@ -40,13 +40,13 @@ class PopUpMenuButton extends StatelessWidget {
                   ]
                 ),
                 onSelected: (value) {
-                  context.read<TransactionHistoryBloc>().add(TransactionHistoryLoaded(accountID: account.accountNumber, filter: value));
+                  context.read<TransactionHistoryBloc>().add(TransactionFetched(accountNumber: account.accountNumber, filter: value));
                 },
                 itemBuilder: (BuildContext context) {
                   return state.filters.map((String value) {
                     return PopupMenuItem<String>(
                       value: value,
-                      child: Text(value.toLowerCase())
+                      child: Text(accountTypeNameString(value.toLowerCase()))
                     );
                   }).toList();
                 }
@@ -54,12 +54,11 @@ class PopUpMenuButton extends StatelessWidget {
             }
           );
         }
-        if (state.filterStatus.isFailure) {
+        if (state.status.isFailure) {
           return Center(child: Text(state.message));
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        // default
+        return const SizedBox.shrink();
       }
     );
   }

@@ -7,14 +7,8 @@ sealed class PaymentButtonsEvent extends Equatable {
   List<Object> get props => [];
 }
 
+final class PaymentButtonsUserIdFetched extends PaymentButtonsEvent {}
+
 final class PaymentButtonsFetched extends PaymentButtonsEvent {}
-
-final class PaymentButtonsFailed extends PaymentButtonsEvent {
-  const PaymentButtonsFailed(this.message);
-  final String message;
-
-  @override
-  List<Object> get props => [message];
-}
 
 final class PaymentButtonsRefreshed extends PaymentButtonsEvent {}

@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../dynamic_viewer.dart';
 
 class ExtraWidgets extends StatelessWidget {
   const ExtraWidgets({super.key});
   static final _regex = RegExp(r'^[-\\+]?\s*((\d{1,3}(,\d{3})*)|\d+)(\.\d{2})?$');
 
- @override
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<WidgetsBloc, WidgetsState>(
       builder: (context, state) {
@@ -24,7 +23,7 @@ class ExtraWidgets extends StatelessWidget {
               )
             )
           );
-        } 
+        }
         if (state.extraWidgetStatus.isSuccess) {
           return Column(
             children: [
@@ -52,7 +51,7 @@ class ExtraWidgets extends StatelessWidget {
                             },
                             onChanged: (value) {
                               context.read<WidgetsBloc>().add(ExtraWidgetsValueChanged(
-                                keyId: item.id,
+                                id: item.id,
                                 title: item.title!,
                                 value: value,
                                 type: item.dataType!
@@ -73,7 +72,7 @@ class ExtraWidgets extends StatelessWidget {
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             onChanged: (value) {
                               context.read<WidgetsBloc>().add(ExtraWidgetsValueChanged(
-                                keyId: item.id,
+                                id: item.id,
                                 title: item.title!,
                                 value: value,
                                 type: item.dataType!
@@ -112,13 +111,12 @@ class ExtraWidgets extends StatelessWidget {
             )
           );
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        // 
+        return const SizedBox.shrink();
       }
     );
   }
-
+  //
   Widget _description() {
     return const Row(
       children: [

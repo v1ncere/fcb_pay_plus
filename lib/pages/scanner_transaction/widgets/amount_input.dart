@@ -12,10 +12,9 @@ class AmountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScannerTransactionBloc, ScannerTransactionState>(
-      buildWhen: (previous, current) => previous.inputAmount != current.inputAmount,
       builder: (context, state) {
         final index = state.qrDataList.indexWhere((e) => e.id == 'main54'); // find id [main54]
-        if (index != -1) { // if not found result is -1
+        if (index != -1) {
           return TextField(
             key: const Key('scanner_transaction_amount_input'),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),

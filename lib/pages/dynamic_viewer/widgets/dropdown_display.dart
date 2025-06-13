@@ -12,27 +12,26 @@ class DropdownDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if(_isUserAccount(pageWidget)) {
-      return SourceDropdown(focusNode: focusNode, widget: pageWidget);
-    } else {
-      _fetchDropdown(context, pageWidget);
-      return Column(
-        children: [
-          DynamicDropdown(focusNode: focusNode, widget: pageWidget),
-          if (pageWidget.hasExtra == true) const ExtraWidgets()
-        ]
+    return _isAccountNode(pageWidget)
+    ? SourceDropdown(focusNode: focusNode, widget: pageWidget)
+    : BlocSelector<WidgetsBloc, WidgetsState, String>(
+        selector: (state) => state.uid,
+        builder: (context, uid) {
+          _dropdownFetch(context, uid, pageWidget);
+          return Column(
+            children: [
+              DynamicDropdown(focusNode: focusNode, widget: pageWidget),
+              if (pageWidget.hasExtra ?? false) const ExtraWidgets()
+            ]
+          );
+        }
       );
-    }
   }
 
-  // utility methods
-  // search for the node 
-  bool _isUserAccount(DynamicWidget widget) => widget.node!.contains('user_account');
+  // UTILITY FUNCTIONS ***
+  bool _isAccountNode(DynamicWidget widget) => (widget.node ?? '').contains('Account');
   
-  void _fetchDropdown(BuildContext context, DynamicWidget widget) {
-    final uid = context.select((WidgetsBloc bloc) => bloc.state.uid);
-    // reference base on the 'dynamic_viewer_widget' child 'node'
-    final reference = widget.node!.replaceAll('{id}', uid);
-    context.read<DropdownBloc>().add(DropdownFetched(reference));
+  void _dropdownFetch(BuildContext context, String uid, DynamicWidget widget) {
+    context.read<DropdownBloc>().add(DropdownFetched(node: widget.node ?? '', uid: uid));
   }
 }

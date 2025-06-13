@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../utils/utils.dart';
 import '../../../app/widgets/widgets.dart';
-import '../../../widgets/widgets.dart';
 import '../notifications_viewer.dart';
 import '../widgets/widgets.dart';
 

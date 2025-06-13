@@ -6,12 +6,7 @@ part 'qr_model.g.dart';
 
 @HiveType(typeId: 1)
 class QRModel {
-  const QRModel({
-    required this.id,
-    required this.title,
-    required this.data,
-    required this.widget
-  });
+  const QRModel({required this.id, required this.title, required this.data, required this.widget});
   @HiveField(0)
   final String id;
   
@@ -56,6 +51,11 @@ class QRModel {
       data: map['data'] as String,
       widget: map['widget'] as String,
     );
+  }
+
+  @override
+  String toString() {
+    return 'QRModel(id: $id title: $title data: $data widget: $widget)';
   }
 
   String toJson() => json.encode(toMap());

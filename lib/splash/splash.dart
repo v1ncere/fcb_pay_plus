@@ -78,13 +78,16 @@ class SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   }
 
   Future<void> startTime() async {
-    final isOnboarded = await _hiveRepository.isOnboarded();
     Future.delayed(const Duration(seconds: 3), () async {
-      if (!isOnboarded) {
+      final isBoarded = await _hiveRepository.isOnboarded();
+      //
+      if (!mounted) return; // Prevents actions if the widget is disposed
+      //
+      if (!isBoarded) {
         _hiveRepository.updateOnboarding(true);
-        if(mounted) context.goNamed(RouteName.walkThrough);
+        context.goNamed(RouteName.walkThrough);
       } else {
-        if(mounted) BlocProvider.of<AppBloc>(context).add(LoginChecked());
+        context.read<AppBloc>().add(LoginChecked());
       }
     });
   }

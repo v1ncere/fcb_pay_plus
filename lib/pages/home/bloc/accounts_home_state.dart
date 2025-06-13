@@ -4,7 +4,8 @@ class AccountsHomeState extends Equatable {
   const AccountsHomeState({
     this.accountList = const <Account>[],
     required this.wallet,
-    required this.deposit,
+    required this.savings,
+    required this.payroll,
     required this.credit,
     this.username = '',
     this.uid = '',
@@ -14,7 +15,8 @@ class AccountsHomeState extends Equatable {
   });
   final List<Account> accountList;
   final Account wallet;
-  final Account deposit;
+  final Account savings;
+  final Account payroll;
   final Account credit;
   final String username;
   final String uid;
@@ -25,7 +27,8 @@ class AccountsHomeState extends Equatable {
   AccountsHomeState copyWith({
     List<Account>? accountList,
     Account? wallet, 
-    Account? deposit,
+    Account? savings,
+    Account? payroll,
     Account? credit,
     String? username,
     String? uid,
@@ -36,7 +39,8 @@ class AccountsHomeState extends Equatable {
     return AccountsHomeState(
       accountList: accountList ?? this.accountList,
       wallet: wallet ?? this.wallet,
-      deposit: deposit ?? this.deposit,
+      savings: savings ?? this.savings,
+      payroll: payroll ?? this.payroll,
       credit: credit ?? this.credit,
       username: username ?? this.username,
       uid: uid ?? this.uid,
@@ -50,7 +54,8 @@ class AccountsHomeState extends Equatable {
   List<Object> get props => [
     accountList,
     wallet,
-    deposit,
+    savings,
+    payroll,
     credit,
     username,
     uid,

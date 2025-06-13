@@ -12,22 +12,28 @@ import '../../../utils/utils.dart';
 part 'accounts_home_event.dart';
 part 'accounts_home_state.dart';
 
-final Account emptyAccount = Account(accountNumber: '');
+final Account emptyAccount = Account(accountNumber: '', owner: '', ledgerStatus: '');
 
 class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   AccountsHomeBloc({
     required HiveRepository hiveRepository,
-  }) : _hiveRepository = hiveRepository,
-  super(AccountsHomeState(credit: emptyAccount, deposit: emptyAccount, wallet: emptyAccount)) {
-    on<UserAttributesFetched>(_onUserAttributesFetched);
-    on<AccountsHomeFetched>(_onAccountsHomeLoaded);
-    on<DepositDisplayChanged>(_onDepositDisplayChanged);
-    on<CreditDisplayChanged>(_onCreditDisplayChanged);
-    on<AccountsHomeRefreshed>(_onAccountsHomeRefreshed);
-  }
+  })  : _hiveRepository = hiveRepository,
+        super(AccountsHomeState(credit: emptyAccount, payroll: emptyAccount, savings: emptyAccount, wallet: emptyAccount)) {
+          on<UserAttributesFetched>(_onUserAttributesFetched);
+          on<AccountsHomeOnCreateStreamed>(_onAccountsHomeOnCreateStreamed);
+          on<AccountsHomeOnDeleteStreamed>(_onAccountsHomeOnDeleteStreamed);
+          on<AccountsHomeOnUpdateStreamed>(_onAccountsHomeOnUpdateStreamed);
+          on<AccountsHomeStreamUpdated>(_onAccountsHomeStreamUpdated);
+          on<AccountsHomeFetched>(_onAccountsHomeLoaded);
+          on<AccountDisplayChanged>(_onAccountDisplayChanged);
+          on<AccountsHomeRefreshed>(_onAccountsHomeRefreshed);
+        }
   final HiveRepository _hiveRepository;
+  StreamSubscription<GraphQLResponse<Account>>? subscriptionOnCreate;
+  StreamSubscription<GraphQLResponse<Account>>? subscriptionOnUpdate;
+  StreamSubscription<GraphQLResponse<Account>>? subscriptionOnDelete;
 
-  Future<void>  _onAccountsHomeLoaded(AccountsHomeFetched event, Emitter<AccountsHomeState> emit) async {
+  Future<void> _onAccountsHomeLoaded(AccountsHomeFetched event, Emitter<AccountsHomeState> emit) async {
     await _fetchDataAndRefreshState(emit);
   }
 
@@ -35,112 +41,158 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
     await _fetchUserDetails(emit);
   }
 
-  // change deposit display
-  Future<void> _onDepositDisplayChanged(DepositDisplayChanged event, Emitter<AccountsHomeState>  emit) async {
-    emit(state.copyWith(status: Status.loading)); // emit status loading
-    _hiveRepository.addDepositId(uid: state.uid, account: event.id); // save id into local storage using [hive]
-    await _fetchDataAndRefreshState(emit); // refresh the state
+  // change account display
+  Future<void> _onAccountDisplayChanged(AccountDisplayChanged event, Emitter<AccountsHomeState>  emit) async {
+    // save by [account type]
+    await _hiveRepository.addAccountNumber(uid: '${event.account.type}', accountNumber: event.account.accountNumber);
+    await _fetchDataAndRefreshState(emit);
   }
 
-  // change credit display
-  Future<void> _onCreditDisplayChanged(CreditDisplayChanged event, Emitter<AccountsHomeState> emit) async {
-    emit(state.copyWith(status: Status.loading)); // emit status loading
-    _hiveRepository.addCreditId(uid: state.uid, account: event.id); // save id into local storage using [hive]
-    await _fetchDataAndRefreshState(emit); // refresh the state
+  // listening on create
+  FutureOr<void> _onAccountsHomeOnCreateStreamed(AccountsHomeOnCreateStreamed event, Emitter<AccountsHomeState> emit) async {
+    final authUser = await Amplify.Auth.getCurrentUser();
+    final request = ModelSubscriptions.onCreate(Account.classType, where: Account.OWNER.eq(authUser.userId));
+    final operation = Amplify.API.subscribe(request);
+    subscriptionOnCreate = operation.listen(
+      (event) => add(AccountsHomeStreamUpdated(event.data, false)),
+      onError: (error) => safePrint(error.toString()),
+    );
+  }
+
+  // listening on update
+  FutureOr<void> _onAccountsHomeOnUpdateStreamed(AccountsHomeOnUpdateStreamed event, Emitter<AccountsHomeState> emit) async {
+    final authUser = await Amplify.Auth.getCurrentUser();
+    final request = ModelSubscriptions.onUpdate(Account.classType, where: Account.OWNER.eq(authUser.userId));
+    final operation = Amplify.API.subscribe(request);
+    subscriptionOnUpdate = operation.listen(
+      (event) => add(AccountsHomeStreamUpdated(event.data, false)),
+      onError: (error) => safePrint(error.toString()),
+    );
+  }
+
+  // listening on delete
+  FutureOr<void> _onAccountsHomeOnDeleteStreamed(AccountsHomeOnDeleteStreamed event, Emitter<AccountsHomeState> emit) async {
+    final authUser = await Amplify.Auth.getCurrentUser();
+    final request = ModelSubscriptions.onDelete(Account.classType, where: Account.OWNER.eq(authUser.userId));
+    final operation = Amplify.API.subscribe(request);
+    subscriptionOnDelete = operation.listen(
+      (event) => add(AccountsHomeStreamUpdated(event.data, true)),
+      onError: (error) => safePrint(error.toString()),
+    );
+  }
+
+  FutureOr<void> _onAccountsHomeStreamUpdated(AccountsHomeStreamUpdated event, Emitter<AccountsHomeState> emit) async {
+    final account = event.account;
+    if (account != null) {
+      final newList = List<Account>.from(state.accountList);
+      final index = newList.indexWhere((e) => e.accountNumber == account.accountNumber);
+      
+      if (event.isDelete) {
+        if (index != -1) {
+          newList.removeAt(index);
+          await _accountHomeCardDisplay(newList, emit);
+        }
+      } else {
+        if (index != -1) {
+          newList[index] = account;
+        } else {
+          newList.add(account);
+        }
+        await _accountHomeCardDisplay(newList, emit);
+      }
+    }
   }
 
   // refresh the state
   Future<void> _onAccountsHomeRefreshed(AccountsHomeRefreshed event, Emitter<AccountsHomeState> emit) async {
-    emit(state.copyWith(status: Status.loading, userStatus: Status.loading)); // emit status loading
+    emit(state.copyWith(status: Status.loading, userStatus: Status.loading));
     await _fetchUserDetails(emit);
-    await _fetchDataAndRefreshState(emit); // refresh the state
+    await _fetchDataAndRefreshState(emit);
   }
 
-  // UTILITY METHODS ===============================================================================
+  // *** UTILITY METHODS ***
   // fetching list of accounts from AWS
   Future<void> _fetchDataAndRefreshState(Emitter<AccountsHomeState> emit) async {
     emit(state.copyWith(status: Status.loading));
-    if (await checkNetworkStatus()) {
-      try {
-        final user = await Amplify.Auth.getCurrentUser();
-        final request = ModelQueries.list(Account.classType, where: Account.OWNER.eq(user.userId), authorizationMode: APIAuthorizationType.iam);
-        final response = await Amplify.API.query(request: request).response;
-        final items = response.data?.items;
-        // check if the response is not null
-        if (items == null) {
-          emit(state.copyWith(status: Status.failure, message: response.errors.first.message));
+    try {
+      final user = await Amplify.Auth.getCurrentUser();
+      final request = ModelQueries.list(Account.classType, where: Account.OWNER.eq(user.userId));
+      final response = await Amplify.API.query(request: request).response;
+      final items = response.data?.items;
+
+      if (items != null && !response.hasErrors) {
+        final accounts = items.whereType<Account>().toList();
+        
+        if (accounts.isNotEmpty) {
+          await _accountHomeCardDisplay(accounts, emit);
         } else {
-          final accountList = items.whereType<Account>().toList();
-          Account wallet = _getAccountOfCategory(accountList, 'wallet'); // locate the wallet account
-          Account deposit = await _getDepositAccount(accountList); // locate the deposit account
-          Account credit = await _getCreditAccount(accountList); // locate the credit account
-
-
-          emit(state.copyWith(status: Status.success, accountList: accountList, wallet: wallet, deposit: deposit, credit: credit));
+          emit(state.copyWith(status: Status.failure, message: TextString.empty));
         }
-      } on AuthException catch (e) {
-        emit(state.copyWith(status: Status.failure, message: e.message));
-      } on ApiException catch (e) {
-        emit(state.copyWith(status: Status.failure, message: e.message));
-      } catch (e) {
-        emit(state.copyWith(status: Status.failure, message: e.toString()));
+      } else {
+        emit(state.copyWith(status: Status.failure, message: response.errors.first.message));
       }
-    } else {
-      emit(state.copyWith(status: Status.failure, message: TextString.internetError));
+    } on AuthException catch (e) {
+      emit(state.copyWith(status: Status.failure, message: e.message));
+    } on ApiException catch (e) {
+      emit(state.copyWith(status: Status.failure, message: e.message));
+    } catch (_) {
+      emit(state.copyWith(status: Status.failure, message: TextString.error));
     }
+  }
+
+  Future<void> _accountHomeCardDisplay(List<Account> accounts, Emitter<AccountsHomeState> emit) async {
+    final wlt = _getAccountOfType(accounts, AccountType.wlt.name); // locate wallet account
+    final psa = await _getAccount(accounts, AccountType.psa.name); // locate savings account
+    final ppr = await _getAccount(accounts, AccountType.ppr.name); // locate payroll account
+    final plc = await _getAccount(accounts, AccountType.plc.name); // locate credit account
+    emit(state.copyWith(status: Status.success, accountList: accounts, wallet: wlt, savings: psa, payroll: ppr, credit: plc));
   }
 
   Future<void> _fetchUserDetails(Emitter<AccountsHomeState> emit) async {
     emit(state.copyWith(userStatus: Status.loading));
-    final isConnected = await checkNetworkStatus();
-    if (isConnected) {
-      try {
-        final result = await Amplify.Auth.fetchUserAttributes();
-        final sub = result.firstWhere((e) => e.userAttributeKey == AuthUserAttributeKey.sub);
-        final givenName = result.firstWhere((e) => e.userAttributeKey == AuthUserAttributeKey.givenName);
-        emit(state.copyWith(userStatus: Status.success, username: givenName.value, uid: sub.value));
-      } on AuthException catch (e) {
-        emit(state.copyWith(userStatus: Status.failure, message: e.message));
-      } catch (e) {
-        emit(state.copyWith(userStatus: Status.failure, message: e.toString()));
-      }
-    } else {
-      emit(state.copyWith(userStatus: Status.failure, message: TextString.internetError));
+    try {
+      final result = await Amplify.Auth.fetchUserAttributes();
+      final sub = result.firstWhere((e) => e.userAttributeKey == AuthUserAttributeKey.sub);
+      final givenName = result.firstWhere((e) => e.userAttributeKey == AuthUserAttributeKey.givenName);
+      emit(state.copyWith(userStatus: Status.success, username: givenName.value, uid: sub.value));
+    } on AuthException catch (e) {
+      emit(state.copyWith(userStatus: Status.failure, message: e.message));
+    } catch (_) {
+      emit(state.copyWith(userStatus: Status.failure, message: TextString.error));
     }
   }
 
-  // get the category of the Account
-  Account _getAccountOfCategory(List<Account> accountList, String category) {
-    return accountList.firstWhere((account) => account.category!.toLowerCase() == category, orElse: () => emptyAccount);
+  // get Account by type
+  Account _getAccountOfType(List<Account> accountList, String type) {
+    return accountList.firstWhere((e) => e.type!.toLowerCase() == type, orElse: () => emptyAccount);
   }
 
   // sort the list of Accounts and return the  latest
-  Account getLatestAccount(List<Account> accountList, String category) {
+  Account _getLatestAccount(List<Account> accountList, String type) {
     accountList.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
-    return accountList.firstWhere((e) => e.category?.toLowerCase() == category);
+    return accountList.firstWhere((e) => e.type!.toLowerCase() == type, orElse: () => emptyAccount);
   }
 
-  // get the specific "deposit" account
-  Future<Account> _getDepositAccount(List<Account> accountList) async {
-    final deposit = accountList.where((account) => account.category?.toLowerCase() == 'deposit');
-    if(deposit.isNotEmpty) {
-      final id = await _hiveRepository.getDepositId(state.uid); // id/account number saved from local storage [hive]
-      return id.isNotEmpty
-      ? accountList.firstWhere((account) => account.accountNumber == id) // if id is not empty, locate the account equals to the id
-      : getLatestAccount(accountList, 'deposit'); // if id is empty get the latest account
+  // get account by specific type 
+  Future<Account> _getAccount(List<Account> accountList, String type) async {
+    final account = accountList.where((e) => e.type!.toLowerCase() == type);
+    if (account.isNotEmpty) {
+      final accountNumber = await _hiveRepository.getAccountNumber(type); // get accountNumber saved from local storage [hive]
+      return accountNumber.isNotEmpty
+      ? accountList.firstWhere((e) => e.accountNumber == accountNumber) // if id is not empty, locate the account equals to the id
+      : _getLatestAccount(accountList, type); // if id is empty get the latest account
     }
     return emptyAccount;
   }
 
-  // get the specific "credit" account
-  Future<Account> _getCreditAccount(List<Account> accountList) async {
-    final credit = accountList.where((account) => account.category?.toLowerCase() == 'credit');
-    if(credit.isNotEmpty) {
-      final id = await _hiveRepository.getCreditId(state.uid); // id/accountId saved from local storage [hive]
-      return id.isNotEmpty
-      ? accountList.firstWhere((account) => account.accountNumber == id) // if id is not empty, locate the account equals to the id
-      : getLatestAccount(accountList, 'credit'); // if id is empty get the latest account
-    }
-    return emptyAccount;
+  @override
+  Future<void> close() async {
+    subscriptionOnCreate?.cancel();
+    subscriptionOnCreate = null;
+    subscriptionOnUpdate?.cancel();
+    subscriptionOnUpdate = null;
+    subscriptionOnDelete?.cancel();
+    subscriptionOnDelete = null;
+    return super.close();
   }
 }

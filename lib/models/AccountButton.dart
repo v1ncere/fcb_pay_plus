@@ -28,6 +28,7 @@ import 'package:collection/collection.dart';
 class AccountButton extends amplify_core.Model {
   static const classType = const _AccountButtonModelType();
   final String? _type;
+  final String? _name;
   final List<Button>? _buttons;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -67,6 +68,10 @@ class AccountButton extends amplify_core.Model {
     }
   }
   
+  String? get name {
+    return _name;
+  }
+  
   List<Button>? get buttons {
     return _buttons;
   }
@@ -79,11 +84,12 @@ class AccountButton extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const AccountButton._internal({required type, buttons, createdAt, updatedAt}): _type = type, _buttons = buttons, _createdAt = createdAt, _updatedAt = updatedAt;
+  const AccountButton._internal({required type, name, buttons, createdAt, updatedAt}): _type = type, _name = name, _buttons = buttons, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory AccountButton({required String type, List<Button>? buttons}) {
+  factory AccountButton({required String type, String? name, List<Button>? buttons}) {
     return AccountButton._internal(
       type: type,
+      name: name,
       buttons: buttons != null ? List<Button>.unmodifiable(buttons) : buttons);
   }
   
@@ -96,6 +102,7 @@ class AccountButton extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is AccountButton &&
       _type == other._type &&
+      _name == other._name &&
       DeepCollectionEquality().equals(_buttons, other._buttons);
   }
   
@@ -108,6 +115,7 @@ class AccountButton extends amplify_core.Model {
     
     buffer.write("AccountButton {");
     buffer.write("type=" + "$_type" + ", ");
+    buffer.write("name=" + "$_name" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -115,23 +123,27 @@ class AccountButton extends amplify_core.Model {
     return buffer.toString();
   }
   
-  AccountButton copyWith({List<Button>? buttons}) {
+  AccountButton copyWith({String? name, List<Button>? buttons}) {
     return AccountButton._internal(
       type: type,
+      name: name ?? this.name,
       buttons: buttons ?? this.buttons);
   }
   
   AccountButton copyWithModelFieldValues({
+    ModelFieldValue<String?>? name,
     ModelFieldValue<List<Button>?>? buttons
   }) {
     return AccountButton._internal(
       type: type,
+      name: name == null ? this.name : name.value,
       buttons: buttons == null ? this.buttons : buttons.value
     );
   }
   
   AccountButton.fromJson(Map<String, dynamic> json)  
     : _type = json['type'],
+      _name = json['name'],
       _buttons = json['buttons']  is Map
         ? (json['buttons']['items'] is List
           ? (json['buttons']['items'] as List)
@@ -149,11 +161,12 @@ class AccountButton extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'type': _type, 'buttons': _buttons?.map((Button? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'type': _type, 'name': _name, 'buttons': _buttons?.map((Button? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'type': _type,
+    'name': _name,
     'buttons': _buttons,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
@@ -161,6 +174,7 @@ class AccountButton extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<AccountButtonModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<AccountButtonModelIdentifier>();
   static final TYPE = amplify_core.QueryField(fieldName: "type");
+  static final NAME = amplify_core.QueryField(fieldName: "name");
   static final BUTTONS = amplify_core.QueryField(
     fieldName: "buttons",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Button'));
@@ -176,6 +190,17 @@ class AccountButton extends amplify_core.Model {
           amplify_core.ModelOperation.UPDATE,
           amplify_core.ModelOperation.DELETE,
           amplify_core.ModelOperation.READ
+        ]),
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.OWNER,
+        ownerField: "owner",
+        identityClaim: "cognito:username",
+        provider: amplify_core.AuthRuleProvider.USERPOOLS,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
         ])
     ];
     
@@ -186,6 +211,12 @@ class AccountButton extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: AccountButton.TYPE,
       isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: AccountButton.NAME,
+      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     

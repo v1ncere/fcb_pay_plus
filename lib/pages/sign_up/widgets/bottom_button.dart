@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../sign_up.dart';
 
 enum ButtonName { leading, trailing }
@@ -15,27 +14,14 @@ class BottomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SignUpBloc, SignUpState>(
-      listener: (context, state) {
-        if (state.status.isSuccess) {
-          _showSuccessDialog(context, state.message);
-          context.goNamed(RouteName.login);
-        }
-        if(state.status.isCanceled) {
-          _showSuccessDialog(context, state.message);
-          context.goNamed(RouteName.signUpConfirm, pathParameters: {'username': state.email.value});
-        }
-        if (state.status.isFailure) {
-          _showFailureSnackbar(context, state.message);
-        }
-      },
+    return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.all(15.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(
+              if (current < 4) TextButton(
                 style: ButtonStyle(
                   shape: WidgetStatePropertyAll(
                     RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
@@ -48,7 +34,7 @@ class BottomButton extends StatelessWidget {
                   state: state
                 ),
                 child: Text(
-                  _buttonName(current, ButtonName.leading), 
+                  _buttonName(current, ButtonName.leading),
                   style: TextStyle(color: ColorString.eucalyptus)
                 )
               ),
@@ -126,14 +112,14 @@ class BottomButton extends StatelessWidget {
               _showFailureSnackbar(context, TextString.incompleteForm);
             }
           case 3:
-            if (state.userImage != null) {
+            if (state.livenessImageBytes.isNotEmpty) {
               context.read<SignUpStepperCubit>().stepContinued();
             } else {
               _showFailureSnackbar(context, TextString.incompleteForm);
             }
           case 4:
             if (state.userImage != null) {
-              context.read<SignUpBloc>().add(FormSubmitted());
+              context.read<SignUpBloc>().add(FaceComparisonFetched());
             } else {
               _showFailureSnackbar(context, TextString.incompleteForm);
             }
@@ -141,18 +127,6 @@ class BottomButton extends StatelessWidget {
         }
         break;
     }
-  }
-
-  // show success dialog 
-  _showSuccessDialog(BuildContext context, String message) {
-    ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(customSnackBar(
-      text: message,
-      icon: FontAwesomeIcons.solidCircleCheck,
-      backgroundColor: ColorString.eucalyptus,
-      foregroundColor: ColorString.white
-    ));
   }
 
   // show failure snackbar

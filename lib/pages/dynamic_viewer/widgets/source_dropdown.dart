@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../../home/home.dart';
 import '../dynamic_viewer.dart';
 
@@ -73,7 +72,7 @@ class SourceDropdown extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(accountTypeString(item.type!)),
-                        Text(item.accountNumber),
+                        Text("**** ${item.accountNumber.substring(item.accountNumber.length - 4)}"),
                         Text('${Currency.php}${(item.balance)!.toStringAsFixed(2).replaceAllMapped(Currency.reg, Currency.mathFunc)}'),
                       ]
                     );
@@ -87,7 +86,7 @@ class SourceDropdown extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(accountTypeString(item.type!)),
-                        Text(item.accountNumber),
+                        Text("**** ${item.accountNumber.substring(item.accountNumber.length - 4)}"),
                         Text('${Currency.php}${(item.balance)!.toStringAsFixed(2).replaceAllMapped(Currency.reg, Currency.mathFunc)}'),
                         const Divider()
                       ]
@@ -109,9 +108,8 @@ class SourceDropdown extends StatelessWidget {
             )
           );
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        //
+        return const SizedBox.shrink();
       }
     );
   }

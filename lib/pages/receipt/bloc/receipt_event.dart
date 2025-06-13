@@ -7,12 +7,10 @@ sealed class ReceiptEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class ReceiptDisplayStreamed extends ReceiptEvent {}
-
-final class ReceiptDisplayUpdated extends ReceiptEvent {
-  const ReceiptDisplayUpdated(this.receipt);
-  final Receipt? receipt;
+final class ReceiptFetched extends ReceiptEvent {
+  const ReceiptFetched(this.id);
+  final String id;
 
   @override
-  List<Object?> get props => [receipt];
+  List<Object?> get props => [id];
 }

@@ -4,39 +4,21 @@ sealed class TransactionHistoryEvent extends Equatable {
   const TransactionHistoryEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-final class TransactionHistoryLoaded extends TransactionHistoryEvent {
-  const TransactionHistoryLoaded({
-    required this.accountID,
+final class TransactionFetched extends TransactionHistoryEvent {
+  const TransactionFetched({
+    required this.accountNumber,
     this.searchQuery = '',
     this.filter = '',
-    this.limit = 0
   });
-  final String accountID;
+  final String accountNumber;
   final String searchQuery;
   final String filter;
-  final int limit;
 
   @override
-  List<Object> get props => [accountID, searchQuery, filter, limit];
-}
-
-final class NextTransactionFetched extends TransactionHistoryEvent {
-  const NextTransactionFetched({
-  required this.accountID,
-    this.searchQuery = '',
-    this.filter = '',
-    this.limit = 0
-  });
-  final String accountID;
-  final String searchQuery;
-  final String filter;
-  final int limit;
-
-  @override
-  List<Object> get props => [accountID, searchQuery, filter, limit];
+  List<Object> get props => [accountNumber, searchQuery, filter];
 }
 
 final class SearchTextFieldChanged extends TransactionHistoryEvent {

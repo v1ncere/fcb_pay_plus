@@ -32,6 +32,7 @@ class Transaction extends amplify_core.Model {
   final String? _details;
   final String? _owner;
   final Account? _account;
+  final Receipt? _receipt;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -68,6 +69,10 @@ class Transaction extends amplify_core.Model {
     return _account;
   }
   
+  Receipt? get receipt {
+    return _receipt;
+  }
+  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -76,16 +81,17 @@ class Transaction extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Transaction._internal({required this.id, accountNumber, accountType, details, owner, account, createdAt, updatedAt}): _accountNumber = accountNumber, _accountType = accountType, _details = details, _owner = owner, _account = account, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Transaction._internal({required this.id, accountNumber, accountType, details, owner, account, receipt, createdAt, updatedAt}): _accountNumber = accountNumber, _accountType = accountType, _details = details, _owner = owner, _account = account, _receipt = receipt, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Transaction({String? id, String? accountNumber, String? accountType, String? details, String? owner, Account? account}) {
+  factory Transaction({String? id, String? accountNumber, String? accountType, String? details, String? owner, Account? account, Receipt? receipt}) {
     return Transaction._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       accountNumber: accountNumber,
       accountType: accountType,
       details: details,
       owner: owner,
-      account: account);
+      account: account,
+      receipt: receipt);
   }
   
   bool equals(Object other) {
@@ -101,7 +107,8 @@ class Transaction extends amplify_core.Model {
       _accountType == other._accountType &&
       _details == other._details &&
       _owner == other._owner &&
-      _account == other._account;
+      _account == other._account &&
+      _receipt == other._receipt;
   }
   
   @override
@@ -125,14 +132,15 @@ class Transaction extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Transaction copyWith({String? accountNumber, String? accountType, String? details, String? owner, Account? account}) {
+  Transaction copyWith({String? accountNumber, String? accountType, String? details, String? owner, Account? account, Receipt? receipt}) {
     return Transaction._internal(
       id: id,
       accountNumber: accountNumber ?? this.accountNumber,
       accountType: accountType ?? this.accountType,
       details: details ?? this.details,
       owner: owner ?? this.owner,
-      account: account ?? this.account);
+      account: account ?? this.account,
+      receipt: receipt ?? this.receipt);
   }
   
   Transaction copyWithModelFieldValues({
@@ -140,7 +148,8 @@ class Transaction extends amplify_core.Model {
     ModelFieldValue<String?>? accountType,
     ModelFieldValue<String?>? details,
     ModelFieldValue<String?>? owner,
-    ModelFieldValue<Account?>? account
+    ModelFieldValue<Account?>? account,
+    ModelFieldValue<Receipt?>? receipt
   }) {
     return Transaction._internal(
       id: id,
@@ -148,7 +157,8 @@ class Transaction extends amplify_core.Model {
       accountType: accountType == null ? this.accountType : accountType.value,
       details: details == null ? this.details : details.value,
       owner: owner == null ? this.owner : owner.value,
-      account: account == null ? this.account : account.value
+      account: account == null ? this.account : account.value,
+      receipt: receipt == null ? this.receipt : receipt.value
     );
   }
   
@@ -163,11 +173,16 @@ class Transaction extends amplify_core.Model {
           ? Account.fromJson(new Map<String, dynamic>.from(json['account']['serializedData']))
           : Account.fromJson(new Map<String, dynamic>.from(json['account']))
         : null,
+      _receipt = json['receipt'] != null
+        ? json['receipt']['serializedData'] != null
+          ? Receipt.fromJson(new Map<String, dynamic>.from(json['receipt']['serializedData']))
+          : Receipt.fromJson(new Map<String, dynamic>.from(json['receipt']))
+        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'accountNumber': _accountNumber, 'accountType': _accountType, 'details': _details, 'owner': _owner, 'account': _account?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'accountNumber': _accountNumber, 'accountType': _accountType, 'details': _details, 'owner': _owner, 'account': _account?.toJson(), 'receipt': _receipt?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -177,6 +192,7 @@ class Transaction extends amplify_core.Model {
     'details': _details,
     'owner': _owner,
     'account': _account,
+    'receipt': _receipt,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -190,11 +206,22 @@ class Transaction extends amplify_core.Model {
   static final ACCOUNT = amplify_core.QueryField(
     fieldName: "account",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Account'));
+  static final RECEIPT = amplify_core.QueryField(
+    fieldName: "receipt",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Receipt'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Transaction";
     modelSchemaDefinition.pluralName = "Transactions";
     
     modelSchemaDefinition.authRules = [
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.PRIVATE,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
+        ]),
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.OWNER,
         ownerField: "owner",
@@ -239,6 +266,13 @@ class Transaction extends amplify_core.Model {
       isRequired: false,
       targetNames: ['accountId'],
       ofModelName: 'Account'
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
+      key: Transaction.RECEIPT,
+      isRequired: false,
+      ofModelName: 'Receipt',
+      associatedKey: Receipt.TRANSACTION
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

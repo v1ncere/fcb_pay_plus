@@ -11,73 +11,135 @@ import '../../../utils/utils.dart';
 part 'notifications_event.dart';
 part 'notifications_state.dart';
 
+final emptyNotification = Notification();
+
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   NotificationsBloc() : super(const NotificationsState(status: Status.loading)) {
     on<NotificationsFetched>(_onNotificationsFetched);
-    on<NotificationsStreamed>(_onNotificationsStreamed);
-    on<NotificationsUpdated>(_onNotificationsUpdated);
+    on<NotificationsOnCreateStreamed>(_onNotificationsOnCreateStreamed);
+    on<NotificationsOnUpdateStreamed>(_onNotificationsOnUpdateStreamed);
+    on<NotificationsOnDeleteStreamed>(_onNotificationsOnDeleteStreamed);
+    on<NotificationsStreamUpdated>(_onNotificationsStreamUpdated);
     on<NotificationsUpdateIsRead>(_onNotificationsUpdateIsRead);
   }
-  StreamSubscription<GraphQLResponse<Notification>>? subscription;
+  StreamSubscription<GraphQLResponse<Notification>>? onCreateSubscription;
+  StreamSubscription<GraphQLResponse<Notification>>? onUpdateSubscription;
+  StreamSubscription<GraphQLResponse<Notification>>? onDeleteSubscription;
 
   Future<void> _onNotificationsFetched(NotificationsFetched event, Emitter<NotificationsState> emit) async {
     emit(state.copyWith(status: Status.loading));
     try {
-      final user = await Amplify.Auth.getCurrentUser();
-      final request = ModelQueries.list(Notification.classType, where: Notification.OWNER.eq(user.userId));
+      final authUser = await Amplify.Auth.getCurrentUser();
+      final request = ModelQueries.list(Notification.classType, where: Notification.OWNER.eq(authUser.userId));
       final response = await Amplify.API.query(request: request).response;
       final items = response.data?.items;
 
-      if (items != null) {
+      if (items != null && !response.hasErrors) {
         final notifications = items.whereType<Notification>().toList();
-        add(NotificationsUpdated(notifications: notifications));
+        
+        emit(
+          notifications.isNotEmpty
+          ? state.copyWith(status: Status.success, notifications: _sortNotifications(notifications))
+          : state.copyWith(status: Status.failure, message: TextString.empty)
+        );
       } else {
         emit(state.copyWith(status: Status.failure, message: response.errors.first.message));
       }
+    } on AuthException catch (e) {
+      emit(state.copyWith(status: Status.failure, message: e.message));
     } on ApiException catch (e) {
       emit(state.copyWith(status: Status.failure, message: e.message));
-    } catch (e) {
-      emit(state.copyWith(status: Status.failure, message: e.toString()));
+    } catch (_) {
+      emit(state.copyWith(status: Status.failure, message: TextString.error));
     }
   }
 
-  void _onNotificationsStreamed(NotificationsStreamed event, Emitter<NotificationsState> emit) async {
-    final user = await Amplify.Auth.getCurrentUser();
-    final subscriptionRequest = ModelSubscriptions.onCreate(Notification.classType, where: Notification.OWNER.eq(user.userId));
-    final operation = Amplify.API.subscribe(subscriptionRequest, onEstablished: () => safePrint('Subscription Established'));
-    subscription = operation.listen(
-      (event) {
-        final notification = state.notifications;
-        notification.add(event.data!);
-        add(NotificationsUpdated(notifications: notification));
-      }, onError: (error) {
-        emit(state.copyWith(status: Status.failure, message: error.toString()));
-      }
+  FutureOr<void> _onNotificationsOnCreateStreamed(NotificationsOnCreateStreamed event, Emitter<NotificationsState> emit) async {
+    final authUser = await Amplify.Auth.getCurrentUser();
+    final subscriptionRequest = ModelSubscriptions.onCreate(Notification.classType, where: Notification.OWNER.eq(authUser.userId));
+    final operation = Amplify.API.subscribe(subscriptionRequest, onEstablished: () => safePrint('Subscription Established!'));
+    onCreateSubscription = operation.listen(
+      (event) => add(NotificationsStreamUpdated(event.data, false)),
+      onError: (error) => safePrint(error.toString()),
+    );
+  }
+
+  FutureOr<void> _onNotificationsOnUpdateStreamed(NotificationsOnUpdateStreamed event, Emitter<NotificationsState> emit) async {
+    final authUser = await Amplify.Auth.getCurrentUser();
+    final subscriptionRequest = ModelSubscriptions.onUpdate(Notification.classType, where: Notification.OWNER.eq(authUser.userId));
+    final operation = Amplify.API.subscribe(subscriptionRequest, onEstablished: () => safePrint('Subscription Established!'));
+    onUpdateSubscription = operation.listen(
+      (event) => add(NotificationsStreamUpdated(event.data, false)),
+      onError: (error) => safePrint(error.toString()),
+    );
+  }
+
+  FutureOr<void> _onNotificationsOnDeleteStreamed(NotificationsOnDeleteStreamed event, Emitter<NotificationsState> emit) async {
+    final authUser = await Amplify.Auth.getCurrentUser();
+    final subscriptionRequest = ModelSubscriptions.onDelete(Notification.classType, where: Notification.OWNER.eq(authUser.userId));
+    final operation = Amplify.API.subscribe(subscriptionRequest, onEstablished: () => safePrint('Subscription Established!'));
+    onDeleteSubscription = operation.listen(
+      (event) => add(NotificationsStreamUpdated(event.data, true)),
+      onError: (error) => safePrint(error.toString()),
     );
   }
   
-  void _onNotificationsUpdated(NotificationsUpdated event, Emitter<NotificationsState> emit) async {
-    if (event.notifications.isEmpty) {
-      emit(state.copyWith(status: Status.failure, message: 'Empty'));
-    } else {
-      final unread = event.notifications.where((e) => !e.isRead!).toList();
-      final read = event.notifications.where((e) => e.isRead!).toList();
-      emit(state.copyWith(status: Status.success, notifications: [...unread, ...read]));
+  void _onNotificationsStreamUpdated(NotificationsStreamUpdated event, Emitter<NotificationsState> emit) {
+    final notification = event.notification;
+    
+    if (notification != null) {
+      final newList = List<Notification>.from(state.notifications);
+      final index = newList.indexWhere((e) => e.id == notification.id);
+
+      if (event.isDelete) {
+        if (index != -1) {
+          newList.removeAt(index);
+          emit(state.copyWith(status: Status.success, notifications: _sortNotifications(newList)));
+        }
+      } else {
+        if (index != -1) {
+          newList[index] = notification;
+        } else {
+          newList.add(notification);
+        }
+        emit(state.copyWith(status: Status.success, notifications: _sortNotifications(newList)));
+      }
     }
+  }
+
+  List<Notification> _sortNotifications(List<Notification> notification) {
+    final unread = notification.where((e) => !e.isRead!).toList();
+    final read = notification.where((e) => e.isRead!).toList();
+    return [...unread, ...read];
   }
 
   void _onNotificationsUpdateIsRead(NotificationsUpdateIsRead event, Emitter<NotificationsState> emit) async {
     emit(state.copyWith(updateStatus: Status.loading));
     try {
-      final notification = event.notification;
-      final updateNotifications = notification.copyWith(isRead: true);
-      final request = ModelMutations.update(updateNotifications, where: Notification.ID.eq(notification.id));
+      final updatedNotification = event.notification.copyWith(isRead: true);
+      final request = ModelMutations.update(updatedNotification);
       final response = await Amplify.API.mutate(request: request).response;
-      emit(state.copyWith(updateStatus: Status.success, message: response.toString()));
+
+      emit(
+        response.data != null && !response.hasErrors
+        ? state.copyWith(updateStatus: Status.success, message: response.toString())
+        : state.copyWith(updateStatus: Status.failure, message: response.errors.first.message)
+      );
     } on ApiException catch (e) {
       emit(state.copyWith(updateStatus: Status.failure, message: e.message));
     } catch (e) {
       emit(state.copyWith(updateStatus: Status.failure, message: e.toString()));
     }
+  }
+
+  @override
+  Future<void> close() async {
+    onCreateSubscription?.cancel();
+    onCreateSubscription = null;
+    onUpdateSubscription?.cancel();
+    onUpdateSubscription = null;
+    onDeleteSubscription?.cancel();
+    onDeleteSubscription = null;
+    return super.close();
   }
 }

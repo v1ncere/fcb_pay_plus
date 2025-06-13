@@ -4,10 +4,11 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:aws_signature_v4/aws_signature_v4.dart';
 import 'package:equatable/equatable.dart';
-import 'package:fcb_pay_plus/utils/utils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import '../../../utils/utils.dart';
 
 part 'face_liveness_event.dart';
 part 'face_liveness_state.dart';
@@ -23,10 +24,6 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
   Future<void> _onFaceLivenessSessionIdFetched(FaceLivenessSessionIdFetched event, Emitter<FaceLivenessState> emit) async {
     emit(state.copyWith(sessionStatus: Status.loading));
     try {
-      final cognito = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
-      final result = await cognito.fetchAuthSession();
-      final cred = result.credentialsResult.value;
-      final signer = AWSSigV4Signer(credentialsProvider: AWSCredentialsProvider(AWSCredentials(cred.accessKeyId, cred.secretAccessKey, cred.sessionToken)));
       final endpoint = Uri.https(dotenv.get('FACELIVENESS_SESSION_HOST'), dotenv.get('FACELIVENESS_SESSION_PATH'));
       final scope = AWSCredentialScope(region: dotenv.get('COGNITO_REGION'), service: AWSService(dotenv.get('SERVICE')));
       final request = AWSHttpRequest(
@@ -37,19 +34,25 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
           AWSHeaders.contentType: 'application/json',
         },
       );
-      final signedRequest = await signer.sign(request, credentialScope: scope);
-      final resp = signedRequest.send();
-      final respBody = await resp.response;
 
-      if (respBody.statusCode == 200) {
-        final map = jsonDecode(await respBody.decodeBody()) as Map<String, dynamic>;
-        final sessionId = map["sessionId"] as String;
+      final signer = await _awsSigV4Signer();
+      final signedRequest = await signer.sign(request, credentialScope: scope);
+      final awsBaseHttpResponse = signedRequest.send();
+      final response = await awsBaseHttpResponse.response;
+      
+      if (response.statusCode == 200) {
+        final responseString = await response.decodeBody();
+        final Map<String, dynamic> map = jsonDecode(responseString);
+        final sessionId = map['sessionId'] as String;
         emit(state.copyWith(sessionStatus: Status.success, sessionId: sessionId));
       } else {
-        emit(state.copyWith(sessionStatus: Status.failure, message:'Error: ${await respBody.decodeBody()}'));
+        final data = await response.decodeBody();
+        final Map<String, dynamic> map = jsonDecode(data);
+        final errorMessage = map['message'] ?? TextString.error;
+        emit(state.copyWith(sessionStatus: Status.failure, message: errorMessage));
       }
     } catch (e) {
-      emit(state.copyWith(sessionStatus: Status.failure, message:'Error: ${e.toString()}'));
+      emit(state.copyWith(sessionStatus: Status.failure, message: TextString.error));
     }
     emit(state.copyWith(sessionStatus: Status.initial));
   }
@@ -70,7 +73,7 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
         final map = Map.from(result);
         final status = map['status'] as String;
         
-        if (status == "complete") {
+        if (status == 'complete') {
           emit(state.copyWith(invokeStatus: Status.success, invokeResult: map));
         } else {
           emit(state.copyWith(invokeStatus: Status.failure, message: map['message'] as String));
@@ -79,9 +82,9 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
         emit(state.copyWith(invokeStatus: Status.failure, message: TextString.error));
       }
     } on PlatformException catch (e) {
-      emit(state.copyWith(invokeStatus: Status.failure, message:"Error: ${e.message}"));
+      emit(state.copyWith(invokeStatus: Status.failure, message: '${e.message}'));
     } catch (e) {
-      emit(state.copyWith(invokeStatus: Status.failure, message:"Error: ${e.toString()}"));
+      emit(state.copyWith(invokeStatus: Status.failure, message: TextString.error));
     }
     emit(state.copyWith(invokeStatus: Status.initial));
   }
@@ -90,10 +93,6 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
   Future<void> _onFaceLivenessResultFetched(FaceLivenessResultFetched event, Emitter<FaceLivenessState> emit) async {
     emit(state.copyWith(resultStatus: Status.loading));
     try {
-      final cognito = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
-      final result = await cognito.fetchAuthSession();
-      final cred = result.credentialsResult.value;
-      final signer = AWSSigV4Signer(credentialsProvider: AWSCredentialsProvider(AWSCredentials(cred.accessKeyId, cred.secretAccessKey, cred.sessionToken)));
       final url = Uri.https(dotenv.get('FACELIVENESS_RESULT_HOST'), dotenv.get('FACELIVENESS_RESULT_PATH'));
       final scope = AWSCredentialScope(region: dotenv.get('COGNITO_REGION'), service: AWSService(dotenv.get('SERVICE')));
       final request = AWSHttpRequest(
@@ -106,29 +105,55 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
         body: json.encode({ 'sessionId': state.sessionId }).codeUnits,
       );
 
+      final signer = await _awsSigV4Signer();
       final signedRequest = await signer.sign(request, credentialScope: scope);
-      final res = signedRequest.send();
-      final respBody = await res.response;
+      final awsBaseHttpResponse = signedRequest.send();
+      final response = await awsBaseHttpResponse.response;
 
-      if (respBody.statusCode == 200) {
-        final map = jsonDecode(await respBody.decodeBody()) as Map<String, dynamic>;
-        final rawBytes = map["ReferenceImage"]["Bytes"] as Map<String, dynamic>;
-        final confidence = map["Confidence"] as double;
+      if (response.statusCode == 200) {
+        final responseString = await response.decodeBody();
+        final Map<String, dynamic> dataMap = jsonDecode(responseString);
+        final rawBytes = dataMap['ReferenceImage']['Bytes'] as Map<String, dynamic>;
+        final confidence = dataMap['Confidence'] as double;
         
-        if (confidence > 90.00) {
-          emit(state.copyWith(resultStatus: Status.success, rawBytes: mapBlobSorter(rawBytes), confidence: confidence));
+        if (confidence >= 90.00) {
+          emit(state.copyWith(
+            resultStatus: Status.success,
+            rawBytes: mapBytesSorter(rawBytes),
+            confidence: confidence, 
+            message: TextString.faceLivenessSuccess
+          ));
         } else {
           emit(state.copyWith(resultStatus: Status.failure, message: TextString.faceLivenessFailed));
         }
       } else {
-        emit(state.copyWith(resultStatus: Status.failure, message:'Error: ${await respBody.decodeBody()}'));
+        final data = await response.decodeBody();
+        final Map<String, dynamic> map = jsonDecode(data);
+        final errorMessage = map['message'] ?? TextString.error;
+        emit(state.copyWith(resultStatus: Status.failure, message: errorMessage));
       }
     } catch (e) {
-      emit(state.copyWith(resultStatus: Status.failure, message:'Error: ${e.toString()}'));
+      emit(state.copyWith(resultStatus: Status.failure, message: TextString.error));
     }
   }
 
-  List<int> mapBlobSorter(Map<String, dynamic> rawBytes) {
+  Future<AWSSigV4Signer> _awsSigV4Signer() async {
+    final cognito = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
+    final result = await cognito.fetchAuthSession();
+    final credential = result.credentialsResult.value;
+
+    return  AWSSigV4Signer(
+      credentialsProvider: AWSCredentialsProvider(
+        AWSCredentials(
+          credential.accessKeyId,
+          credential.secretAccessKey,
+          credential.sessionToken,
+        ),
+      ),
+    );
+  }
+
+  List<int> mapBytesSorter(Map<String, dynamic> rawBytes) {
     // convert map keys into list
     var sortedKeys = rawBytes.keys.toList()
     ..sort((a, b) => int.parse(a).compareTo(int.parse(b))); // parse into int and sort the keys 

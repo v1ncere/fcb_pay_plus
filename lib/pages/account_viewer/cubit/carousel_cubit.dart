@@ -5,7 +5,7 @@ import '../../../models/ModelProvider.dart';
 
 part 'carousel_state.dart';
 
-final accountEmpty = Account(accountNumber: '');
+final accountEmpty = Account(accountNumber: '', owner: '', ledgerStatus: '');
 
 class CarouselCubit extends Cubit<CarouselState> {
   CarouselCubit() : super(CarouselState(account: accountEmpty));

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../local_authentication.dart';
-import '../../../../widgets/widgets.dart';
+import '../../../../utils/utils.dart';
 
 class NumPad extends StatelessWidget {
   const NumPad({super.key, required this.isBiometricEnable});

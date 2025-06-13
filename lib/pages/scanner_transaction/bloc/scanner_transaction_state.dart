@@ -3,51 +3,48 @@ part of 'scanner_transaction_bloc.dart';
 class ScannerTransactionState extends Equatable with FormzMixin {
   const ScannerTransactionState({
     this.qrDataList = const <QRModel>[],
-    this.uid = '',
-    this.accountDropdown = const AccountDropdown.pure(),
     required this.account,
+    this.accountDropdown = const AccountDropdown.pure(),
     this.inputAmount = const Amount.pure(),
     this.notifyFlag = '',
     this.tip = '',
+    this.receiptId = '',
     this.status = Status.initial,
-    this.userStatus = Status.initial,
     this.formStatus = FormzSubmissionStatus.initial,
     this.message = ''
   });
   final List<QRModel> qrDataList;
-  final String uid;
-  final String notifyFlag;
-  final AccountDropdown accountDropdown;
   final Account account;
+  final AccountDropdown accountDropdown;
+  final String notifyFlag;
   final String tip;
   final Amount inputAmount;
+  final String receiptId;
   final Status status;
-  final Status userStatus;
   final FormzSubmissionStatus formStatus;
   final String message;
 
   ScannerTransactionState copyWith({
     List<QRModel>? qrDataList,
-    String? uid,
-    String? notifyFlag,
-    AccountDropdown? accountDropdown,
     Account? account,
+    AccountDropdown? accountDropdown,
+    String? notifyFlag,
     String? tip,
     Amount? inputAmount,
+    String? receiptId,
     Status? status,
-    Status? userStatus,
     FormzSubmissionStatus? formStatus,
     String? message
   }) {
     return ScannerTransactionState(
       qrDataList: qrDataList ?? this.qrDataList,
-      notifyFlag: notifyFlag ?? this.notifyFlag,
-      accountDropdown: accountDropdown ?? this.accountDropdown,
       account: account ?? this.account,
+      accountDropdown: accountDropdown ?? this.accountDropdown,
+      notifyFlag: notifyFlag ?? this.notifyFlag,
       tip: tip ?? this.tip,
       inputAmount: inputAmount ?? this.inputAmount,
+      receiptId: receiptId ?? this.receiptId,
       status: status ?? this.status,
-      userStatus: userStatus ?? this.userStatus,
       formStatus: formStatus ?? this.formStatus,
       message: message ?? this.message
     );
@@ -56,17 +53,16 @@ class ScannerTransactionState extends Equatable with FormzMixin {
   @override
   List<Object> get props => [
     qrDataList,
-    notifyFlag,
-    accountDropdown,
     account,
+    accountDropdown,
+    notifyFlag,
     tip,
     inputAmount,
+    receiptId,
     status,
-    userStatus,
     formStatus,
     message,
     isValid,
-    isPure
   ];
   
   @override

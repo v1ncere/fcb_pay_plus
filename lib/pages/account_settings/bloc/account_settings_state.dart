@@ -25,3 +25,5 @@ class AccountSettingsState extends Equatable {
   @override
   List<Object> get props => [status, userStatus, message];
 }
+
+enum Settings { delete }

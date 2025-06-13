@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../models/Account.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../home.dart';
 import 'widgets.dart';
 
@@ -55,16 +54,14 @@ Card creditCard({
                     Text(
                       'CREDIT',
                       style: TextStyle(
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.bold,
                         color: ColorString.white
                       )
                     ),
                     settingsPopUp(
                       accountList: accountList,
-                      category: account.category ?? '',
-                      onSelected: (value) {
-                        context.read<AccountsHomeBloc>().add(CreditDisplayChanged(value));
-                      }
+                      type: account.type ?? '',
+                      onSelected: (value) => context.read<AccountsHomeBloc>().add(AccountDisplayChanged(value))
                     )
                   ]
                 ),

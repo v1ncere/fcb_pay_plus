@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 
 // Build the top row containing logos
 Row buildLogosBlock() {
@@ -37,7 +36,7 @@ Column buildAccountNumber({
         fontSize: 21
       ),
       CustomText(
-        text: type.toUpperCase(),
+        text: accountTypeNameString(type.toLowerCase()),
         color: ColorString.white,
         fontSize: 9,
         fontWeight: FontWeight.bold

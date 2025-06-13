@@ -10,6 +10,7 @@ import amplify_secure_storage
 import connectivity_plus
 import device_info_plus
 import file_selector_macos
+import flutter_image_compress_macos
 import gal
 import local_auth_darwin
 import mobile_scanner
@@ -23,6 +24,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   ConnectivityPlusPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlusPlugin"))
   DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))
   FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
+  FlutterImageCompressMacosPlugin.register(with: registry.registrar(forPlugin: "FlutterImageCompressMacosPlugin"))
   GalPlugin.register(with: registry.registrar(forPlugin: "GalPlugin"))
   FLALocalAuthPlugin.register(with: registry.registrar(forPlugin: "FLALocalAuthPlugin"))
   MobileScannerPlugin.register(with: registry.registrar(forPlugin: "MobileScannerPlugin"))

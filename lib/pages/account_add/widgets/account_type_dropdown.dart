@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../utils/utils.dart';
-import '../account_add.dart';
+import '../bloc/account_add_bloc.dart';
 
 class AccountTypeDropdown extends StatelessWidget {
-  const AccountTypeDropdown({super.key});
+  AccountTypeDropdown({super.key});
+  
+  final List<AccountType> visibleAccountTypes = AccountType.values.where((type) {
+    return type == AccountType.psa || type == AccountType.ppr || type == AccountType.plc;
+  }).toList();
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +34,11 @@ class AccountTypeDropdown extends StatelessWidget {
                     border: OutlineInputBorder(borderSide: BorderSide.none)
                   ),
                   onChanged: (value) => context.read<AccountAddBloc>().add(AccountTypeDropdownChanged(value!)),
-                  items: AccountType.values.map((type) {
+                  items: visibleAccountTypes.map((type) {
                     return DropdownMenuItem(
                       value: type,
                       enabled: !type.isUnknown,
-                      child: type.isUnknown ? _accountTitle() : Text(type.name)
+                      child: type.isUnknown ? _accountTitle() : Text(accountTypeName(type))
                     );
                   }).toList(),
                 )

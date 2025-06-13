@@ -7,7 +7,7 @@ import '../scanner_transaction.dart';
 
 class ScannerTransactionPage extends StatelessWidget {
   const ScannerTransactionPage({super.key});
-   static final _hiveRepository = HiveRepository();
+  static final _hiveRepository = HiveRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,7 @@ class ScannerTransactionPage extends StatelessWidget {
           BlocProvider(create: (context) => AccountsHomeBloc(hiveRepository: _hiveRepository)
           ..add(AccountsHomeFetched())),
           BlocProvider(create: (context) => ScannerTransactionBloc(hiveRepository: _hiveRepository)
-          ..add(ScannerTransactionDisplayLoaded())
-          ..add(ScannerCurrentUserFetched()))
+          ..add(ScannerTransactionDisplayLoaded())),
         ],
         child: const ScannerTransactionView()
       )

@@ -18,7 +18,8 @@ class ScannerView extends StatefulWidget {
 class ScannerViewState extends State<ScannerView> {
   final _controller = MobileScannerController(
     formats: const [BarcodeFormat.qrCode],
-    detectionSpeed: DetectionSpeed.normal
+    detectionSpeed: DetectionSpeed.normal,
+    detectionTimeoutMs: 1000,
   );
 
   @override

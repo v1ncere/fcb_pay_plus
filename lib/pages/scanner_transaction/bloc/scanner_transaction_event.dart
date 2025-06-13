@@ -7,8 +7,6 @@ sealed class ScannerTransactionEvent extends Equatable {
   List<Object> get props => [];
 }
 
-final class ScannerCurrentUserFetched extends ScannerTransactionEvent {}
-
 final class ScannerTransactionDisplayLoaded extends ScannerTransactionEvent {}
 
 final class ScannerAccountValueChanged extends ScannerTransactionEvent {

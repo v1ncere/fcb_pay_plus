@@ -3,10 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../models/Account.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 
 PopupMenuButton settingsPopUp ({
-  required String category,
+  required String type,
   required List<Account> accountList,
   required void Function(dynamic)? onSelected
 }) {
@@ -14,10 +13,10 @@ PopupMenuButton settingsPopUp ({
     tooltip: 'Select account to be displayed',
     onSelected: onSelected,
     itemBuilder: (context) {
-      final newList = accountList.where((account) => account.category == category).toList();
+      final newList = accountList.where((e) => e.type == type).toList();
       return newList.map((value) {
-        return PopupMenuItem<String>(
-          value: value.accountNumber,
+        return PopupMenuItem<Account>(
+          value: value,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

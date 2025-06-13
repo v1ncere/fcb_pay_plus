@@ -29,6 +29,7 @@ class Receipt extends amplify_core.Model {
   final String id;
   final String? _data;
   final String? _owner;
+  final Transaction? _transaction;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -53,6 +54,10 @@ class Receipt extends amplify_core.Model {
     return _owner;
   }
   
+  Transaction? get transaction {
+    return _transaction;
+  }
+  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -61,13 +66,14 @@ class Receipt extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Receipt._internal({required this.id, data, owner, createdAt, updatedAt}): _data = data, _owner = owner, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Receipt._internal({required this.id, data, owner, transaction, createdAt, updatedAt}): _data = data, _owner = owner, _transaction = transaction, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Receipt({String? id, String? data, String? owner}) {
+  factory Receipt({String? id, String? data, String? owner, Transaction? transaction}) {
     return Receipt._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       data: data,
-      owner: owner);
+      owner: owner,
+      transaction: transaction);
   }
   
   bool equals(Object other) {
@@ -80,7 +86,8 @@ class Receipt extends amplify_core.Model {
     return other is Receipt &&
       id == other.id &&
       _data == other._data &&
-      _owner == other._owner;
+      _owner == other._owner &&
+      _transaction == other._transaction;
   }
   
   @override
@@ -94,6 +101,7 @@ class Receipt extends amplify_core.Model {
     buffer.write("id=" + "$id" + ", ");
     buffer.write("data=" + "$_data" + ", ");
     buffer.write("owner=" + "$_owner" + ", ");
+    buffer.write("transaction=" + (_transaction != null ? _transaction!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -101,21 +109,24 @@ class Receipt extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Receipt copyWith({String? data, String? owner}) {
+  Receipt copyWith({String? data, String? owner, Transaction? transaction}) {
     return Receipt._internal(
       id: id,
       data: data ?? this.data,
-      owner: owner ?? this.owner);
+      owner: owner ?? this.owner,
+      transaction: transaction ?? this.transaction);
   }
   
   Receipt copyWithModelFieldValues({
     ModelFieldValue<String?>? data,
-    ModelFieldValue<String?>? owner
+    ModelFieldValue<String?>? owner,
+    ModelFieldValue<Transaction?>? transaction
   }) {
     return Receipt._internal(
       id: id,
       data: data == null ? this.data : data.value,
-      owner: owner == null ? this.owner : owner.value
+      owner: owner == null ? this.owner : owner.value,
+      transaction: transaction == null ? this.transaction : transaction.value
     );
   }
   
@@ -123,17 +134,23 @@ class Receipt extends amplify_core.Model {
     : id = json['id'],
       _data = json['data'],
       _owner = json['owner'],
+      _transaction = json['transaction'] != null
+        ? json['transaction']['serializedData'] != null
+          ? Transaction.fromJson(new Map<String, dynamic>.from(json['transaction']['serializedData']))
+          : Transaction.fromJson(new Map<String, dynamic>.from(json['transaction']))
+        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'data': _data, 'owner': _owner, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'data': _data, 'owner': _owner, 'transaction': _transaction?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'data': _data,
     'owner': _owner,
+    'transaction': _transaction,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -142,11 +159,22 @@ class Receipt extends amplify_core.Model {
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final DATA = amplify_core.QueryField(fieldName: "data");
   static final OWNER = amplify_core.QueryField(fieldName: "owner");
+  static final TRANSACTION = amplify_core.QueryField(
+    fieldName: "transaction",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Transaction'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Receipt";
     modelSchemaDefinition.pluralName = "Receipts";
     
     modelSchemaDefinition.authRules = [
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.PRIVATE,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
+        ]),
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.OWNER,
         ownerField: "owner",
@@ -172,6 +200,13 @@ class Receipt extends amplify_core.Model {
       key: Receipt.OWNER,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
+      key: Receipt.TRANSACTION,
+      isRequired: false,
+      targetNames: ['transactionId'],
+      ofModelName: 'Transaction'
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

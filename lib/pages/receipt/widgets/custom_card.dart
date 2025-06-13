@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 
 class CustomCard extends StatelessWidget {
   const CustomCard({

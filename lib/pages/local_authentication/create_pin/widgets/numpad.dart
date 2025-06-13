@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../widgets/widgets.dart';
+import '../../../../utils/utils.dart';
 import '../../local_authentication.dart';
 
 class NumPad extends StatelessWidget {

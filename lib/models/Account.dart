@@ -29,13 +29,15 @@ class Account extends amplify_core.Model {
   static const classType = const _AccountModelType();
   final String? _accountNumber;
   final double? _balance;
-  final String? _category;
   final double? _creditLimit;
   final amplify_core.TemporalDateTime? _expiry;
   final String? _type;
   final String? _ownerName;
   final String? _owner;
+  final String? _ledgerStatus;
+  final bool? _isActive;
   final List<Transaction>? _transactions;
+  final TransferableUser? _transferableUser;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -78,10 +80,6 @@ class Account extends amplify_core.Model {
     return _balance;
   }
   
-  String? get category {
-    return _category;
-  }
-  
   double? get creditLimit {
     return _creditLimit;
   }
@@ -98,12 +96,42 @@ class Account extends amplify_core.Model {
     return _ownerName;
   }
   
-  String? get owner {
-    return _owner;
+  String get owner {
+    try {
+      return _owner!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
+  String get ledgerStatus {
+    try {
+      return _ledgerStatus!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
+  bool? get isActive {
+    return _isActive;
   }
   
   List<Transaction>? get transactions {
     return _transactions;
+  }
+  
+  TransferableUser? get transferableUser {
+    return _transferableUser;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -114,19 +142,21 @@ class Account extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Account._internal({required accountNumber, balance, category, creditLimit, expiry, type, ownerName, owner, transactions, createdAt, updatedAt}): _accountNumber = accountNumber, _balance = balance, _category = category, _creditLimit = creditLimit, _expiry = expiry, _type = type, _ownerName = ownerName, _owner = owner, _transactions = transactions, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Account._internal({required accountNumber, balance, creditLimit, expiry, type, ownerName, required owner, required ledgerStatus, isActive, transactions, transferableUser, createdAt, updatedAt}): _accountNumber = accountNumber, _balance = balance, _creditLimit = creditLimit, _expiry = expiry, _type = type, _ownerName = ownerName, _owner = owner, _ledgerStatus = ledgerStatus, _isActive = isActive, _transactions = transactions, _transferableUser = transferableUser, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Account({required String accountNumber, double? balance, String? category, double? creditLimit, amplify_core.TemporalDateTime? expiry, String? type, String? ownerName, String? owner, List<Transaction>? transactions}) {
+  factory Account({required String accountNumber, double? balance, double? creditLimit, amplify_core.TemporalDateTime? expiry, String? type, String? ownerName, required String owner, required String ledgerStatus, bool? isActive, List<Transaction>? transactions, TransferableUser? transferableUser}) {
     return Account._internal(
       accountNumber: accountNumber,
       balance: balance,
-      category: category,
       creditLimit: creditLimit,
       expiry: expiry,
       type: type,
       ownerName: ownerName,
       owner: owner,
-      transactions: transactions != null ? List<Transaction>.unmodifiable(transactions) : transactions);
+      ledgerStatus: ledgerStatus,
+      isActive: isActive,
+      transactions: transactions != null ? List<Transaction>.unmodifiable(transactions) : transactions,
+      transferableUser: transferableUser);
   }
   
   bool equals(Object other) {
@@ -139,13 +169,15 @@ class Account extends amplify_core.Model {
     return other is Account &&
       _accountNumber == other._accountNumber &&
       _balance == other._balance &&
-      _category == other._category &&
       _creditLimit == other._creditLimit &&
       _expiry == other._expiry &&
       _type == other._type &&
       _ownerName == other._ownerName &&
       _owner == other._owner &&
-      DeepCollectionEquality().equals(_transactions, other._transactions);
+      _ledgerStatus == other._ledgerStatus &&
+      _isActive == other._isActive &&
+      DeepCollectionEquality().equals(_transactions, other._transactions) &&
+      _transferableUser == other._transferableUser;
   }
   
   @override
@@ -158,12 +190,13 @@ class Account extends amplify_core.Model {
     buffer.write("Account {");
     buffer.write("accountNumber=" + "$_accountNumber" + ", ");
     buffer.write("balance=" + (_balance != null ? _balance!.toString() : "null") + ", ");
-    buffer.write("category=" + "$_category" + ", ");
     buffer.write("creditLimit=" + (_creditLimit != null ? _creditLimit!.toString() : "null") + ", ");
     buffer.write("expiry=" + (_expiry != null ? _expiry!.format() : "null") + ", ");
     buffer.write("type=" + "$_type" + ", ");
     buffer.write("ownerName=" + "$_ownerName" + ", ");
     buffer.write("owner=" + "$_owner" + ", ");
+    buffer.write("ledgerStatus=" + "$_ledgerStatus" + ", ");
+    buffer.write("isActive=" + (_isActive != null ? _isActive!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -171,51 +204,58 @@ class Account extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Account copyWith({double? balance, String? category, double? creditLimit, amplify_core.TemporalDateTime? expiry, String? type, String? ownerName, String? owner, List<Transaction>? transactions}) {
+  Account copyWith({double? balance, double? creditLimit, amplify_core.TemporalDateTime? expiry, String? type, String? ownerName, String? owner, String? ledgerStatus, bool? isActive, List<Transaction>? transactions, TransferableUser? transferableUser}) {
     return Account._internal(
       accountNumber: accountNumber,
       balance: balance ?? this.balance,
-      category: category ?? this.category,
       creditLimit: creditLimit ?? this.creditLimit,
       expiry: expiry ?? this.expiry,
       type: type ?? this.type,
       ownerName: ownerName ?? this.ownerName,
       owner: owner ?? this.owner,
-      transactions: transactions ?? this.transactions);
+      ledgerStatus: ledgerStatus ?? this.ledgerStatus,
+      isActive: isActive ?? this.isActive,
+      transactions: transactions ?? this.transactions,
+      transferableUser: transferableUser ?? this.transferableUser);
   }
   
   Account copyWithModelFieldValues({
     ModelFieldValue<double?>? balance,
-    ModelFieldValue<String?>? category,
     ModelFieldValue<double?>? creditLimit,
     ModelFieldValue<amplify_core.TemporalDateTime?>? expiry,
     ModelFieldValue<String?>? type,
     ModelFieldValue<String?>? ownerName,
-    ModelFieldValue<String?>? owner,
-    ModelFieldValue<List<Transaction>?>? transactions
+    ModelFieldValue<String>? owner,
+    ModelFieldValue<String>? ledgerStatus,
+    ModelFieldValue<bool?>? isActive,
+    ModelFieldValue<List<Transaction>?>? transactions,
+    ModelFieldValue<TransferableUser?>? transferableUser
   }) {
     return Account._internal(
       accountNumber: accountNumber,
       balance: balance == null ? this.balance : balance.value,
-      category: category == null ? this.category : category.value,
       creditLimit: creditLimit == null ? this.creditLimit : creditLimit.value,
       expiry: expiry == null ? this.expiry : expiry.value,
       type: type == null ? this.type : type.value,
       ownerName: ownerName == null ? this.ownerName : ownerName.value,
       owner: owner == null ? this.owner : owner.value,
-      transactions: transactions == null ? this.transactions : transactions.value
+      ledgerStatus: ledgerStatus == null ? this.ledgerStatus : ledgerStatus.value,
+      isActive: isActive == null ? this.isActive : isActive.value,
+      transactions: transactions == null ? this.transactions : transactions.value,
+      transferableUser: transferableUser == null ? this.transferableUser : transferableUser.value
     );
   }
   
   Account.fromJson(Map<String, dynamic> json)  
     : _accountNumber = json['accountNumber'],
       _balance = (json['balance'] as num?)?.toDouble(),
-      _category = json['category'],
       _creditLimit = (json['creditLimit'] as num?)?.toDouble(),
       _expiry = json['expiry'] != null ? amplify_core.TemporalDateTime.fromString(json['expiry']) : null,
       _type = json['type'],
       _ownerName = json['ownerName'],
       _owner = json['owner'],
+      _ledgerStatus = json['ledgerStatus'],
+      _isActive = json['isActive'],
       _transactions = json['transactions']  is Map
         ? (json['transactions']['items'] is List
           ? (json['transactions']['items'] as List)
@@ -229,23 +269,30 @@ class Account extends amplify_core.Model {
               .map((e) => Transaction.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
           : null),
+      _transferableUser = json['transferableUser'] != null
+        ? json['transferableUser']['serializedData'] != null
+          ? TransferableUser.fromJson(new Map<String, dynamic>.from(json['transferableUser']['serializedData']))
+          : TransferableUser.fromJson(new Map<String, dynamic>.from(json['transferableUser']))
+        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'accountNumber': _accountNumber, 'balance': _balance, 'category': _category, 'creditLimit': _creditLimit, 'expiry': _expiry?.format(), 'type': _type, 'ownerName': _ownerName, 'owner': _owner, 'transactions': _transactions?.map((Transaction? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'accountNumber': _accountNumber, 'balance': _balance, 'creditLimit': _creditLimit, 'expiry': _expiry?.format(), 'type': _type, 'ownerName': _ownerName, 'owner': _owner, 'ledgerStatus': _ledgerStatus, 'isActive': _isActive, 'transactions': _transactions?.map((Transaction? e) => e?.toJson()).toList(), 'transferableUser': _transferableUser?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'accountNumber': _accountNumber,
     'balance': _balance,
-    'category': _category,
     'creditLimit': _creditLimit,
     'expiry': _expiry,
     'type': _type,
     'ownerName': _ownerName,
     'owner': _owner,
+    'ledgerStatus': _ledgerStatus,
+    'isActive': _isActive,
     'transactions': _transactions,
+    'transferableUser': _transferableUser,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -253,20 +300,32 @@ class Account extends amplify_core.Model {
   static final amplify_core.QueryModelIdentifier<AccountModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<AccountModelIdentifier>();
   static final ACCOUNTNUMBER = amplify_core.QueryField(fieldName: "accountNumber");
   static final BALANCE = amplify_core.QueryField(fieldName: "balance");
-  static final CATEGORY = amplify_core.QueryField(fieldName: "category");
   static final CREDITLIMIT = amplify_core.QueryField(fieldName: "creditLimit");
   static final EXPIRY = amplify_core.QueryField(fieldName: "expiry");
   static final TYPE = amplify_core.QueryField(fieldName: "type");
   static final OWNERNAME = amplify_core.QueryField(fieldName: "ownerName");
   static final OWNER = amplify_core.QueryField(fieldName: "owner");
+  static final LEDGERSTATUS = amplify_core.QueryField(fieldName: "ledgerStatus");
+  static final ISACTIVE = amplify_core.QueryField(fieldName: "isActive");
   static final TRANSACTIONS = amplify_core.QueryField(
     fieldName: "transactions",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Transaction'));
+  static final TRANSFERABLEUSER = amplify_core.QueryField(
+    fieldName: "transferableUser",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'TransferableUser'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Account";
     modelSchemaDefinition.pluralName = "Accounts";
     
     modelSchemaDefinition.authRules = [
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.PRIVATE,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
+        ]),
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.OWNER,
         ownerField: "owner",
@@ -297,12 +356,6 @@ class Account extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Account.CATEGORY,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Account.CREDITLIMIT,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
@@ -328,8 +381,20 @@ class Account extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Account.OWNER,
-      isRequired: false,
+      isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Account.LEDGERSTATUS,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Account.ISACTIVE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
@@ -337,6 +402,13 @@ class Account extends amplify_core.Model {
       isRequired: false,
       ofModelName: 'Transaction',
       associatedKey: Transaction.ACCOUNT
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
+      key: Account.TRANSFERABLEUSER,
+      isRequired: false,
+      ofModelName: 'TransferableUser',
+      associatedKey: TransferableUser.ACCOUNT
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

@@ -8,9 +8,13 @@ sealed class DropdownEvent extends Equatable {
 }
 
 final class DropdownFetched extends DropdownEvent {
-  const DropdownFetched(this.reference);
-  final String reference;
+  const DropdownFetched({
+    required this.node, 
+    required this.uid
+  });
+  final String node;
+  final String uid;
 
   @override
-  List<Object?> get props => [reference];
+  List<Object?> get props => [node, uid];
 }

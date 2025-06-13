@@ -94,7 +94,10 @@ enum SignInSteps {
   confirmSignInWithNewPassword,
   confirmSignInWithCustomChallenge,
   continueSignInWithMfaSelection,
+  continueSignInWithMfaSetupSelection,
+  continueSignInWithEmailMfaSetup,
   continueSignInWithTotpSetup,
+  confirmSignInWithOtpCode,
   resetPassword,
   confirmSignUp,
   done,
@@ -107,7 +110,10 @@ extension SignInStepsX on SignInSteps {
   bool get isConfirmSignInWithNewPassword => this == SignInSteps.confirmSignInWithNewPassword;
   bool get isConfirmSignInWithCustomChallenge => this == SignInSteps.confirmSignInWithCustomChallenge;
   bool get isContinueSignInWithMfaSelection => this == SignInSteps.continueSignInWithMfaSelection;
+  bool get isContinueSignInWithMfaSetupSelection => this == SignInSteps.continueSignInWithMfaSetupSelection;
+  bool get isContinueSignInWithEmailMfaSetup => this == SignInSteps.continueSignInWithEmailMfaSetup;
   bool get isContinueSignInWithTotpSetup => this == SignInSteps.continueSignInWithTotpSetup;
+  bool get isConfirmSignInWithOtpCode => this == SignInSteps.confirmSignInWithOtpCode;
   bool get isResetPassword => this == SignInSteps.resetPassword;
   bool get isConfirmSignUp => this == SignInSteps.confirmSignUp;
   bool get isDone => this == SignInSteps.done;

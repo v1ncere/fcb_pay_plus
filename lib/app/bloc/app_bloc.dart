@@ -11,7 +11,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     // login checked
     on<LoginChecked>((event, emit) async {
       try {
-        final session = await Amplify.Auth.fetchAuthSession();
+        final cognitoPlugin = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
+        final session = await cognitoPlugin.fetchAuthSession();
         emit(
           state.copyWith(
             status: session.isSignedIn
@@ -25,6 +26,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         emit(state.copyWith(status: LogStatus.unknown));
       }
     });
+    
     // logout
     on<LoggedOut>((event, emit) async {
       final result = await Amplify.Auth.signOut();

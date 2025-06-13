@@ -13,13 +13,14 @@ class AccountViewerPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => TransactionHistoryBloc()
-        ..add(TransactionHistoryLoaded(accountID: account.accountNumber))),
+        ..add(TransactionFetched(accountNumber: account.accountNumber))),
         BlocProvider(create: (context) => FilterBloc()
         ..add(FilterFetched())),
         BlocProvider(create: (context) => AccountButtonBloc()
         ..add(ButtonsFetched(account.type!))),
         BlocProvider(create: (context) => AccountsBloc()
-        ..add(AccountsFetched(account))),
+        ..add(AccountsFetched(account))
+        ..add(AccountsStreamed(account.owner))),
         BlocProvider(create: (context) => CarouselCubit()..setAccount(account: account)),
       ],
       child: AccountViewerView(account: account)

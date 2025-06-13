@@ -14,14 +14,14 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
   }
 
   void _onFilteredFetched(FilterFetched event, Emitter<FilterState> emit) async {
-    emit(state.copyWith(filterStatus: Status.loading));
+    emit(state.copyWith(status: Status.loading));
     try {
       List<String> filterList = SearchFilter.values.map((e) => e.name).toList();
-      emit(state.copyWith(filterStatus: Status.success, filters: filterList));
+      emit(state.copyWith(status: Status.success, filters: filterList));
     } on ApiException catch (e) {
-      emit(state.copyWith(filterStatus: Status.failure, message: e.message));
+      emit(state.copyWith(status: Status.failure, message: e.message));
     } catch (e) {
-      emit(state.copyWith(filterStatus: Status.failure, message: e.toString()));
+      emit(state.copyWith(status: Status.failure, message: e.toString()));
     }
   }
 }

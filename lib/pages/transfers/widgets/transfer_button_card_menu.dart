@@ -33,7 +33,11 @@ class TransferButtonCardMenu extends StatelessWidget {
                 icon: iconMapper(button.icon!),
                 iconColor: colorStringParser(button.iconColor!),
                 bgColor: colorStringParser(button.backgroundColor!),
-                function: () => context.goNamed(RouteName.dynamicViewer, extra: button)
+                function: () => context.goNamed(
+                  RouteName.dynamicViewer,
+                  pathParameters: {'accountNumber': state.uid},
+                  extra: button,
+                )
               );
             }
           );
@@ -49,9 +53,8 @@ class TransferButtonCardMenu extends StatelessWidget {
             )
           );
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        // default display
+        return const SizedBox.shrink();
       }
     );
   }

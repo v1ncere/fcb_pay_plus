@@ -2,16 +2,16 @@ part of 'dropdown_bloc.dart';
 
 class DropdownState extends Equatable {
   const DropdownState({
-    this.dropdowns = const <String>[],
+    this.dropdowns = const <Model>[],
     this.status = Status.initial,
     this.message = ''
   });
-  final List<String> dropdowns;
+  final List<Model> dropdowns;
   final Status status;
   final String message;
 
   DropdownState copyWith({
-    List<String>? dropdowns,
+    List<Model>? dropdowns,
     Status? status,
     String? message,
   }) {

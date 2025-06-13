@@ -13,10 +13,10 @@ class PaymentButtonCardMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PaymentButtonsBloc, PaymentButtonsState>(
       builder: (context, state) {
-        if (state is PaymentButtonsLoading) {
+        if (state.status.isLoading) {
           return const ButtonShimmer();
         }
-        if (state is PaymentButtonsSuccess) {
+        if (state.status.isSuccess) {
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
@@ -33,12 +33,16 @@ class PaymentButtonCardMenu extends StatelessWidget {
                 icon: iconMapper(button.icon!),
                 iconColor: colorStringParser(button.iconColor!),
                 bgColor: colorStringParser(button.backgroundColor!),
-                function: () => context.goNamed(RouteName.dynamicViewer, extra: button)
+                function: () => context.goNamed(
+                  RouteName.dynamicViewer,
+                  pathParameters: {'accountNumber': state.uid},
+                  extra: button
+                )
               );
             }
           );
         }
-        if (state is PaymentButtonsError) {
+        if (state.status.isFailure) {
           return Center(
             child: Text(
               state.message,
@@ -49,9 +53,8 @@ class PaymentButtonCardMenu extends StatelessWidget {
             )
           );
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        // default display
+        return const SizedBox.shrink();
       }
     );
   }

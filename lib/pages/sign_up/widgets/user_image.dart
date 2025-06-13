@@ -18,106 +18,60 @@ class UserImage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Upload an image of yourself holding your PITAKArd'),
-        const SizedBox(height: 5),
         BlocBuilder<SignUpBloc, SignUpState>(
           builder: (context, state) {
-            if(state.imageStatus.isInitial) {
-              return GestureDetector(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.60,
-                  height: MediaQuery.of(context).size.height * 0.20,
-                  decoration: BoxDecoration(
-                    color: ColorString.emerald,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.circular(15)
-                  ),
-                  child: Center(
-                    child: Icon(
-                      FontAwesomeIcons.cameraRetro,
-                      color: ColorString.white
-                    )
-                  )
-                ),
-                onTap: () => _settingModalBottomSheet(context),
-              );
-            }
-            if (state.imageStatus.isLoading) {
-              return GestureDetector(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.60,
-                  height: MediaQuery.of(context).size.height * 0.20,
-                  decoration: BoxDecoration(
-                    color: ColorString.emerald,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: const Center(
-                    child: SpinKitChasingDots(
-                      color: Colors.white,
-                      size: 18,
-                    )
-                  )
-                ),
-                onTap: () => _settingModalBottomSheet(context)
-              );
-            }
-            if (state.imageStatus.isSuccess) {
-              return GestureDetector(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.60,
-                  height: MediaQuery.of(context).size.height * 0.20,
-                  decoration: BoxDecoration(
-                    color: ColorString.emerald,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                      fit: BoxFit.contain,
-                      image: FileImage(File(state.userImage!.path))
-                    )
-                  )
-                ),
-                onTap: () => _settingModalBottomSheet(context),
-              );
-            }
-            if (state.imageStatus.isFailure) {
-              return GestureDetector(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.60,
-                  height: MediaQuery.of(context).size.height * 0.20,
-                  decoration: BoxDecoration(
-                    color: ColorString.guardsmanRed,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.triangleExclamation,
-                          size: 18,
-                          color: ColorString.white,
-                        ),
-                        Text(
-                          state.message,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: ColorString.white,
-                            fontWeight: FontWeight.bold
-                          )
-                        )
-                      ]
-                    )
-                  )
-                ),
-                onTap: () => _settingModalBottomSheet(context)
-              );
-            }
-            return const SizedBox.shrink();
+            return GestureDetector(
+              onTap: () => _settingModalBottomSheet(context),
+              child: _buildImageContainer(context, state),
+            );
           }
         )
       ]
+    );
+  }
+
+  Widget _buildImageContainer(BuildContext context, SignUpState state) {
+    Color backgroundColor = ColorString.emerald;
+    Widget child = Icon(FontAwesomeIcons.cameraRetro, color: ColorString.white);
+    BoxDecoration decoration = BoxDecoration(
+      color: backgroundColor,
+      shape: BoxShape.rectangle,
+      borderRadius: BorderRadius.circular(15)
+    );
+
+    if (state.imageStatus.isLoading) {
+      child = SpinKitChasingDots(color: ColorString.white, size: 18);
+    }
+    if (state.imageStatus.isSuccess) {
+      child = const SizedBox.shrink();
+      decoration = decoration.copyWith(
+        image: DecorationImage(
+          fit: BoxFit.contain,
+          image: FileImage(File(state.userImage!.path))
+        )
+      );
+    }
+    if (state.imageStatus.isFailure) {
+      backgroundColor = ColorString.zombie;
+      child = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(FontAwesomeIcons.circleInfo, size: 18, color: ColorString.white),
+          Text(
+            TextString.imageRetake,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: ColorString.white, fontWeight: FontWeight.bold),
+          )
+        ],
+      );
+    }
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      decoration: decoration.copyWith(color: backgroundColor),
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Center(child: child)
+      ),
     );
   }
 
@@ -164,3 +118,4 @@ class UserImage extends StatelessWidget {
     });
   }
 }
+

@@ -31,11 +31,11 @@ class CarouselSliderView extends StatelessWidget {
                     context.read<CarouselCubit>() // cascade methods for concise implementation
                     ..setSlideIndex(index: index)
                     ..setAccount(account: account);
-                    context.read<TransactionHistoryBloc>().add(TransactionHistoryLoaded(accountID: account.accountNumber));
+                    context.read<TransactionHistoryBloc>().add(TransactionFetched(accountNumber: account.accountNumber));
                   }
                 ),
                 items: state.accountList.map((data) {
-                  if(data.category == 'credit') {
+                  if (data.type ==  AccountType.plc.name) {
                     return CardCredit(
                       cardExpiration: getDateString(data.expiry!.getDateTimeInUtc()),
                       cardHolder: data.ownerName!,
@@ -48,8 +48,10 @@ class CarouselSliderView extends StatelessWidget {
                       }
                     );
                   }
-                  if (data.category == 'deposit' || data.type == 'wallet') {
-                    return DepositsCard(
+                  if (data.type == AccountType.wlt.name 
+                  || data.type == AccountType.psa.name 
+                  || data.type == AccountType.ppr.name) {
+                    return SavingsCard(
                       cardHolder: data.ownerName!,
                       cardNumber: data.accountNumber,
                       type: data.type!,
@@ -59,9 +61,8 @@ class CarouselSliderView extends StatelessWidget {
                         context.replaceNamed(RouteName.account, extra: data);
                       }
                     );
-                  } else {
-                    return const SizedBox.shrink();
                   }
+                  return const SizedBox.shrink();
                 }).toList()
               ),
               // page indicator, circle under carousel
@@ -72,9 +73,7 @@ class CarouselSliderView extends StatelessWidget {
         if (state.status.isFailure) {
           return CardError(text: state.message);
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        return const SizedBox.shrink();
       }
     );
   }

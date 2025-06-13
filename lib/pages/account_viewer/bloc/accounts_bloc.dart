@@ -11,69 +11,75 @@ import '../../../utils/utils.dart';
 part 'accounts_event.dart';
 part 'accounts_state.dart';
 
+final emptyAccount = Account(accountNumber: '', owner: '', ledgerStatus: '');
+
 class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
   AccountsBloc() : super(const AccountsState()) {
-    on<AccountsFetched>(_onAccountsLoaded);
-    on<AccountsRefreshed>(_onAccountsRefreshed);
-    on<AccountsBalanceRequested>(_onAccountsBalanceRequested);
+    on<AccountsFetched>(_onAccountsFetched);
+    on<AccountsStreamed>(_onAccountsStreamed);
+    on<AccountsStreamedUpdate>(_onAccountsStreamedUpdate);
+    on<AccountsStreamedFailed>(_onAccountsStreamedFailed);
   }
+  StreamSubscription<GraphQLResponse<Account>>? subscription;
 
-  Future<void> _onAccountsLoaded(AccountsFetched event, Emitter<AccountsState> emit) async {
+  Future<void> _onAccountsFetched(AccountsFetched event, Emitter<AccountsState> emit) async {
     emit(state.copyWith(status: Status.loading));
-    final isConnected = await checkNetworkStatus();
-    if (isConnected) {
-      final user = await Amplify.Auth.getCurrentUser();
-      final request = ModelQueries.list(Account.classType, where: Account.OWNER.eq(user.userId));
-      final response = await Amplify.API.query(request: request).response;
-      final accounts = response.data?.items;
-      
-      if (accounts == null || accounts.isEmpty) {
-        emit(state.copyWith(status: Status.failure, message: 'No accounts found'));
-      } else {
-        final accountList = accounts.whereType<Account>().toList();
-        final sameCategory = accountList.where((e) => e.category == event.account.category).toList();
-        // Account specified by user to display first
-        final first = sameCategory.firstWhere((e) => e.accountNumber == event.account.accountNumber);
-        // other Accounts remaining
-        final others = sameCategory.where((e) => e.accountNumber != event.account.accountNumber).toList();
-        // sort the accounts
-        final sortedAccountList = [ first, ...others ];
-        emit(state.copyWith(status: Status.success, accountList: sortedAccountList));
-      }      
-    } else {
-      emit(state.copyWith(status: Status.failure, message: TextString.internetError));
-    }
-  }
-
-  Future<void> _onAccountsBalanceRequested(AccountsBalanceRequested event, Emitter<AccountsState> emit) async {
-    emit(state.copyWith(requestStatus: Status.loading));
     try {
-      final user = await Amplify.Auth.getCurrentUser();
-      final title = 'request_balance';
-      final data = '$title|${event.account.accountNumber}|${event.account.ownerName}';
-      // create balance request
-      final request = ModelMutations.create(Request(
-        data: data,
-        details: title,
-        verifier: hashSha1(encryption("$data$title${user.userId}")),
-        owner: user.userId
-      ));
-
-      final response = await Amplify.API.mutate(request: request).response;
-      if(response.hasErrors) {
-        emit(state.copyWith(requestStatus: Status.failure, message: response.errors.join(', ')));
+      final request = ModelQueries.list(Account.classType, where: Account.OWNER.eq(event.account.owner));
+      final response = await Amplify.API.query(request: request).response;
+      final items = response.data?.items;
+      
+      if (items != null && !response.hasErrors) {
+        final accounts = items.whereType<Account>().toList();
+        
+        if (accounts.isNotEmpty) {
+          final sameType = accounts.where((e) => e.type == event.account.type).toList();
+          final first = sameType.firstWhere((e) => e.accountNumber == event.account.accountNumber); // account specified by user to display first
+          final others = sameType.where((e) => e.accountNumber != event.account.accountNumber).toList(); // other remaining Accounts
+          emit(state.copyWith(status: Status.success, accountList: [first, ...others]));
+        } else {
+          emit(state.copyWith(status: Status.failure, message: TextString.empty));  
+        }
       } else {
-        emit(state.copyWith(requestStatus: Status.success));
+        emit(state.copyWith(status: Status.failure, message: response.errors.first.message));
       }
     } on ApiException catch (e) {
-       emit(state.copyWith(requestStatus: Status.failure, message: e.message));
+      emit(state.copyWith(status: Status.failure, message: e.message));
     } catch (e) {
-       emit(state.copyWith(requestStatus: Status.failure, message: e.toString()));
+      emit(state.copyWith(status: Status.failure, message: TextString.error));
     }
   }
 
-  void _onAccountsRefreshed(AccountsRefreshed event, Emitter<AccountsState> emit) {
-    add(AccountsBalanceRequested(event.account)); // balance request
-    add(AccountsFetched(event.account)); // actual refresh data
+  Future<void> _onAccountsStreamed(AccountsStreamed event, Emitter<AccountsState> emit) async {
+    final subscriptionRequest = ModelSubscriptions.onUpdate(Account.classType, where: Account.OWNER.eq(event.userId));
+    final operation = Amplify.API.subscribe(subscriptionRequest);
+    subscription = operation.listen(
+      (event) => add(AccountsStreamedUpdate(event.data)),
+      onError: (error) => safePrint(error.toString())
+    );
+  }
+
+  void _onAccountsStreamedUpdate(AccountsStreamedUpdate event, Emitter<AccountsState> emit) {
+    final account = event.account;
+    if (account != null && account != emptyAccount) {
+      final newList = List<Account>.from(state.accountList);
+      final index = newList.indexWhere((e) => e.accountNumber == account.accountNumber);
+      
+      if (index != -1) {
+        newList[index] = account;
+        emit(state.copyWith(status: Status.success, accountList: newList));
+      }
+    }
+  }
+
+  void _onAccountsStreamedFailed(AccountsStreamedFailed event, Emitter<AccountsState> emit) {
+    emit(state.copyWith(status: Status.failure, message: event.message));
+  }
+
+  @override
+  Future<void> close() async {
+    subscription?.cancel();
+    subscription = null;
+    return super.close();
   }
 }

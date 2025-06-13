@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_repository/hive_repository.dart';
 
 import '../account_settings.dart';
 
@@ -9,7 +10,7 @@ class AccountSettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AccountSettingsBloc(),
+      create: (context) => AccountSettingsBloc(hiveRepository: HiveRepository()),
       child: const AccountSettingsView()
     );
   }

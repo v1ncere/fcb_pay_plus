@@ -12,7 +12,7 @@ Text noteText() {
       fontSize: 12,
       shadows: <Shadow>[
         Shadow(
-          color: Colors.black87, // Shadow color
+          color: Colors.black12, // Shadow color
           blurRadius: 1,
           offset: Offset(0, 1)
         )

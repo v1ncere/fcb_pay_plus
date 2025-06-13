@@ -12,8 +12,8 @@ final class AccountEventPressed extends AccountSettingsEvent {
     required this.account,
     required this.method
   });
-  final String account;
-  final String method;
+  final Account account;
+  final Settings method;
 
   @override
   List<Object> get props => [account, method];

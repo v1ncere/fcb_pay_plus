@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:formz/formz.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
-import '../account_add.dart';
+import '../bloc/account_add_bloc.dart';
 
 class SubmitAccountButton extends StatelessWidget {
   const SubmitAccountButton({super.key});
@@ -21,8 +21,7 @@ class SubmitAccountButton extends StatelessWidget {
             backgroundColor: ColorString.eucalyptus,
             foregroundColor: ColorString.mystic
           ));
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
+          context.pop();
         }
         if(state.formStatus.isFailure) {
           ScaffoldMessenger.of(context).showSnackBar(customSnackBar(

@@ -5,7 +5,6 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_repository/hive_repository.dart';
 
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
@@ -14,39 +13,32 @@ part 'receipt_event.dart';
 part 'receipt_state.dart';
 
 class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
-  ReceiptBloc({
-    required HiveRepository hiveRepository,
-  }) : _hiveRepository = hiveRepository,
-  super(const ReceiptState(status: Status.loading)) {
-    on<ReceiptDisplayStreamed>(_onReceiptDisplayStreamed);
-    on<ReceiptDisplayUpdated>(_onReceiptDisplayUpdated);
-  }
-  final HiveRepository _hiveRepository;
-  StreamSubscription<GraphQLResponse<Receipt>>? _subscription;
-
-  void _onReceiptDisplayStreamed(ReceiptDisplayStreamed event, Emitter<ReceiptState> emit) async {
-    final id = await _hiveRepository.getId();
-    final subscriptionRequest = ModelSubscriptions.onCreate(Receipt.classType, where: Receipt.ID.eq(id));
-    final operation = Amplify.API.subscribe(subscriptionRequest, onEstablished: () => safePrint('Subscription Established'));
-    _subscription = operation.listen(
-      (event) => add(ReceiptDisplayUpdated(event.data)),
-      onError: (Object e) => emit(state.copyWith(status: Status.failure, message: e.toString()))
-    );
+  ReceiptBloc() : super(const ReceiptState()) {
+    on<ReceiptFetched>(_onReceiptFetched);
   }
 
-  void _onReceiptDisplayUpdated(ReceiptDisplayUpdated event, Emitter<ReceiptState> emit) async {
-    final receipt = event.receipt;
-    if (receipt != null) {
-      final Map<String, dynamic> parsedData = jsonDecode(receipt.data!);
-      emit(state.copyWith(status: Status.success, receiptMap: parsedData));
-    } else {
-      emit(state.copyWith(status: Status.loading));
+  Future<void> _onReceiptFetched(ReceiptFetched event, Emitter<ReceiptState> emit) async {
+    emit(state.copyWith(status: Status.loading));
+    try {
+      final request = ModelQueries.get(Receipt.classType, ReceiptModelIdentifier(id: event.id));
+      final response = await Amplify.API.query(request: request).response;
+      // 
+      if (!response.hasErrors) {
+        final receipt = response.data;
+        //
+        if (receipt != null) {
+          final Map<String, dynamic> newData = jsonDecode(receipt.data!);
+          emit(state.copyWith(status: Status.success, receiptMap: newData));
+        } else {
+          emit(state.copyWith(status: Status.failure, message: TextString.empty));
+        }
+      } else {
+        emit(state.copyWith(status: Status.failure, message: response.errors.first.message));
+      }
+    } on ApiException catch (e) {
+      emit(state.copyWith(status: Status.failure, message: e.message));
+    } catch (e) {
+      emit(state.copyWith(status: Status.failure, message: TextString.error));
     }
-  }
-
-  @override
-  Future<void> close() {
-    _subscription?.cancel();
-    return super.close();
   }
 }

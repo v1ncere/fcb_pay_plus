@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../models/ModelProvider.dart';
-import '../../../widgets/widgets.dart';
+import '../../../utils/utils.dart';
 
 class DynamicText extends StatelessWidget {
   const DynamicText({

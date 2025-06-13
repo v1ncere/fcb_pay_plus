@@ -6,7 +6,6 @@ import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
   
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../login.dart';
 
 class LoginView extends StatelessWidget {
@@ -47,22 +46,36 @@ class LoginView extends StatelessWidget {
           child: LoadingStack(
             isLoading: state.status.isInProgress,
             child: Scaffold(
-              body: switch(state.signInSteps) {
-                SignInSteps.initial => const LoginScreen(),
-                SignInSteps.confirmSignInWithSmsMfaCode => const ConfirmScreen(),
-                SignInSteps.confirmSignInWithTotpMfaCode => const ConfirmScreen(),
-                SignInSteps.confirmSignInWithNewPassword => const NewPasswordScreen(),
-                SignInSteps.confirmSignInWithCustomChallenge => const LoginScreen(),
-                SignInSteps.continueSignInWithMfaSelection => const MfaSelectionScreen(),
-                SignInSteps.continueSignInWithTotpSetup => const TotpSetupScreen(),
-                SignInSteps.resetPassword => const ResetPasswordScreen(),
-                SignInSteps.confirmSignUp => const ConfirmScreen(),
-                SignInSteps.done => const LoginScreen(),
-              }
+              body: _getSignInScreen(state.signInSteps)
             )
           )
         );
       }
     );
+  }
+  
+  Widget _getSignInScreen(SignInSteps step) {
+    switch (step) {
+      case SignInSteps.initial:
+      case SignInSteps.confirmSignInWithCustomChallenge:
+      case SignInSteps.done:
+        return const LoginScreen();
+      case SignInSteps.confirmSignInWithSmsMfaCode:
+      case SignInSteps.confirmSignInWithTotpMfaCode:
+      case SignInSteps.confirmSignInWithOtpCode:
+      case SignInSteps.confirmSignUp:
+        return const ConfirmScreen();
+      case SignInSteps.confirmSignInWithNewPassword:
+        return const NewPasswordScreen();
+      case SignInSteps.continueSignInWithMfaSelection:
+      case SignInSteps.continueSignInWithMfaSetupSelection:
+        return const MfaSelectionScreen();
+      case SignInSteps.continueSignInWithEmailMfaSetup:
+        return const EmailConfirmScreen();
+      case SignInSteps.continueSignInWithTotpSetup:
+        return const TotpSetupScreen();
+      case SignInSteps.resetPassword:
+        return const ResetPasswordScreen();
+    }
   }
 }

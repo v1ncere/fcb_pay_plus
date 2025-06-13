@@ -104,8 +104,8 @@ final class SignUpConfirmed extends LoginEvent {
   List<Object> get props => [code];
 }
 
-final class ConfirmSignInWithMfaSelection extends LoginEvent {
-  const ConfirmSignInWithMfaSelection(this.result);
+final class ContinueSignInWithMfaSelection extends LoginEvent {
+  const ContinueSignInWithMfaSelection(this.result);
   final SignInResult  result;
 
   @override
@@ -136,6 +136,24 @@ final class SignInConfirmed extends LoginEvent {
 
   @override
   List<Object> get props => [code]; 
+}
+
+final class ContinueSignInWithMfaSetupSelection extends LoginEvent {
+  const ContinueSignInWithMfaSetupSelection(this.result);
+  final SignInResult  result;
+
+  @override
+  List<Object> get props => [result];
+}
+
+final class ContinueSignInWithEmailMfaSetup extends LoginEvent {}
+
+final class ConfirmSignInWithOtpCode extends LoginEvent {
+  const ConfirmSignInWithOtpCode(this.result);
+  final SignInResult  result;
+
+  @override
+  List<Object> get props => [result];
 }
 
 final class AuthSignInStepDone extends LoginEvent {}

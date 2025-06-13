@@ -11,18 +11,22 @@ import '../bottom_navbar.dart';
 class BottomNavbarPage extends StatelessWidget {
   const BottomNavbarPage({super.key});
   // under this nav dont create another .page()
-  static final _hiveRepository = HiveRepository();
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AccountsHomeBloc(hiveRepository: _hiveRepository)
+        BlocProvider(create: (context) => AccountsHomeBloc(hiveRepository: HiveRepository())
         ..add(UserAttributesFetched())
-        ..add(AccountsHomeFetched())),
+        ..add(AccountsHomeFetched())
+        ..add(AccountsHomeOnCreateStreamed())
+        ..add(AccountsHomeOnDeleteStreamed())
+        ..add(AccountsHomeOnUpdateStreamed())),
         BlocProvider(create: (context) => PaymentButtonsBloc()
+        ..add(PaymentButtonsUserIdFetched())
         ..add(PaymentButtonsFetched())),
         BlocProvider(create: (context) => TransferButtonsBloc()
+        ..add(TransferButtonUserIdFetched())
         ..add(TransferButtonsFetched())),
         BlocProvider(create: (context) => BottomNavbarCubit()),
       ],

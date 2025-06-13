@@ -1,17 +1,14 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
-import '../../../repository/repository.dart';
-
 part 'sign_up_confirm_event.dart';
 part 'sign_up_confirm_state.dart';
 
 class SignUpConfirmBloc extends Bloc<SignUpConfirmEvent, SignUpConfirmState> {
-  SignUpConfirmBloc({
-    required AmplifyAuth amplifyAuth,
-  }) : super(const SignUpConfirmState()) {
+  SignUpConfirmBloc() : super(const SignUpConfirmState()) {
     on<UsernameChanged>(_onUsernameChanged);
     on<PinCodeSubmitted>(_onPinCodeSubmitted);
     on<HandleSignUpResult>(_onHandleSignUpResult);
@@ -25,6 +22,7 @@ class SignUpConfirmBloc extends Bloc<SignUpConfirmEvent, SignUpConfirmState> {
 
   void _onPinCodeSubmitted(PinCodeSubmitted event, Emitter<SignUpConfirmState> emit) async {
     try {
+      fetchCognitoAuthSession();
       emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
       final result = await Amplify.Auth.confirmSignUp(
         username: state.username.trim(),
@@ -62,4 +60,15 @@ class SignUpConfirmBloc extends Bloc<SignUpConfirmEvent, SignUpConfirmState> {
   void _onSignUpStepDone(SignUpStepDone event, Emitter<SignUpConfirmState> emit) {
     emit(state.copyWith(status: FormzSubmissionStatus.success, message: 'Sign up is complete'));
   }
+
+  Future<void> fetchCognitoAuthSession() async {
+    try {
+      final cognitoPlugin = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
+      final result = await cognitoPlugin.fetchAuthSession();
+      final identityId = result.identityIdResult.value;
+      safePrint("Current user's identity ID: $identityId");
+    } on AuthException catch (e) {
+      safePrint('Error retrieving auth session: ${e.message}');
+    }
+  } 
 }

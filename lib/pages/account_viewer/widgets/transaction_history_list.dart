@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../account_viewer.dart';
 import 'widgets.dart';
 
@@ -25,7 +24,7 @@ class TransactionHistoryList extends StatelessWidget {
               if (metrics.atEdge) {
                 bool isTop = metrics.pixels == 0;
                 if (!isTop) {
-                  context.read<TransactionHistoryBloc>().add(TransactionHistoryLoaded(accountID: account.accountNumber, limit: 20));
+                  context.read<TransactionHistoryBloc>().add(TransactionFetched(accountNumber: account.accountNumber));
                 }
               }
               return true;
@@ -34,14 +33,14 @@ class TransactionHistoryList extends StatelessWidget {
               itemCount: state.transactionList.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                final history = state.transactionList[index]; // specific [transaction] indexed
+                final transaction = state.transactionList[index]; // specific [transaction] indexed
                 return ListTile(
-                  key: ValueKey(history),
-                  leading: Text(history.accountType!),
-                  title: Text(history.accountNumber!),
-                  subtitle: Text(history.details!, overflow: TextOverflow.ellipsis,),
+                  key: ValueKey(transaction),
+                  leading: Text(transaction.accountType!),
+                  title: Text(transaction.accountNumber!),
+                  subtitle: Text(transaction.details!, overflow: TextOverflow.ellipsis,),
                   trailing: CustomText(
-                    text: getDynamicDateString(state.transactionList[index].createdAt!.getDateTimeInUtc()),
+                    text: getDynamicDateString(state.transactionList[index].createdAt!.getDateTimeInUtc().toLocal()),
                     color: Colors.black45,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -51,9 +50,7 @@ class TransactionHistoryList extends StatelessWidget {
                     showDialog(
                       context: context,
                       useRootNavigator: false,
-                      builder: (ctx) {
-                        return showHistoryDialog(ctx, history);
-                      }
+                      builder: (ctx) => showHistoryDialog(ctx, transaction)
                     );
                   }
                 );
@@ -78,14 +75,13 @@ class TransactionHistoryList extends StatelessWidget {
             )
           );
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        
+        return const SizedBox.shrink();
       }
     );
   }
   
-  Dialog showHistoryDialog(BuildContext context, Transaction history) {
+  Dialog showHistoryDialog(BuildContext context, Transaction transaction) {
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -93,12 +89,12 @@ class TransactionHistoryList extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(history.accountNumber!, style: Theme.of(context).textTheme.labelLarge),
-              Text(history.accountType!, style: Theme.of(context).textTheme.labelMedium),
+              Text(transaction.accountNumber!, style: Theme.of(context).textTheme.labelLarge),
+              Text(transaction.accountType!, style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: 10),
-              Text(history.details!, style: Theme.of(context).textTheme.bodyMedium),
+              Text(transaction.details!, style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 10),
-              Text(getDateString(history.createdAt!.getDateTimeInUtc()), style: Theme.of(context).textTheme.bodySmall)
+              Text(getDateString(transaction.createdAt!.getDateTimeInUtc().toLocal()), style: Theme.of(context).textTheme.bodySmall)
             ]
           )
         )

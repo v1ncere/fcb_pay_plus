@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../receipt.dart';
 
 class ScreenshotButton extends StatelessWidget {

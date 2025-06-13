@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../account_settings.dart';
 import '../widgets/widgets.dart';
 
@@ -20,7 +19,7 @@ class AccountSettingsView extends StatelessWidget {
         body: BlocListener<AccountSettingsBloc, AccountSettingsState>(
           listener: (context, state) {
             Timer? timer;
-            if(state.status.isSuccess) {
+            if (state.status.isSuccess) {
               showDialog(
                 context: context,
                 builder: (ctx) {

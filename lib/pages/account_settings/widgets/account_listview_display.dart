@@ -17,16 +17,17 @@ class AccountListViewDisplay extends StatelessWidget {
           return const ListViewShimmer();
         }
         if (state.status.isSuccess) {
+          final accounts = state.accountList.where((e) => e.type != AccountType.wlt.name).toList(); // only linked accounts not wallet
           return ListView.separated(
             separatorBuilder: (context, index) => const Divider(height: 10.0,),
             shrinkWrap: true,
             padding: const EdgeInsets.all(20),
-            itemCount: state.accountList.length,
+            itemCount: accounts.length,
             itemBuilder: (context, index) {
               return AccountCard(
                 colors: Colors.white,
                 icon: FontAwesomeIcons.coins,
-                account: state.accountList[index].accountNumber
+                account: accounts[index]
               );
             }
           );
@@ -36,15 +37,13 @@ class AccountListViewDisplay extends StatelessWidget {
             child: Text(state.message,
               style: const TextStyle(
                 color: Colors.black38,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.bold,
                 fontSize: 16.0
               )
             )
           );
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        return const SizedBox.shrink();
       }
     );
   }

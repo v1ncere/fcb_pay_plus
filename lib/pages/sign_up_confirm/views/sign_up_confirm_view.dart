@@ -6,7 +6,6 @@ import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../sign_up_confirm.dart';
 
 class SignUpConfirmView extends StatelessWidget{

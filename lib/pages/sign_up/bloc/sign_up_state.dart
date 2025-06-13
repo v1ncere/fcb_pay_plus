@@ -6,7 +6,6 @@ class SignUpState extends Equatable with FormzMixin {
     required this.firstNameController,
     required this.lastNameController,
     required this.mobileController,
-    required this.usernameController,
     required this.passwordController,
     required this.confirmPasswordController,
     required this.zipCodeController,
@@ -15,10 +14,10 @@ class SignUpState extends Equatable with FormzMixin {
     this.firstName = const Name.pure(),
     this.lastName = const Name.pure(),
     this.mobile = const MobileNumber.pure(),
-    this.username = const Username.pure(),
     this.password = const Password.pure(),
     this.confirmPassword = const ConfirmedPassword.pure(),
     this.userImage,
+    this.similarity = 0.0,
     this.provinceList = const [],
     this.cityMunicipalityList = const [],
     this.barangayList = const [],
@@ -26,11 +25,14 @@ class SignUpState extends Equatable with FormzMixin {
     this.cityMunicipality = const Name.pure(),
     this.barangay = const Name.pure(),
     this.zipCode = const Integer.pure(),
+    this.livenessImageBytes = const [],
+    this.validIDTitle = '',
     this.cityMunicipalStatus = Status.initial,
     this.provinceStatus = Status.initial,
     this.barangayStatus = Status.initial,
     this.zipCodeStatus = Status.initial,
     this.imageStatus = Status.initial,
+    this.faceComparisonStatus = Status.initial,
     this.status = Status.initial,
     this.obscurePassword = true,
     this.obscureConfirmPassword = true,
@@ -42,7 +44,6 @@ class SignUpState extends Equatable with FormzMixin {
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
   final TextEditingController mobileController;
-  final TextEditingController usernameController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
   final TextEditingController zipCodeController;
@@ -51,10 +52,10 @@ class SignUpState extends Equatable with FormzMixin {
   final Name firstName;
   final Name lastName;
   final MobileNumber mobile;
-  final Username username;
   final Password password;
   final ConfirmedPassword confirmPassword;
   final XFile? userImage;
+  final double similarity;
   final List<Province> provinceList;
   final List<CityMunicipality> cityMunicipalityList;
   final List<Barangay> barangayList;
@@ -62,11 +63,14 @@ class SignUpState extends Equatable with FormzMixin {
   final Name cityMunicipality;
   final Name barangay;
   final Integer zipCode;
+  final List<int> livenessImageBytes;
+  final String validIDTitle;
   final Status cityMunicipalStatus;
   final Status provinceStatus;
   final Status barangayStatus;
   final Status zipCodeStatus;
   final Status imageStatus;
+  final Status faceComparisonStatus;
   final Status status;
   final bool obscurePassword;
   final bool obscureConfirmPassword;
@@ -80,7 +84,6 @@ class SignUpState extends Equatable with FormzMixin {
     TextEditingController? firstNameController,
     TextEditingController? lastNameController,
     TextEditingController? mobileController,
-    TextEditingController? usernameController,
     TextEditingController? passwordController,
     TextEditingController? confirmPasswordController,
     TextEditingController? zipCodeController,
@@ -89,10 +92,10 @@ class SignUpState extends Equatable with FormzMixin {
     Name? firstName,
     Name? lastName,
     MobileNumber? mobile,
-    Username? username,
     Password? password,
     ConfirmedPassword? confirmPassword,
     XFile? userImage,
+    double? similarity,
     List<Province>? provinceList,
     List<CityMunicipality>? cityMunicipalityList,
     List<Barangay>? barangayList,
@@ -100,11 +103,14 @@ class SignUpState extends Equatable with FormzMixin {
     Name? cityMunicipality,
     Name? barangay,
     Integer? zipCode,
+    List<int>? livenessImageBytes,
+    String? validIDTitle,
     Status? cityMunicipalStatus,
     Status? provinceStatus,
     Status? barangayStatus,
     Status? zipCodeStatus,
     Status? imageStatus,
+    Status? faceComparisonStatus,
     Status? status,
     bool? obscurePassword,
     bool? obscureConfirmPassword,
@@ -117,7 +123,6 @@ class SignUpState extends Equatable with FormzMixin {
         firstNameController: firstNameController ?? this.firstNameController,
         lastNameController: lastNameController ?? this.lastNameController,
         mobileController: mobileController ?? this.mobileController,
-        usernameController: usernameController ?? this.usernameController,
         passwordController: passwordController ?? this.passwordController,
         confirmPasswordController: confirmPasswordController ?? this.confirmPasswordController,
         zipCodeController: zipCodeController ?? this.zipCodeController,
@@ -126,10 +131,10 @@ class SignUpState extends Equatable with FormzMixin {
         firstName: firstName ?? this.firstName,
         lastName: lastName ?? this.lastName,
         mobile: mobile ?? this.mobile,
-        username: username ?? this.username,
         password: password ?? this.password,
         confirmPassword: confirmPassword ?? this.confirmPassword,
         userImage: userImage ?? this.userImage,
+        similarity: similarity ?? this.similarity,
         provinceList: provinceList ?? this.provinceList,
         cityMunicipalityList: cityMunicipalityList ?? this.cityMunicipalityList,
         barangayList: barangayList ?? this.barangayList,
@@ -137,11 +142,14 @@ class SignUpState extends Equatable with FormzMixin {
         cityMunicipality: cityMunicipality ?? this.cityMunicipality,
         barangay: barangay ?? this.barangay,
         zipCode: zipCode ?? this.zipCode,
+        livenessImageBytes: livenessImageBytes ?? this.livenessImageBytes,
+        validIDTitle: validIDTitle ?? this.validIDTitle,
         cityMunicipalStatus: cityMunicipalStatus ?? this.cityMunicipalStatus,
         provinceStatus: provinceStatus ?? this.provinceStatus,
         barangayStatus: barangayStatus ?? this.barangayStatus,
         zipCodeStatus: zipCodeStatus ?? this.zipCodeStatus,
         imageStatus: imageStatus ?? this.imageStatus,
+        faceComparisonStatus: faceComparisonStatus ?? this.faceComparisonStatus,
         status: status ?? this.status,
         obscurePassword: obscurePassword ?? this.obscurePassword,
         obscureConfirmPassword: obscureConfirmPassword ?? this.obscureConfirmPassword,
@@ -156,7 +164,6 @@ class SignUpState extends Equatable with FormzMixin {
     firstNameController,
     lastNameController,
     mobileController,
-    usernameController,
     passwordController,
     confirmPasswordController,
     zipCodeController,
@@ -165,10 +172,10 @@ class SignUpState extends Equatable with FormzMixin {
     firstName,
     lastName,
     mobile,
-    username,
     password,
     confirmPassword,
     userImage,
+    similarity,
     provinceList,
     cityMunicipalityList,
     barangayList,
@@ -176,11 +183,14 @@ class SignUpState extends Equatable with FormzMixin {
     cityMunicipality,
     barangay,
     zipCode,
+    livenessImageBytes,
+    validIDTitle,
     cityMunicipalStatus,
     provinceStatus,
     barangayStatus,
     zipCodeStatus,
     imageStatus,
+    faceComparisonStatus,
     status,
     obscurePassword,
     obscureConfirmPassword,
@@ -196,7 +206,6 @@ class SignUpState extends Equatable with FormzMixin {
     firstName,
     lastName,
     mobile,
-    username,
     password,
     confirmPassword
   ];

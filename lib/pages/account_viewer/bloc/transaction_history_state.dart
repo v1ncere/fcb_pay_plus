@@ -8,7 +8,6 @@ class TransactionHistoryState extends Equatable {
     this.status = Status.initial,
     this.message = ''
   });
-
   final List<Transaction> transactionList;
   final Search searchQuery;
   final FormzSubmissionStatus formStatus;
@@ -32,6 +31,11 @@ class TransactionHistoryState extends Equatable {
   }
   
   @override
-  List<Object> get props => [transactionList, searchQuery, formStatus, status, message];
+  List<Object?> get props => [
+    transactionList,
+    searchQuery,
+    formStatus,
+    status,
+    message
+  ];
 }
-

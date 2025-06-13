@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../dynamic_viewer.dart';
 
 class SubmitButton extends StatelessWidget {
@@ -41,7 +40,7 @@ class SubmitButton extends StatelessWidget {
                 description: 'Are you sure you want to proceed?', 
                 title: button.title!, 
                 onPressed: () {
-                  context.read<WidgetsBloc>().add(ButtonSubmitted(button.title!));
+                  context.read<WidgetsBloc>().add(ButtonSubmitted(button));
                   Navigator.of(ctx).pop();
                 }
               )

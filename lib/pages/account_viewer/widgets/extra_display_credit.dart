@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import 'widgets.dart';
 
 class ExtraDisplayCredit extends StatelessWidget {

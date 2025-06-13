@@ -33,9 +33,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<ResetPasswordDone>(_onResetPasswordDone);
     on<ConfirmSignUp>(_onConfirmSignUp);
     on<SignUpConfirmed>(_onSignUpConfirmed);
-    on<ConfirmSignInWithMfaSelection>(_onConfirmSignInWithMfaSelection);
+    on<ContinueSignInWithMfaSelection>(_onConfirmSignInWithMfaSelection);
     on<ContinueSignInWithTotpSetup>(_onContinueSignInWithTotpSetup);
     on<ConfirmSignInWithTotpMfaCode>(_onConfirmSignInWithTotpMfaCode);
+    on<ContinueSignInWithMfaSetupSelection>(_onContinueSignInWithMfaSetupSelection);
+    on<ContinueSignInWithEmailMfaSetup>(_onContinueSignInWithEmailMfaSetup);
+    on<ConfirmSignInWithOtpCode>(_onConfirmSignInWithOtpCode);
     on<SignInConfirmed>(_onSignInConfirmed);
     on<AuthSignInStepDone>(_onAuthSignInStepDone);
   }
@@ -69,16 +72,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(state.copyWith(mfa: event.mfa));
   }
 
-  FutureOr<void> _onLoggedInWithCredentials(LoggedInWithCredentials event, Emitter<LoginState> emit) async {
+  Future<void> _onLoggedInWithCredentials(LoggedInWithCredentials event, Emitter<LoginState> emit) async {
+    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     if (state.isValid) {
-      emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
       try {
-        final result = await Amplify.Auth.signIn(username: state.email.value, password: state.password.value); 
+        final result = await Amplify.Auth.signIn(
+          username: state.email.value,
+          password: state.password.value
+        );
         add(SignInResults(result));
       } on AuthException catch (e) {
         emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.message));
-      } catch (e) {
-        emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.toString()));
+      } catch (_) {
+        emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.error));
       }
     } else {
       emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.formError));
@@ -87,7 +93,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   Future<void> _onSignInResults(SignInResults event, Emitter<LoginState> emit) async {
-    switch(event.result.nextStep.signInStep) {
+    final step = event.result.nextStep.signInStep;
+    switch(step) {
       case AuthSignInStep.confirmSignInWithSmsMfaCode:
         add(ConfirmSignInWithSmsMfaCode(event.result));
         break;
@@ -107,58 +114,74 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         add(ConfirmSignInWithCustomChallenge(event.result));
         break;
       case AuthSignInStep.continueSignInWithMfaSelection:
-        add(ConfirmSignInWithMfaSelection(event.result));
+        add(ContinueSignInWithMfaSelection(event.result));
         break;
       case AuthSignInStep.continueSignInWithTotpSetup:
         add(ContinueSignInWithTotpSetup(event.result));
         break;
+      case AuthSignInStep.continueSignInWithMfaSetupSelection:
+        add(ContinueSignInWithMfaSetupSelection(event.result));
+        break;
+      case AuthSignInStep.continueSignInWithEmailMfaSetup:
+        add(ContinueSignInWithEmailMfaSetup());
+        break;
+      case AuthSignInStep.confirmSignInWithOtpCode:
+        add(ConfirmSignInWithOtpCode(event.result));
+        break;
       case AuthSignInStep.done:
         add(AuthSignInStepDone());
         break;
-      case AuthSignInStep.continueSignInWithMfaSetupSelection:
-        // TODO: Handle this case.
-        throw UnimplementedError();
-      case AuthSignInStep.continueSignInWithEmailMfaSetup:
-        // TODO: Handle this case.
-        throw UnimplementedError();
-      case AuthSignInStep.confirmSignInWithOtpCode:
-        // TODO: Handle this case.
-        throw UnimplementedError();
     }
   }
 
   void _onConfirmSubmitted(ConfirmSubmitted event, Emitter<LoginState> emit) {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final code = event.code;
-    if (state.signInSteps.isConfirmSignInWithSmsMfaCode || state.signInSteps.isConfirmSignInWithTotpMfaCode || state.signInSteps.isContinueSignInWithTotpSetup) {
-      if (code != null) {
-        add(SignInConfirmed(code));
-      } else {
-        emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.formError));
-      }
-    }
-    if (state.signInSteps.isConfirmSignUp) {
-      if(code != null) {
-        add(SignUpConfirmed(code));
-      } else {
-        emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.formError));
-      }
-    }
-    if (state.signInSteps.isConfirmSignInWithNewPassword) {
-      final password = state.password;
-      if (password.isValid && state.confirmedPassword.isValid) {
-        add(SignInConfirmed(password.value));
-      } else {
-        emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.formError));
-        emit(state.copyWith(status: FormzSubmissionStatus.initial));
-      }
-    }
-    if(state.signInSteps.isResetPassword) {
-      add(ResetPasswordWithCodeConfirmed());
-    }
-    if(state.signInSteps.isContinueSignInWithMfaSelection) {
-      // default mfa [sms]
-      add(SignInConfirmed(state.mfa.confirmationValue));
+    void emitFailure() => emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.formError));
+    void emitInitial() => emit(state.copyWith(status: FormzSubmissionStatus.initial));
+
+    switch (state.signInSteps) {
+      case SignInSteps.confirmSignInWithSmsMfaCode:
+      case SignInSteps.confirmSignInWithTotpMfaCode:
+      case SignInSteps.continueSignInWithTotpSetup:
+        if (code != null) {
+          add(SignInConfirmed(code));
+        } else {
+          emitFailure();
+        }
+        break;
+      case SignInSteps.confirmSignUp:
+        if (code != null) {
+          add(SignUpConfirmed(code));
+        } else {
+          emitFailure();
+        }
+        break;
+      case SignInSteps.continueSignInWithEmailMfaSetup:
+        if (state.email.isValid) {
+          add(SignInConfirmed(state.email.value));
+        } else {
+          emitFailure();
+          emitInitial();
+        }
+        break;
+      case SignInSteps.confirmSignInWithNewPassword:
+        if (state.password.isValid && state.confirmedPassword.isValid) {
+          add(SignInConfirmed(state.password.value));
+        } else {
+          emitFailure();
+          emitInitial();
+        }
+        break;
+      case SignInSteps.resetPassword:
+        add(ResetPasswordWithCodeConfirmed());
+        break;
+      case SignInSteps.continueSignInWithMfaSelection:
+      case SignInSteps.continueSignInWithMfaSetupSelection:
+        add(SignInConfirmed(state.mfa.confirmationValue)); // default MFA is SMS
+        break;
+      default:
+        emitFailure();
     }
   }
   
@@ -167,13 +190,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(state.copyWith(
       status: FormzSubmissionStatus.canceled,
       signInSteps: SignInSteps.confirmSignInWithSmsMfaCode,
-      message: 'A confirmation code has been sent to ${details.destination}. ''Please check your ${details.deliveryMedium.name} for the code.',
+      message: 'A confirmation code has been sent to ${details.destination}. '
+      'Please check your ${details.deliveryMedium.name} for the code.',
     ));
   }
 
   Future<void> _onConfirmSignUp(ConfirmSignUp event, Emitter<LoginState> emit) async {
     try {
-      final result = await Amplify.Auth.resendSignUpCode(username: state.email.value); // resend the code
+      final result = await Amplify.Auth.resendSignUpCode(username: state.email.value); // resend code
       emit(state.copyWith(
         status: FormzSubmissionStatus.canceled,
         signInSteps: SignInSteps.confirmSignUp,
@@ -182,8 +206,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       ));
     } on AuthException catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.message));
-    } catch (e) {
-      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.toString()));
+    } catch (_) {
+      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.error));
     }
     emit(state.copyWith(status: FormzSubmissionStatus.initial));
   }
@@ -197,12 +221,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       final result = await Amplify.Auth.confirmSignUp(username: state.email.value, confirmationCode: event.code);
       if(result.isSignUpComplete) {
-        emit(state.copyWith(status: FormzSubmissionStatus.canceled, signInSteps: SignInSteps.initial, message: TextString.signUpConfirmed));
+        emit(state.copyWith(
+          status: FormzSubmissionStatus.canceled,
+          signInSteps: SignInSteps.initial, 
+          message: TextString.signUpConfirmed
+        ));
       }
     } on AuthException catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.message));
-    } catch (e) {
-      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.toString()));
+    } catch (_) {
+      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.error));
     }
     emit(state.copyWith(status: FormzSubmissionStatus.initial));
   }
@@ -214,14 +242,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       add(SignInResults(result));
     } on AuthException catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.message));
-    } catch (e) {
-      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.toString()));
+    } catch (_) {
+      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.error));
     }
     emit(state.copyWith(status: FormzSubmissionStatus.initial));
   }
 
   void _onConfirmSignInWithNewPassword(ConfirmSignInWithNewPassword event, Emitter<LoginState> emit) {
-    emit(state.copyWith(status: FormzSubmissionStatus.canceled, signInSteps: SignInSteps.confirmSignInWithNewPassword, message: TextString.newPassword));
+    emit(state.copyWith(
+      status: FormzSubmissionStatus.canceled,
+      signInSteps: SignInSteps.confirmSignInWithNewPassword,
+      message: TextString.newPassword
+    ));
   }
 
   void _onConfirmSignInWithCustomChallenge(ConfirmSignInWithCustomChallenge event, Emitter<LoginState> emit) {
@@ -230,8 +262,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(state.copyWith(signInSteps: SignInSteps.confirmSignInWithCustomChallenge, message: prompt));
   }
 
-  // ======================== >>> RESET PASSWORD =========================== >>>
-  void _onResetPassword(ResetPassword event, Emitter<LoginState> emit) async {
+  // ======================== >>> RESET PASSWORD =====================================
+  Future<void> _onResetPassword(ResetPassword event, Emitter<LoginState> emit) async {
     try {
       final result = await Amplify.Auth.resetPassword(username: state.email.value);
       switch(result.nextStep.updateStep) {
@@ -244,8 +276,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     } on AuthException catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.message));
-    } catch (e) {
-      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.toString()));
+    } catch (_) {
+      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.error));
     }
     emit(state.copyWith(status: FormzSubmissionStatus.initial));
   }
@@ -255,18 +287,20 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(state.copyWith(
       status: FormzSubmissionStatus.canceled,
       signInSteps: SignInSteps.resetPassword,
-      message: 'A confirmation code has been sent to ${details.destination}. ''Please check your ${details.deliveryMedium.name} for the code.'
+      message: 'A confirmation code has been sent to ${details.destination}. '
+      'Please check your ${details.deliveryMedium.name} for the code.'
     ));
   }
 
   Future<void> _onResetPasswordWithCodeConfirmed(ResetPasswordWithCodeConfirmed event, Emitter<LoginState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
-      final auth = state.pinCode;
-      final username = state.email;
-      final password = state.password;
-      if (auth.isValid && username.isValid && password.isValid) {
-        final result = await Amplify.Auth.confirmResetPassword(confirmationCode: auth.value, username: username.value, newPassword: password.value);
+      if (state.pinCode.isValid && state.email.isValid && state.password.isValid) {
+        final result = await Amplify.Auth.confirmResetPassword(
+          confirmationCode: state.pinCode.value,
+          username: state.email.value,
+          newPassword: state.password.value
+        );
         if (result.isPasswordReset) {
           add(ResetPasswordDone());
         } else {
@@ -277,19 +311,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     } on AuthException catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.message));
-    } catch (e) {
-      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: e.toString()));
+    } catch (_) {
+      emit(state.copyWith(status: FormzSubmissionStatus.failure, message: TextString.error));
     }
     emit(state.copyWith(status: FormzSubmissionStatus.initial));
   }
 
   void _onResetPasswordDone(ResetPasswordDone event, Emitter<LoginState> emit) {
-    emit(state.copyWith(signInSteps: SignInSteps.initial, status: FormzSubmissionStatus.canceled, message: TextString.resetPasswordDone));
+    emit(state.copyWith(
+      signInSteps: SignInSteps.initial,
+      status: FormzSubmissionStatus.canceled,
+      message: TextString.resetPasswordDone
+    ));
     emit(state.copyWith(status: FormzSubmissionStatus.initial));
   }
   // <<< ===================== RESET PASSWORD END ========================== <<<
 
-  void _onConfirmSignInWithMfaSelection(ConfirmSignInWithMfaSelection event, Emitter<LoginState> emit) async {
+  void _onConfirmSignInWithMfaSelection(ContinueSignInWithMfaSelection event, Emitter<LoginState> emit) {
     final allowedMfaTypes = event.result.nextStep.allowedMfaTypes!;
     emit(state.copyWith(signInSteps: SignInSteps.continueSignInWithMfaSelection, mfaTypes: allowedMfaTypes));
   }
@@ -298,6 +336,25 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     final details = event.result.nextStep.totpSetupDetails!;
     emit(state.copyWith(totpDetails: details));
     // final setupUri = details.getSetupUri(appName: 'FCBPay');
+  }
+
+  void _onContinueSignInWithMfaSetupSelection(ContinueSignInWithMfaSetupSelection event, Emitter<LoginState> emit) {
+    final allowedMfaTypes = event.result.nextStep.allowedMfaTypes!;
+    emit(state.copyWith(signInSteps: SignInSteps.continueSignInWithMfaSetupSelection , mfaTypes: allowedMfaTypes));
+  }
+
+  void _onContinueSignInWithEmailMfaSetup(ContinueSignInWithEmailMfaSetup event, Emitter<LoginState> emit) {
+    emit(state.copyWith(signInSteps: SignInSteps.continueSignInWithEmailMfaSetup));
+  }
+
+  void _onConfirmSignInWithOtpCode(ConfirmSignInWithOtpCode event, Emitter<LoginState> emit) {
+    final details = event.result.nextStep.codeDeliveryDetails!;
+    emit(state.copyWith(
+      status: FormzSubmissionStatus.canceled,
+      signInSteps: SignInSteps.confirmSignInWithOtpCode,
+      message: 'A confirmation code has been sent to ${details.destination}. '
+      'Please check your ${details.deliveryMedium.name} for the code.',
+    ));
   }
 
   void _onAuthSignInStepDone(AuthSignInStepDone event, Emitter<LoginState> emit) {

@@ -3,15 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../dynamic_viewer.dart';
 
 class DynamicDropdown extends StatelessWidget {
-  const DynamicDropdown({
-    super.key,
-    required this.widget,
-    required this.focusNode
-  });
+  const DynamicDropdown({super.key, required this.widget, required this.focusNode});
   final DynamicWidget widget;
   final FocusNode focusNode;
 
@@ -40,29 +35,23 @@ class DynamicDropdown extends StatelessWidget {
                   value: value!
                 ));
               },
-              validator: (value) {
-                return value == null
-                ? 'Please select an option.'
-                : null;
-              },
+              validator: (value) => value == null ? 'Please select an option.' : null,
               items: state.dropdowns.map((item) {
+                final Map<String, dynamic> data = item.toJson();
                 return DropdownMenuItem<String> (
-                  value: item.toString(),
-                  child: Text(item.replaceAll('_', ' ')),
-                  onTap: () => context.read<WidgetsBloc>().add(ExtraWidgetFetched(item.toString())),
+                  value: data['id'].toString(),
+                  child: Text(data['name'].toString().replaceAll('_', ' ')),
+                  onTap: () => context.read<WidgetsBloc>().add(ExtraWidgetFetched(data['id'] as String)),
                 );
               }).toList()
             )
           );
         }
         if (state.status.isFailure) {
-          return Center(
-            child: Text(state.message)
-          );
+          return Center(child: Text(state.message));
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        //
+        return const SizedBox.shrink();
       }
     );
   }

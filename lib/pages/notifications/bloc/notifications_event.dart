@@ -4,19 +4,24 @@ sealed class NotificationsEvent extends Equatable {
   const NotificationsEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class NotificationsFetched extends NotificationsEvent {}
 
-final class NotificationsStreamed extends NotificationsEvent {}
+final class NotificationsOnCreateStreamed extends NotificationsEvent {}
 
-final class NotificationsUpdated extends NotificationsEvent {
-  const NotificationsUpdated({required this.notifications});
-  final List<Notification> notifications;
+final class NotificationsOnUpdateStreamed extends NotificationsEvent {}
+
+final class NotificationsOnDeleteStreamed extends NotificationsEvent {}
+
+final class NotificationsStreamUpdated extends NotificationsEvent {
+  const NotificationsStreamUpdated(this.notification, this.isDelete);
+  final Notification? notification;
+  final bool isDelete;
   
   @override
-  List<Object> get props => [notifications];
+  List<Object?> get props => [notification, isDelete];
 }
 
 final class NotificationsUpdateIsRead extends NotificationsEvent {

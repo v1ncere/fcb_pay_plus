@@ -22,8 +22,8 @@
 enum SearchFilter {
   newest,
   oldest,
-  cc,
-  pr,
-  sa,
-  wallet
+  plc,
+  ppr,
+  psa,
+  wlt
 }

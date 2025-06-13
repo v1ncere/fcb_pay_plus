@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_inputs/form_inputs.dart';
 
-import '../account_add.dart';
+import '../bloc/account_add_bloc.dart';
 
 class FullName extends StatelessWidget {
   const FullName({super.key});

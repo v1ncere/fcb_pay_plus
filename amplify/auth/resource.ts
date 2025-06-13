@@ -1,5 +1,5 @@
 import { defineAuth } from '@aws-amplify/backend';
-import { preSignUp } from './pre-sign-up/resource';
+import { postConfirmation } from './post-confirmation/resource';
 /**
  * Define and configure your auth resource
  * @see https://docs.amplify.aws/gen2/build-a-backend/auth
@@ -17,14 +17,18 @@ export const auth = defineAuth({
       }
     }
   },
-  triggers: {
-    preSignUp
-  },
   userAttributes: {
     "custom:accountNumber": {
       dataType: "Number",
       max: 16, // in bytes not length
       mutable: true,
+    },
+    "custom:phone_id": {
+      dataType: "String",
+      mutable: true,
     }
+  },
+  triggers: {
+    postConfirmation
   }
 });

@@ -1,11 +1,10 @@
-import 'package:fcb_pay_plus/pages/sign_up/sign_up.dart';
-import 'package:fcb_pay_plus/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_inputs/form_inputs.dart';
 
-import '../../../widgets/widgets.dart';
+import '../../../utils/utils.dart';
+import '../sign_up.dart';
 
 class ZipCodeTextfield extends StatelessWidget {
   const ZipCodeTextfield({super.key});

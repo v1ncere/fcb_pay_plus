@@ -39,47 +39,12 @@ final class LastNameChanged extends AccountAddEvent {
   List<Object> get props => [lastName];
 }
 
-final class BirthdateChanged extends AccountAddEvent {
-  const BirthdateChanged(this.date);
-  final DateTime date;
+// final class BirthdateChanged extends AccountAddEvent {
+//   const BirthdateChanged(this.date);
+//   final DateTime date;
 
-  @override
-  List<Object> get props => [date];
-}
-
+//   @override
+//   List<Object> get props => [date];
+// }
 
 final class AccountFormSubmitted extends AccountAddEvent {}
-
-final class IsAccountExisted extends AccountAddEvent {
-  const IsAccountExisted(this.isExists);
-  final bool isExists;
-
-  @override
-  List<Object> get props => [isExists];
-}
-
-final class AccountVerified extends AccountAddEvent {}
-
-final class AccountVerifyReplyStreamed extends AccountAddEvent {
-  const AccountVerifyReplyStreamed(this.id);
-  final String id;
-
-  @override
-  List<Object> get props => [id];
-}
-
-final class AccountVerifyReplyUpdated extends AccountAddEvent {
-  const AccountVerifyReplyUpdated(this.verifyReply);
-  final SignupVerifyReply verifyReply;
-
-  @override
-  List<Object> get props => [verifyReply];
-}
-
-final class AccountVerifyReplyFailed extends AccountAddEvent {
-  const AccountVerifyReplyFailed(this.message);
-  final String message;
-
-  @override
-  List<Object> get props => [message];
-}

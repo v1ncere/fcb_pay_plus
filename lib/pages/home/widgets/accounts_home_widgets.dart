@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 
 // Build the top row containing logos
 Row buildLogosBlock() {

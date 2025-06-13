@@ -5,7 +5,6 @@ import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../scanner_transaction.dart';
 
 class SubmitButton extends StatelessWidget {
@@ -14,10 +13,9 @@ class SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ScannerTransactionBloc, ScannerTransactionState>(
-      listenWhen: (previous, current) => previous.formStatus != current.formStatus,
       listener: (context, state) {
         if(state.formStatus.isSuccess) {
-          context.goNamed(RouteName.receipt);
+          context.pushNamed(RouteName.receipt, pathParameters: {'receiptId': state.receiptId});
           ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(customSnackBar(

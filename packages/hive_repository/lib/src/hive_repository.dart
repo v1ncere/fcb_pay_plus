@@ -96,73 +96,40 @@ class HiveRepository {
     }
   }
 
-  // ================== DEPOSIT =====================
-    static const String _depositBox = 'DEPOSIT_BOX';
-  // ================================================
+  // ================== ACCOUNT ====================
+    static const String _accountBox = 'ACCOUNT_BOX';
+  // ===============================================
   
-  Future<void> addDepositId({
+  Future<void> addAccountNumber({
     required String uid,
-    required String account
+    required String accountNumber
   }) async {
-    final box = await Hive.openBox<String>(_depositBox);
-    await box.put(uid, account);
+    final box = await Hive.openBox<String>(_accountBox);
+    await box.put(uid, accountNumber);
   }
   
-  Future<String> getDepositId(String uid) async {
+  Future<String> getAccountNumber(String uid) async {
     try {
-      final box = await Hive.openBox<String>(_depositBox);
+      final box = await Hive.openBox<String>(_accountBox);
       return box.get(uid) ?? '';
     } catch (_) {
       return '';
     }
   }
   
-  Future<void> deleteDepositId(String uid) async {
-    final box = await Hive.openBox<String>(_depositBox);
+  Future<void> deleteAccountNumber(String uid) async {
+    final box = await Hive.openBox<String>(_accountBox);
     await box.delete(uid);
   }
 
-  Future<void> closeDepositIdBox() async {
-    if (Hive.isBoxOpen(_depositBox)) {
-      final box = Hive.box<String>(_depositBox);
+  Future<void> closeAccountNumberBox() async {
+    if (Hive.isBoxOpen(_accountBox)) {
+      final box = Hive.box<String>(_accountBox);
       await box.close();
     }
   }
 
-  // ===================== CREDIT =================
-    static const String _creditBox = 'CREDIT_BOX';
-  // ==============================================
-  
-  Future<void> addCreditId({
-    required String uid,
-    required String account
-  }) async {
-    final box = await Hive.openBox<String>(_creditBox);
-    await box.put(uid, account);
-  }
-  
-  Future<String> getCreditId(String uid) async {
-    try {
-      final box = await Hive.openBox<String>(_creditBox);
-      return box.get(uid) ?? '';
-    } catch (_) {
-      return '';
-    }
-  }
-  
-  Future<void> deleteCreditId(String uid) async {
-    final box = await Hive.openBox<String>(_creditBox);
-    await box.delete(uid);
-  }
-  
-  Future<void> closeCreditIdBox() async {
-    if (Hive.isBoxOpen(_creditBox)) {
-      final box = Hive.box<String>(_creditBox);
-      await box.close();
-    }
-  }
-
-  // ========================= ONBOARDING =================
+  // ===================== ONBOARDING =====================
     static const String _onboardingBox = 'ONBOARDING_BOX';
     static const String _onBoardingStaticKey = '4f4e';
   // ======================================================

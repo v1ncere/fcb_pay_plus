@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/widgets/widgets.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../widgets/widgets.dart';
 
 class ScannerTransactionView extends StatelessWidget {
@@ -27,9 +26,7 @@ class ScannerTransactionView extends StatelessWidget {
             ),
             actions: [
               IconButton(
-                onPressed: () {
-                  context.pushNamed(RouteName.bottomNavbar);
-                },
+                onPressed: () => context.pop(),
                 icon: const Icon(FontAwesomeIcons.x, size: 18)
               )
             ]
@@ -61,10 +58,10 @@ class ScannerTransactionView extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   AmountInput(),
-                  SizedBox(height: 10), 
+                  SizedBox(height: 10),
                   Divider(thickness: 2), // line divider ---------------------
                   SizedBox(height: 5),
-                  CustomText(text: 'Please verify your data for accuracy and completeness before proceeding with the payment.',
+                  CustomText(text: TextString.paymentNote,
                     fontSize: 12,
                     color: Colors.teal
                   ),
@@ -75,7 +72,7 @@ class ScannerTransactionView extends StatelessWidget {
               )
             )
           )
-        ),
+        )
       )
     );
   }

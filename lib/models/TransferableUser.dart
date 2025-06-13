@@ -26,10 +26,11 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 /** This is an auto generated class representing the TransferableUser type in your schema. */
 class TransferableUser extends amplify_core.Model {
   static const classType = const _TransferableUserModelType();
-  final String? _transferableUserId;
+  final String id;
   final String? _name;
   final bool? _isTransferable;
   final String? _owner;
+  final Account? _account;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -38,26 +39,17 @@ class TransferableUser extends amplify_core.Model {
   
   @Deprecated('[getId] is being deprecated in favor of custom primary key feature. Use getter [modelIdentifier] to get model identifier.')
   @override
-  String getId() => modelIdentifier.serializeAsString();
+  String getId() => id;
   
   TransferableUserModelIdentifier get modelIdentifier {
-    try {
       return TransferableUserModelIdentifier(
-        transferableUserId: _transferableUserId!
+        id: id
       );
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
   }
   
-  String get transferableUserId {
+  String get name {
     try {
-      return _transferableUserId!;
+      return _name!;
     } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
           amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -68,16 +60,34 @@ class TransferableUser extends amplify_core.Model {
     }
   }
   
-  String? get name {
-    return _name;
+  bool get isTransferable {
+    try {
+      return _isTransferable!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  bool? get isTransferable {
-    return _isTransferable;
+  String get owner {
+    try {
+      return _owner!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  String? get owner {
-    return _owner;
+  Account? get account {
+    return _account;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -88,14 +98,15 @@ class TransferableUser extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const TransferableUser._internal({required transferableUserId, name, isTransferable, owner, createdAt, updatedAt}): _transferableUserId = transferableUserId, _name = name, _isTransferable = isTransferable, _owner = owner, _createdAt = createdAt, _updatedAt = updatedAt;
+  const TransferableUser._internal({required this.id, required name, required isTransferable, required owner, account, createdAt, updatedAt}): _name = name, _isTransferable = isTransferable, _owner = owner, _account = account, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory TransferableUser({required String transferableUserId, String? name, bool? isTransferable, String? owner}) {
+  factory TransferableUser({String? id, required String name, required bool isTransferable, required String owner, Account? account}) {
     return TransferableUser._internal(
-      transferableUserId: transferableUserId,
+      id: id == null ? amplify_core.UUID.getUUID() : id,
       name: name,
       isTransferable: isTransferable,
-      owner: owner);
+      owner: owner,
+      account: account);
   }
   
   bool equals(Object other) {
@@ -106,10 +117,11 @@ class TransferableUser extends amplify_core.Model {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is TransferableUser &&
-      _transferableUserId == other._transferableUserId &&
+      id == other.id &&
       _name == other._name &&
       _isTransferable == other._isTransferable &&
-      _owner == other._owner;
+      _owner == other._owner &&
+      _account == other._account;
   }
   
   @override
@@ -120,10 +132,11 @@ class TransferableUser extends amplify_core.Model {
     var buffer = new StringBuffer();
     
     buffer.write("TransferableUser {");
-    buffer.write("transferableUserId=" + "$_transferableUserId" + ", ");
+    buffer.write("id=" + "$id" + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("isTransferable=" + (_isTransferable != null ? _isTransferable!.toString() : "null") + ", ");
     buffer.write("owner=" + "$_owner" + ", ");
+    buffer.write("account=" + (_account != null ? _account!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -131,58 +144,78 @@ class TransferableUser extends amplify_core.Model {
     return buffer.toString();
   }
   
-  TransferableUser copyWith({String? name, bool? isTransferable, String? owner}) {
+  TransferableUser copyWith({String? name, bool? isTransferable, String? owner, Account? account}) {
     return TransferableUser._internal(
-      transferableUserId: transferableUserId,
+      id: id,
       name: name ?? this.name,
       isTransferable: isTransferable ?? this.isTransferable,
-      owner: owner ?? this.owner);
+      owner: owner ?? this.owner,
+      account: account ?? this.account);
   }
   
   TransferableUser copyWithModelFieldValues({
-    ModelFieldValue<String?>? name,
-    ModelFieldValue<bool?>? isTransferable,
-    ModelFieldValue<String?>? owner
+    ModelFieldValue<String>? name,
+    ModelFieldValue<bool>? isTransferable,
+    ModelFieldValue<String>? owner,
+    ModelFieldValue<Account?>? account
   }) {
     return TransferableUser._internal(
-      transferableUserId: transferableUserId,
+      id: id,
       name: name == null ? this.name : name.value,
       isTransferable: isTransferable == null ? this.isTransferable : isTransferable.value,
-      owner: owner == null ? this.owner : owner.value
+      owner: owner == null ? this.owner : owner.value,
+      account: account == null ? this.account : account.value
     );
   }
   
   TransferableUser.fromJson(Map<String, dynamic> json)  
-    : _transferableUserId = json['transferableUserId'],
+    : id = json['id'],
       _name = json['name'],
       _isTransferable = json['isTransferable'],
       _owner = json['owner'],
+      _account = json['account'] != null
+        ? json['account']['serializedData'] != null
+          ? Account.fromJson(new Map<String, dynamic>.from(json['account']['serializedData']))
+          : Account.fromJson(new Map<String, dynamic>.from(json['account']))
+        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'transferableUserId': _transferableUserId, 'name': _name, 'isTransferable': _isTransferable, 'owner': _owner, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'isTransferable': _isTransferable, 'owner': _owner, 'account': _account?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'transferableUserId': _transferableUserId,
+    'id': id,
     'name': _name,
     'isTransferable': _isTransferable,
     'owner': _owner,
+    'account': _account,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
   static final amplify_core.QueryModelIdentifier<TransferableUserModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<TransferableUserModelIdentifier>();
-  static final TRANSFERABLEUSERID = amplify_core.QueryField(fieldName: "transferableUserId");
+  static final ID = amplify_core.QueryField(fieldName: "id");
   static final NAME = amplify_core.QueryField(fieldName: "name");
   static final ISTRANSFERABLE = amplify_core.QueryField(fieldName: "isTransferable");
   static final OWNER = amplify_core.QueryField(fieldName: "owner");
+  static final ACCOUNT = amplify_core.QueryField(
+    fieldName: "account",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Account'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "TransferableUser";
     modelSchemaDefinition.pluralName = "TransferableUsers";
     
     modelSchemaDefinition.authRules = [
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.PRIVATE,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
+        ]),
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.OWNER,
         ownerField: "owner",
@@ -196,32 +229,31 @@ class TransferableUser extends amplify_core.Model {
         ])
     ];
     
-    modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["transferableUserId"], name: null)
-    ];
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: TransferableUser.TRANSFERABLEUSERID,
+      key: TransferableUser.NAME,
       isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: TransferableUser.NAME,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: TransferableUser.ISTRANSFERABLE,
-      isRequired: false,
+      isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: TransferableUser.OWNER,
-      isRequired: false,
+      isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
+      key: TransferableUser.ACCOUNT,
+      isRequired: false,
+      targetNames: ['accountId'],
+      ofModelName: 'Account'
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -259,15 +291,15 @@ class _TransferableUserModelType extends amplify_core.ModelType<TransferableUser
  * of [TransferableUser] in your schema.
  */
 class TransferableUserModelIdentifier implements amplify_core.ModelIdentifier<TransferableUser> {
-  final String transferableUserId;
+  final String id;
 
-  /** Create an instance of TransferableUserModelIdentifier using [transferableUserId] the primary key. */
+  /** Create an instance of TransferableUserModelIdentifier using [id] the primary key. */
   const TransferableUserModelIdentifier({
-    required this.transferableUserId});
+    required this.id});
   
   @override
   Map<String, dynamic> serializeAsMap() => (<String, dynamic>{
-    'transferableUserId': transferableUserId
+    'id': id
   });
   
   @override
@@ -280,7 +312,7 @@ class TransferableUserModelIdentifier implements amplify_core.ModelIdentifier<Tr
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'TransferableUserModelIdentifier(transferableUserId: $transferableUserId)';
+  String toString() => 'TransferableUserModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -289,10 +321,10 @@ class TransferableUserModelIdentifier implements amplify_core.ModelIdentifier<Tr
     }
     
     return other is TransferableUserModelIdentifier &&
-      transferableUserId == other.transferableUserId;
+      id == other.id;
   }
   
   @override
   int get hashCode =>
-    transferableUserId.hashCode;
+    id.hashCode;
 }

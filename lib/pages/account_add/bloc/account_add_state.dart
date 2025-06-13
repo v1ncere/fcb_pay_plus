@@ -3,7 +3,6 @@ part of 'account_add_bloc.dart';
 class AccountAddState extends Equatable with FormzMixin {
   const AccountAddState({
     this.accountType = AccountType.unknown,
-    required this.birthdateController,
     this.accountNumber = const AccountNumber.pure(),
     this.firstName = const Name.pure(),
     this.lastName = const Name.pure(),
@@ -12,7 +11,6 @@ class AccountAddState extends Equatable with FormzMixin {
   });
 
   final AccountType accountType;
-  final TextEditingController birthdateController;
   final AccountNumber accountNumber;
   final Name firstName;
   final Name lastName;
@@ -21,7 +19,7 @@ class AccountAddState extends Equatable with FormzMixin {
 
   AccountAddState copyWith({
     AccountType? accountType,
-    TextEditingController? birthdateController,
+    List<AccountType>? typeList,
     AccountNumber? accountNumber,
     Name? firstName,
     Name? lastName,
@@ -30,7 +28,6 @@ class AccountAddState extends Equatable with FormzMixin {
   }) {
     return AccountAddState(
       accountType: accountType ?? this.accountType,
-      birthdateController: birthdateController ?? this.birthdateController,
       accountNumber: accountNumber ?? this.accountNumber,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
@@ -42,7 +39,6 @@ class AccountAddState extends Equatable with FormzMixin {
   @override
   List<Object> get props => [
     accountType,
-    birthdateController,
     accountNumber,
     firstName,
     lastName,

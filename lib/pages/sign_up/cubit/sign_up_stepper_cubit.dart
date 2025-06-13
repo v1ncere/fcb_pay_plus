@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignUpStepperCubit extends Cubit<int> {
   SignUpStepperCubit({required this.length}) : super(0);
-  final int length;
+  final int length; // assume length is 5
 
   void stepTapped(int index) => emit(index);
 

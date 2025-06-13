@@ -4,7 +4,7 @@ sealed class SignUpEvent extends Equatable {
   const SignUpEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class EmailChanged extends SignUpEvent {
@@ -39,14 +39,6 @@ final class MobileNumberChanged extends SignUpEvent {
   List<Object> get props => [mobile];
 }
 
-final class UsernameChanged extends SignUpEvent {
-  const UsernameChanged(this.username);
-  final String username;
-
-  @override
-  List<Object> get props => [username];
-}
-
 final class PasswordChanged extends SignUpEvent {
   const PasswordChanged(this.password);
   final String password;
@@ -66,10 +58,10 @@ final class ConfirmPasswordChanged extends SignUpEvent {
 
 final class UserImageChanged extends SignUpEvent {
   const UserImageChanged(this.image);
-  final XFile image;
+  final XFile? image;
 
   @override
-  List<Object> get props => [image];
+  List<Object?> get props => [image];
 }
 
 final class ProvinceChanged extends SignUpEvent {
@@ -103,6 +95,22 @@ final  class ZipCodeChanged extends SignUpEvent {
   @override
   List<Object> get props => [zipCode];
 }
+
+final class LivenessImageBytesChanged extends SignUpEvent {
+  const LivenessImageBytesChanged(this.livenessImageBytesList);
+  final List<int> livenessImageBytesList;
+
+  @override
+  List<Object> get props => [livenessImageBytesList];
+}
+
+final class ValidIDTitleChanged extends SignUpEvent {
+  const ValidIDTitleChanged(this.validID);
+  final String validID;
+
+  @override
+  List<Object> get props => [validID];
+}
 //
 final class EmailTextErased extends SignUpEvent {}
 
@@ -111,8 +119,6 @@ final class FirstNameTextErased extends SignUpEvent {}
 final class LastNameTextErased extends SignUpEvent {}
 
 final class MobileTextErased extends SignUpEvent {}
-
-final class UsernameTextErased extends SignUpEvent {}
 
 final class PasswordTextErased extends SignUpEvent {}
 
@@ -163,6 +169,8 @@ final class BarangayFetched extends SignUpEvent {
 final class ZipCodeFetched extends SignUpEvent {}
 
 final class StatusRefreshed extends SignUpEvent {}
+
+final class FaceComparisonFetched extends SignUpEvent {}
 
 final class FormSubmitted extends SignUpEvent {}
 

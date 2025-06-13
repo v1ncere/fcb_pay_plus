@@ -7,6 +7,14 @@ sealed class WidgetsEvent extends Equatable {
   List<Object> get props => [];
 }
 
+final class SourceAccountFetched extends WidgetsEvent {
+  const SourceAccountFetched(this.accountNumber);
+  final String accountNumber;
+
+  @override
+  List<Object> get props => [accountNumber];
+}
+
 final class UserIdFetched extends WidgetsEvent {}
 
 final class WidgetsFetched extends WidgetsEvent {
@@ -43,24 +51,24 @@ final class DynamicWidgetsValueChanged extends WidgetsEvent {
 
 final class ExtraWidgetsValueChanged extends WidgetsEvent {
   const ExtraWidgetsValueChanged({
-    required this.keyId,
+    required this.id,
     required this.title,
     required this.value,
     required this.type
   });
-  final String keyId;
+  final String id;
   final String title;
   final String value;
   final String type;
 
   @override
-  List<Object> get props => [keyId, title, value, type];
+  List<Object> get props => [id, title, value, type];
 }
 
 final class ButtonSubmitted extends WidgetsEvent {
-  const ButtonSubmitted(this.title);
-  final String title;
+  const ButtonSubmitted(this.button);
+  final Button button;
 
   @override
-  List<Object> get props => [title];
+  List<Object> get props => [button];
 }

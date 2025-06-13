@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../scanner_transaction.dart';
 
 class AccountCardInfo extends StatelessWidget {
@@ -15,7 +14,7 @@ class AccountCardInfo extends StatelessWidget {
       builder: (context, state) {
         final f = NumberFormat('#,##0.00', 'en_US');
         final account = state.account;
-        return account == emptyAccount
+        return account != emptyAccount
         ? Card(
           elevation: 2.0,
           margin: const EdgeInsets.all(0),
@@ -25,7 +24,7 @@ class AccountCardInfo extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: const AssetImage('assets/bg.png'),
+                image: const AssetImage(AssetString.coverBG),
                 colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.05), BlendMode.dstATop),
                 fit: BoxFit.cover
               )
@@ -36,7 +35,7 @@ class AccountCardInfo extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CustomRowText(  
+                  CustomRowText(
                     title: 'Balance',
                     titleColor: Colors.white,
                     contentColor: Colors.white,

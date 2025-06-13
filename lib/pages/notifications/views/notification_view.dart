@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/widgets/widgets.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../widgets/widgets.dart';
 
 class NotificationView extends StatelessWidget {

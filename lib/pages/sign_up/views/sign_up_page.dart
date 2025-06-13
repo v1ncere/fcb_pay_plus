@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import '../../../repository/repository.dart';
 import '../../../utils/utils.dart';
 import '../sign_up.dart';
 
@@ -27,13 +26,10 @@ class SignUpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => SignUpBloc(
-          amplifyAuth: AmplifyAuth(),
-          amplifyStorage: AmplifyStorage()
-        )
+        BlocProvider(create: (context) => SignUpBloc()
         ..add(LostDataRetrieved())
         ..add(ProvinceFetched())),
-        BlocProvider(create: (context) => SignUpStepperCubit(length: 5)), // length starts at 1
+        BlocProvider(create: (context) => SignUpStepperCubit(length: 5)), // if modify length, count starts at (1 not 0)
         BlocProvider(create: (context) => FaceLivenessBloc())
       ],
       child: const SignUpView()

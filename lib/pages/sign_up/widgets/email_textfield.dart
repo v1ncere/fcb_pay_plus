@@ -15,7 +15,7 @@ class EmailTextField extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your email here', style: Theme.of(context).textTheme.labelLarge),
+            Text('Your email', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 10),
             TextFormField(
               controller: state.emailController,

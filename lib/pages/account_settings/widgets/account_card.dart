@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../models/ModelProvider.dart';
 import 'widgets.dart';
 
 class AccountCard extends StatelessWidget {
@@ -10,7 +11,7 @@ class AccountCard extends StatelessWidget {
     required this.colors
   });
   final IconData icon;
-  final String account;
+  final Account account;
   final Color colors;
 
   @override
@@ -22,7 +23,7 @@ class AccountCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.0),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black87, // Shadow color
+            color: Colors.black26, // Shadow color
             spreadRadius: 1,
             blurRadius: 4,
             offset: Offset(0, 3)
@@ -46,11 +47,12 @@ class AccountCard extends StatelessWidget {
                 ),
                 Flexible(
                   child: FittedBox(
-                    child: Text(account,
+                    child: Text(
+                      account.accountNumber,
                       textAlign: TextAlign.center,
                       style:  const TextStyle(
                         color: Color(0xFFFFFFFF),
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.bold,
                         fontSize: 16.0,
                         shadows: <Shadow>[
                           Shadow(

@@ -35,8 +35,8 @@ class DynamicWidget extends amplify_core.Model {
   final String? _title;
   final String? _widgetType;
   final Button? _button;
-  final Institution? _institutionWidget;
-  final Institution? _institutionExtraWidget;
+  final Merchant? _merchantWidget;
+  final Merchant? _merchantExtraWidget;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -85,12 +85,12 @@ class DynamicWidget extends amplify_core.Model {
     return _button;
   }
   
-  Institution? get institutionWidget {
-    return _institutionWidget;
+  Merchant? get merchantWidget {
+    return _merchantWidget;
   }
   
-  Institution? get institutionExtraWidget {
-    return _institutionExtraWidget;
+  Merchant? get merchantExtraWidget {
+    return _merchantExtraWidget;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -101,9 +101,9 @@ class DynamicWidget extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const DynamicWidget._internal({required this.id, hasExtra, content, dataType, node, position, title, widgetType, button, institutionWidget, institutionExtraWidget, createdAt, updatedAt}): _hasExtra = hasExtra, _content = content, _dataType = dataType, _node = node, _position = position, _title = title, _widgetType = widgetType, _button = button, _institutionWidget = institutionWidget, _institutionExtraWidget = institutionExtraWidget, _createdAt = createdAt, _updatedAt = updatedAt;
+  const DynamicWidget._internal({required this.id, hasExtra, content, dataType, node, position, title, widgetType, button, merchantWidget, merchantExtraWidget, createdAt, updatedAt}): _hasExtra = hasExtra, _content = content, _dataType = dataType, _node = node, _position = position, _title = title, _widgetType = widgetType, _button = button, _merchantWidget = merchantWidget, _merchantExtraWidget = merchantExtraWidget, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory DynamicWidget({String? id, bool? hasExtra, String? content, String? dataType, String? node, int? position, String? title, String? widgetType, Button? button, Institution? institutionWidget, Institution? institutionExtraWidget}) {
+  factory DynamicWidget({String? id, bool? hasExtra, String? content, String? dataType, String? node, int? position, String? title, String? widgetType, Button? button, Merchant? merchantWidget, Merchant? merchantExtraWidget}) {
     return DynamicWidget._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       hasExtra: hasExtra,
@@ -114,8 +114,8 @@ class DynamicWidget extends amplify_core.Model {
       title: title,
       widgetType: widgetType,
       button: button,
-      institutionWidget: institutionWidget,
-      institutionExtraWidget: institutionExtraWidget);
+      merchantWidget: merchantWidget,
+      merchantExtraWidget: merchantExtraWidget);
   }
   
   bool equals(Object other) {
@@ -135,8 +135,8 @@ class DynamicWidget extends amplify_core.Model {
       _title == other._title &&
       _widgetType == other._widgetType &&
       _button == other._button &&
-      _institutionWidget == other._institutionWidget &&
-      _institutionExtraWidget == other._institutionExtraWidget;
+      _merchantWidget == other._merchantWidget &&
+      _merchantExtraWidget == other._merchantExtraWidget;
   }
   
   @override
@@ -156,8 +156,8 @@ class DynamicWidget extends amplify_core.Model {
     buffer.write("title=" + "$_title" + ", ");
     buffer.write("widgetType=" + "$_widgetType" + ", ");
     buffer.write("button=" + (_button != null ? _button!.toString() : "null") + ", ");
-    buffer.write("institutionWidget=" + (_institutionWidget != null ? _institutionWidget!.toString() : "null") + ", ");
-    buffer.write("institutionExtraWidget=" + (_institutionExtraWidget != null ? _institutionExtraWidget!.toString() : "null") + ", ");
+    buffer.write("merchantWidget=" + (_merchantWidget != null ? _merchantWidget!.toString() : "null") + ", ");
+    buffer.write("merchantExtraWidget=" + (_merchantExtraWidget != null ? _merchantExtraWidget!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -165,7 +165,7 @@ class DynamicWidget extends amplify_core.Model {
     return buffer.toString();
   }
   
-  DynamicWidget copyWith({bool? hasExtra, String? content, String? dataType, String? node, int? position, String? title, String? widgetType, Button? button, Institution? institutionWidget, Institution? institutionExtraWidget}) {
+  DynamicWidget copyWith({bool? hasExtra, String? content, String? dataType, String? node, int? position, String? title, String? widgetType, Button? button, Merchant? merchantWidget, Merchant? merchantExtraWidget}) {
     return DynamicWidget._internal(
       id: id,
       hasExtra: hasExtra ?? this.hasExtra,
@@ -176,8 +176,8 @@ class DynamicWidget extends amplify_core.Model {
       title: title ?? this.title,
       widgetType: widgetType ?? this.widgetType,
       button: button ?? this.button,
-      institutionWidget: institutionWidget ?? this.institutionWidget,
-      institutionExtraWidget: institutionExtraWidget ?? this.institutionExtraWidget);
+      merchantWidget: merchantWidget ?? this.merchantWidget,
+      merchantExtraWidget: merchantExtraWidget ?? this.merchantExtraWidget);
   }
   
   DynamicWidget copyWithModelFieldValues({
@@ -189,8 +189,8 @@ class DynamicWidget extends amplify_core.Model {
     ModelFieldValue<String?>? title,
     ModelFieldValue<String?>? widgetType,
     ModelFieldValue<Button?>? button,
-    ModelFieldValue<Institution?>? institutionWidget,
-    ModelFieldValue<Institution?>? institutionExtraWidget
+    ModelFieldValue<Merchant?>? merchantWidget,
+    ModelFieldValue<Merchant?>? merchantExtraWidget
   }) {
     return DynamicWidget._internal(
       id: id,
@@ -202,8 +202,8 @@ class DynamicWidget extends amplify_core.Model {
       title: title == null ? this.title : title.value,
       widgetType: widgetType == null ? this.widgetType : widgetType.value,
       button: button == null ? this.button : button.value,
-      institutionWidget: institutionWidget == null ? this.institutionWidget : institutionWidget.value,
-      institutionExtraWidget: institutionExtraWidget == null ? this.institutionExtraWidget : institutionExtraWidget.value
+      merchantWidget: merchantWidget == null ? this.merchantWidget : merchantWidget.value,
+      merchantExtraWidget: merchantExtraWidget == null ? this.merchantExtraWidget : merchantExtraWidget.value
     );
   }
   
@@ -221,21 +221,21 @@ class DynamicWidget extends amplify_core.Model {
           ? Button.fromJson(new Map<String, dynamic>.from(json['button']['serializedData']))
           : Button.fromJson(new Map<String, dynamic>.from(json['button']))
         : null,
-      _institutionWidget = json['institutionWidget'] != null
-        ? json['institutionWidget']['serializedData'] != null
-          ? Institution.fromJson(new Map<String, dynamic>.from(json['institutionWidget']['serializedData']))
-          : Institution.fromJson(new Map<String, dynamic>.from(json['institutionWidget']))
+      _merchantWidget = json['merchantWidget'] != null
+        ? json['merchantWidget']['serializedData'] != null
+          ? Merchant.fromJson(new Map<String, dynamic>.from(json['merchantWidget']['serializedData']))
+          : Merchant.fromJson(new Map<String, dynamic>.from(json['merchantWidget']))
         : null,
-      _institutionExtraWidget = json['institutionExtraWidget'] != null
-        ? json['institutionExtraWidget']['serializedData'] != null
-          ? Institution.fromJson(new Map<String, dynamic>.from(json['institutionExtraWidget']['serializedData']))
-          : Institution.fromJson(new Map<String, dynamic>.from(json['institutionExtraWidget']))
+      _merchantExtraWidget = json['merchantExtraWidget'] != null
+        ? json['merchantExtraWidget']['serializedData'] != null
+          ? Merchant.fromJson(new Map<String, dynamic>.from(json['merchantExtraWidget']['serializedData']))
+          : Merchant.fromJson(new Map<String, dynamic>.from(json['merchantExtraWidget']))
         : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'hasExtra': _hasExtra, 'content': _content, 'dataType': _dataType, 'node': _node, 'position': _position, 'title': _title, 'widgetType': _widgetType, 'button': _button?.toJson(), 'institutionWidget': _institutionWidget?.toJson(), 'institutionExtraWidget': _institutionExtraWidget?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'hasExtra': _hasExtra, 'content': _content, 'dataType': _dataType, 'node': _node, 'position': _position, 'title': _title, 'widgetType': _widgetType, 'button': _button?.toJson(), 'merchantWidget': _merchantWidget?.toJson(), 'merchantExtraWidget': _merchantExtraWidget?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -248,8 +248,8 @@ class DynamicWidget extends amplify_core.Model {
     'title': _title,
     'widgetType': _widgetType,
     'button': _button,
-    'institutionWidget': _institutionWidget,
-    'institutionExtraWidget': _institutionExtraWidget,
+    'merchantWidget': _merchantWidget,
+    'merchantExtraWidget': _merchantExtraWidget,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -266,12 +266,12 @@ class DynamicWidget extends amplify_core.Model {
   static final BUTTON = amplify_core.QueryField(
     fieldName: "button",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Button'));
-  static final INSTITUTIONWIDGET = amplify_core.QueryField(
-    fieldName: "institutionWidget",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Institution'));
-  static final INSTITUTIONEXTRAWIDGET = amplify_core.QueryField(
-    fieldName: "institutionExtraWidget",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Institution'));
+  static final MERCHANTWIDGET = amplify_core.QueryField(
+    fieldName: "merchantWidget",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Merchant'));
+  static final MERCHANTEXTRAWIDGET = amplify_core.QueryField(
+    fieldName: "merchantExtraWidget",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Merchant'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "DynamicWidget";
     modelSchemaDefinition.pluralName = "DynamicWidgets";
@@ -279,6 +279,17 @@ class DynamicWidget extends amplify_core.Model {
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.PRIVATE,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
+        ]),
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.OWNER,
+        ownerField: "owner",
+        identityClaim: "cognito:username",
+        provider: amplify_core.AuthRuleProvider.USERPOOLS,
         operations: const [
           amplify_core.ModelOperation.CREATE,
           amplify_core.ModelOperation.UPDATE,
@@ -339,17 +350,17 @@ class DynamicWidget extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: DynamicWidget.INSTITUTIONWIDGET,
+      key: DynamicWidget.MERCHANTWIDGET,
       isRequired: false,
-      targetNames: ['institutionWidgetId'],
-      ofModelName: 'Institution'
+      targetNames: ['merchantWidgetId'],
+      ofModelName: 'Merchant'
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: DynamicWidget.INSTITUTIONEXTRAWIDGET,
+      key: DynamicWidget.MERCHANTEXTRAWIDGET,
       isRequired: false,
-      targetNames: ['institutionExtraId'],
-      ofModelName: 'Institution'
+      targetNames: ['merchantExtraId'],
+      ofModelName: 'Merchant'
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

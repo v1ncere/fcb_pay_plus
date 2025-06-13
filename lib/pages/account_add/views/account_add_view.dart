@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/widgets/widgets.dart';
 import '../../../utils/utils.dart';
-import '../account_add.dart';
+import '../bloc/account_add_bloc.dart';
 import '../widgets/widgets.dart';
 
 class AccountAddView extends StatelessWidget {
@@ -42,13 +42,13 @@ class AccountAddView extends StatelessWidget {
                 padding: const EdgeInsets.all(15.0),
                 child: ListView(
                   children: [
-                    const AccountTypeDropdown(),
+                    AccountTypeDropdown(),
                     state.accountType.isUnknown ? shrink : const SizedBox(height: 20),
                     state.accountType.isUnknown ? shrink : const AccountNumberInput(),
-                    state.accountType.isSavings ? const SizedBox(height: 20) : shrink,
-                    state.accountType.isSavings ? const FullName() : shrink,
                     state.accountType.isUnknown ? shrink : const SizedBox(height: 20),
-                    state.accountType.isUnknown ? shrink : const BirthDate()
+                    state.accountType.isUnknown ? shrink : const FullName(),
+                    state.accountType.isUnknown ? shrink : const SizedBox(height: 20),
+                    // state.accountType.isUnknown ? shrink : const BirthDate()
                   ]
                 )
               ),

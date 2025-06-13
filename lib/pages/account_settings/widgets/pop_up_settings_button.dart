@@ -1,8 +1,9 @@
+import 'package:fcb_pay_plus/models/ModelProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../widgets/widgets.dart';
+import '../../../utils/utils.dart';
 import '../account_settings.dart';
 
 class PopUpSettingsButton extends StatelessWidget {
@@ -10,7 +11,7 @@ class PopUpSettingsButton extends StatelessWidget {
     super.key,
     required this.account
   });
-  final String account;
+  final Account account;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class PopUpSettingsButton extends StatelessWidget {
           builder: (ctx) => BlocProvider.value(
             value: BlocProvider.of<AccountSettingsBloc>(context),
             child: CustomAlertDialog(
-              description: 'Are you sure you want to $value this account? ', 
+              description: 'Are you sure you want to ${value.name} this account? ', 
               title: 'Confirmation', 
               onPressed: () {
                 context.read<AccountSettingsBloc>().add(AccountEventPressed(account: account, method: value));
@@ -38,11 +39,10 @@ class PopUpSettingsButton extends StatelessWidget {
         );
       },
       itemBuilder: (context) {
-        final settings = ['edit', 'delete'];
-        return settings.map((String value) {
-          return PopupMenuItem<String>(
+        return Settings.values.map((value) {
+          return PopupMenuItem<Settings>(
             value: value,
-            child: Text(value),
+            child: Text(value.name),
           );
         }).toList();
       }

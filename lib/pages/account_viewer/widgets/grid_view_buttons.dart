@@ -22,17 +22,15 @@ class GridViewButtons extends StatelessWidget {
               return GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: constraints.maxWidth > 400 ? 4 : 3), // larger width screen the more the button display
                 shrinkWrap: true,
-                itemCount: state.buttonList.length,
+                itemCount: state.buttons.length,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  final button = state.buttonList[index];
+                  final button = state.buttons[index];
                   return CircleButtonWithLabel(
                     icon: iconMapper(button.icon!),
                     color: colorStringParser(button.iconColor!),
                     text: button.title!,
-                    onTap: () {
-                      context.pushNamed(RouteName.dynamicViewer, extra: button);
-                    }
+                    onTap: () => context.pushNamed(RouteName.dynamicViewer, extra: button)
                   );
                 }
               );
@@ -42,9 +40,8 @@ class GridViewButtons extends StatelessWidget {
         if (state.status.isFailure) {
           return Center(child: Text(state.message));
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        
+        return const SizedBox.shrink();
       }
     );
   }

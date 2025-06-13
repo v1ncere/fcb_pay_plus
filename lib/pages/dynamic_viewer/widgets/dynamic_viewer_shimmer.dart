@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../widgets/widgets.dart';
+import '../../../utils/utils.dart';
 
 class DynamicViewerShimmer extends StatelessWidget {
   const DynamicViewerShimmer({super.key});

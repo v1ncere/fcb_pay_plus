@@ -7,7 +7,6 @@ import '../../../app/app.dart';
 import '../../../app/widgets/widgets.dart';
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 import '../dynamic_viewer.dart';
 import '../widgets/widgets.dart';
 
@@ -21,7 +20,7 @@ class DynamicViewerView extends StatelessWidget {
     return BlocListener<WidgetsBloc, WidgetsState>(
       listener: (context, state) {
         if(state.submissionStatus.isSuccess) {
-          // context.flow<HomeRouterStatus>().update((next) => HomeRouterStatus.receipt);
+          context.pushNamed(RouteName.receipt, pathParameters: {'receiptId': state.receiptId});
           _showSuccessDialog(context, TextString.transactionSuccess);
         }
         if(state.submissionStatus.isFailure) {
@@ -65,25 +64,31 @@ class DynamicViewerView extends StatelessWidget {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 15.0),
                   child: state.dropdownHasData
-                  ? CustomCardContainer(
-                      color: const Color(0xFFFFFFFF),
-                      children: state.widgetList.map((widget) {
-                        switch(widget.widgetType) {
-                          case 'dropdown':
-                            return DropdownDisplay(focusNode: focusNode, pageWidget: widget);
-                          case 'textfield':
-                            return DynamicTextfield(widget: widget);
-                          case 'text':
-                            return DynamicText(widget: widget);
-                          case 'multitextfield':
-                            return MultiTextfield(widget: widget);
-                          case 'button':
-                            return SubmitButton(widget: widget, button: button);
-                          default:
-                            return const SizedBox.shrink();
-                        }
-                      }).toList()
-                    )
+                  ? Column(
+                    children: [
+                      SourceAccountCard(),
+                      SizedBox(height: 10),
+                      CustomCardContainer(
+                        color: const Color(0xFFFFFFFF),
+                        children: state.widgetList.map((widget) {
+                          switch(widget.widgetType) {
+                            case 'dropdown':
+                              return DropdownDisplay(focusNode: focusNode, pageWidget: widget);
+                            case 'textfield':
+                              return DynamicTextfield(widget: widget);
+                            case 'text':
+                              return DynamicText(widget: widget);
+                            case 'multitextfield':
+                              return MultiTextfield(widget: widget);
+                            case 'button':
+                              return SubmitButton(widget: widget, button: button);
+                            default:
+                              return const SizedBox.shrink();
+                          }
+                        }).toList()
+                      )
+                    ]
+                  )
                   : SizedBox(
                     height: MediaQuery.of(context).size.height * 0.8,
                     width: MediaQuery.of(context).size.width,
@@ -96,16 +101,15 @@ class DynamicViewerView extends StatelessWidget {
                           fontWeight: FontWeight.bold
                         )
                       )
-                    ),
+                    )
                   )
                 );
               }
               if (state.widgetStatus.isFailure) {
                 return Center(child: Text(state.message));
               }
-              else {
-                return const SizedBox.shrink();
-              }
+              // default
+              return const SizedBox.shrink();
             }
           )
         )

@@ -1,4 +1,5 @@
 export 'confirm_screen.dart';
+export 'email_confirm_screen.dart';
 export 'login_screen.dart';
 export 'mfa_selection_screen.dart';
 export 'new_password_screen.dart';

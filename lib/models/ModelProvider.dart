@@ -23,41 +23,31 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'Account.dart';
 import 'AccountButton.dart';
 import 'Button.dart';
-import 'DynamicModel.dart';
 import 'DynamicRoute.dart';
 import 'DynamicWidget.dart';
-import 'Institution.dart';
+import 'Merchant.dart';
 import 'Notification.dart';
-import 'PublicAccount.dart';
 import 'Receipt.dart';
-import 'Request.dart';
-import 'SignupVerify.dart';
-import 'SignupVerifyReply.dart';
 import 'Transaction.dart';
 import 'TransferableUser.dart';
 
 export 'Account.dart';
 export 'AccountButton.dart';
 export 'Button.dart';
-export 'DynamicModel.dart';
 export 'DynamicRoute.dart';
 export 'DynamicWidget.dart';
-export 'Institution.dart';
+export 'Merchant.dart';
 export 'Notification.dart';
-export 'PublicAccount.dart';
 export 'Receipt.dart';
-export 'Request.dart';
 export 'SearchFilter.dart';
-export 'SignupVerify.dart';
-export 'SignupVerifyReply.dart';
 export 'Transaction.dart';
 export 'TransferableUser.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "bd873ce80abc8763f3e133f6a5686440";
+  String version = "7325339e1269ac6eb89b198b04262547";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [Account.schema, AccountButton.schema, Button.schema, DynamicModel.schema, DynamicRoute.schema, DynamicWidget.schema, Institution.schema, Notification.schema, PublicAccount.schema, Receipt.schema, Request.schema, SignupVerify.schema, SignupVerifyReply.schema, Transaction.schema, TransferableUser.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [Account.schema, AccountButton.schema, Button.schema, DynamicRoute.schema, DynamicWidget.schema, Merchant.schema, Notification.schema, Receipt.schema, Transaction.schema, TransferableUser.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -72,26 +62,16 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return AccountButton.classType;
       case "Button":
         return Button.classType;
-      case "DynamicModel":
-        return DynamicModel.classType;
       case "DynamicRoute":
         return DynamicRoute.classType;
       case "DynamicWidget":
         return DynamicWidget.classType;
-      case "Institution":
-        return Institution.classType;
+      case "Merchant":
+        return Merchant.classType;
       case "Notification":
         return Notification.classType;
-      case "PublicAccount":
-        return PublicAccount.classType;
       case "Receipt":
         return Receipt.classType;
-      case "Request":
-        return Request.classType;
-      case "SignupVerify":
-        return SignupVerify.classType;
-      case "SignupVerifyReply":
-        return SignupVerifyReply.classType;
       case "Transaction":
         return Transaction.classType;
       case "TransferableUser":
