@@ -15,54 +15,63 @@ class DynamicTextfield extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.dataType == 'int') {
-      return Padding(
-        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-        child: CustomTextFormField(
-          title: widget.title!,
-          inputFormatters: <ThousandsFormatter>[ThousandsFormatter(allowFraction: true)],
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) {
-            return value?.isEmpty == true
-            ? TextString.dynamicAmountRequired
-            : _regex.hasMatch(value!)
-              ? null
-              : TextString.dynamicAmountInvalid;
-          },
-          onChanged: (value) {
-            context.read<WidgetsBloc>().add(DynamicWidgetsValueChanged(
-              id: widget.id,
-              title: widget.title!,
-              value: value,
-              type: widget.dataType!,
-            ));
-          }
-        )
-      ); 
-    } else if (widget.dataType == 'string') {
-      return Padding(
-        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-        child: CustomTextFormField(
-          title: widget.title!,
-          validator: (value) {
-            return value?.isEmpty == true 
-            ? TextString.dynamicEmptyFields
-            : null;
-          },
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          onChanged: (value) {
-            context.read<WidgetsBloc>().add(DynamicWidgetsValueChanged(
-              id: widget.id,
-              title: widget.title!,
-              value: value,
-              type: widget.dataType!,
-            ));
-          }
-        )
-      );
-    } else {
-      return const SizedBox.shrink();
+    switch(widget.dataType) {
+      case 'int':
+        return _intTextField(context);
+      case 'string':
+        return _stringTextfield(context);
+      default:
+        return const SizedBox.shrink();
     }
+  }
+
+  Widget _intTextField(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+      child: CustomTextFormField(
+        title: widget.title!,
+        inputFormatters: <ThousandsFormatter>[ThousandsFormatter(allowFraction: true)],
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: (value) {
+          return value?.isEmpty == true
+          ? TextString.dynamicAmountRequired
+          : _regex.hasMatch(value!)
+            ? null
+            : TextString.dynamicAmountInvalid;
+        },
+        onChanged: (value) {
+          context.read<WidgetsBloc>().add(DynamicWidgetsValueChanged(
+            id: widget.id,
+            title: widget.title!,
+            value: value,
+            type: widget.dataType!,
+          ));
+        }
+      )
+    );
+  }
+
+  Widget _stringTextfield(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+      child: CustomTextFormField(
+        title: widget.title!,
+        validator: (value) {
+          return value?.isEmpty == true 
+          ? TextString.dynamicEmptyFields
+          : null;
+        },
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        onChanged: (value) {
+          context.read<WidgetsBloc>().add(DynamicWidgetsValueChanged(
+            id: widget.id,
+            title: widget.title!,
+            value: value,
+            type: widget.dataType!,
+          ));
+        }
+      )
+    );
   }
 }

@@ -35,21 +35,19 @@ class SourceAccountCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  account.type!.isNotEmpty
+                  ? CustomRowText(
+                    title: accountTypeNameString(account.type!.toLowerCase()),
+                    titleColor: Colors.white,
+                    content: '',
+                  ) : const SizedBox.shrink(),
+                  const SizedBox(height: 10),
                   CustomRowText(
                     title: 'Balance',
                     titleColor: Colors.white,
                     contentColor: Colors.white,
                     content: f.format(account.balance),
-                  ),
-                  const SizedBox(height: 20),
-                  account.type!.isNotEmpty
-                  ? CustomRowText(
-                    title: accountTypeNameString(account.type!.toLowerCase()),
-                    titleColor: Colors.white,
-                    contentColor: Colors.white,
-                    content: account.accountNumber.replaceRange(0,  account.accountNumber.length - 4, '***'),
-                    contentFontSize: 12,
-                  ) : const SizedBox.shrink(),
+                  )
                 ]
               )
             )

@@ -11,8 +11,9 @@ import '../dynamic_viewer.dart';
 import '../widgets/widgets.dart';
 
 class DynamicViewerView extends StatelessWidget {
-  const DynamicViewerView({super.key, required this.button});
+  const DynamicViewerView({super.key, required this.button, required this.accountNumber});
   final Button button;
+  final String? accountNumber;
   static final FocusNode focusNode = FocusNode(); // this is for open dropdown buttons
 
   @override
@@ -43,7 +44,8 @@ class DynamicViewerView extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   context.read<InactivityCubit>().resumeTimer();
-                  context.pushReplacementNamed(RouteName.bottomNavbar);
+                  context.pop();
+                  // context.pushReplacementNamed(RouteName.bottomNavbar);
                 },
                 icon: const Icon(FontAwesomeIcons.x, size: 18)
               )
@@ -72,6 +74,8 @@ class DynamicViewerView extends StatelessWidget {
                         color: const Color(0xFFFFFFFF),
                         children: state.widgetList.map((widget) {
                           switch(widget.widgetType) {
+                            case 'accounttext':
+                              return AccountText(widget: widget, accountNumber: accountNumber);
                             case 'dropdown':
                               return DropdownDisplay(focusNode: focusNode, pageWidget: widget);
                             case 'textfield':

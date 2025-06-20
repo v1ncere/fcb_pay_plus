@@ -13,9 +13,7 @@ class InactivityCubit extends Cubit<InactivityState> {
     emit(state.copyWith(status: InactivityStatus.active));
     // timer is NOT paused
     if (!state.isTimerPaused) {
-      _timer = Timer(const Duration(seconds: 150), () {
-        emit(state.copyWith(status: InactivityStatus.inactive));
-      });
+      _timer = Timer(const Duration(seconds: 300), () => emit(state.copyWith(status: InactivityStatus.inactive)));
     }
   }
 

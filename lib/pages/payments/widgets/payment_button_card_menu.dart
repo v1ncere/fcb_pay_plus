@@ -33,7 +33,7 @@ class PaymentButtonCardMenu extends StatelessWidget {
                 icon: iconMapper(button.icon!),
                 iconColor: colorStringParser(button.iconColor!),
                 bgColor: colorStringParser(button.backgroundColor!),
-                function: () => context.goNamed(
+                function: () => context.pushNamed(
                   RouteName.dynamicViewer,
                   pathParameters: {'accountNumber': state.uid},
                   extra: button

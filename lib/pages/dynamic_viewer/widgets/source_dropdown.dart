@@ -66,7 +66,8 @@ class SourceDropdown extends StatelessWidget {
                   );
                 },
                 selectedItemBuilder: (context) {
-                  return state.accountList.map((item) {
+                  final newList = state.accountList.where((e) => e.type!.toLowerCase() != 'plc');
+                  return newList.map((item) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
@@ -108,7 +109,7 @@ class SourceDropdown extends StatelessWidget {
             )
           );
         }
-        //
+        // default display
         return const SizedBox.shrink();
       }
     );

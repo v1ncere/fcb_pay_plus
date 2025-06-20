@@ -12,12 +12,13 @@ class DropdownDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _isAccountNode(pageWidget)
+    return _isAccountDropdown(pageWidget)
     ? SourceDropdown(focusNode: focusNode, widget: pageWidget)
     : BlocSelector<WidgetsBloc, WidgetsState, String>(
         selector: (state) => state.uid,
         builder: (context, uid) {
-          _dropdownFetch(context, uid, pageWidget);
+          // *** fetch dropdown data
+          context.read<DropdownBloc>().add(DropdownFetched(node: pageWidget.node ?? '', uid: uid));
           return Column(
             children: [
               DynamicDropdown(focusNode: focusNode, widget: pageWidget),
@@ -28,10 +29,10 @@ class DropdownDisplay extends StatelessWidget {
       );
   }
 
-  // UTILITY FUNCTIONS ***
-  bool _isAccountNode(DynamicWidget widget) => (widget.node ?? '').contains('Account');
-  
-  void _dropdownFetch(BuildContext context, String uid, DynamicWidget widget) {
-    context.read<DropdownBloc>().add(DropdownFetched(node: widget.node ?? '', uid: uid));
+  // *** UTILITY FUNCTIONS ***
+  bool _isAccountDropdown(DynamicWidget widget) {
+    final isAccount = (widget.node ?? '').contains('Account');
+    final isDropdown = (widget.widgetType ?? '') == 'dropdown';
+    return isAccount && isDropdown;
   }
 }

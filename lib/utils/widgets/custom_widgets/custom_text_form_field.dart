@@ -7,6 +7,7 @@ class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField({
     super.key,
     this.inputFormatters,
+    this.controller,
     this.keyboardType,
     this.autovalidateMode,
     required this.title,
@@ -16,6 +17,7 @@ class CustomTextFormField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final AutovalidateMode? autovalidateMode;
+  final TextEditingController? controller;
   final String title;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
@@ -23,6 +25,7 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       inputFormatters: inputFormatters,
       keyboardType: keyboardType,
       style: const TextStyle(

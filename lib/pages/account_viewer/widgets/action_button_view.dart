@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'widgets.dart';
 
 class ActionButtonView extends StatelessWidget {
-  const ActionButtonView({super.key});
+  const ActionButtonView({super.key, required this.accountNumber});
+  final String accountNumber;
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.all(15.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,7 +22,7 @@ class ActionButtonView extends StatelessWidget {
           ),
           Divider(color: Color(0xFF25C166)),
           SizedBox(height: 10),
-          GridViewButtons()
+          GridViewButtons(accountNumber: accountNumber)
         ]
       )
     );

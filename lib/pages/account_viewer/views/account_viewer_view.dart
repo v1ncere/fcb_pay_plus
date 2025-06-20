@@ -38,7 +38,7 @@ class AccountViewerView extends StatelessWidget {
             const SizedBox(height: 10),
             const AccountDetailsView(),
             const SizedBox(height: 10),
-            const ActionButtonView(),
+            ActionButtonView(accountNumber: account.accountNumber),
             const SizedBox(height: 20),
             TransactionHistoryView(account: account),
             SizedBox(height: MediaQuery.of(context).size.height * 0.25)

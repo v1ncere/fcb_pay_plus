@@ -7,7 +7,8 @@ import '../account_viewer.dart';
 import 'widgets.dart';
 
 class GridViewButtons extends StatelessWidget {
-  const GridViewButtons({super.key});
+  const GridViewButtons({super.key, required this.accountNumber});
+  final String accountNumber;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,11 @@ class GridViewButtons extends StatelessWidget {
                     icon: iconMapper(button.icon!),
                     color: colorStringParser(button.iconColor!),
                     text: button.title!,
-                    onTap: () => context.pushNamed(RouteName.dynamicViewer, extra: button)
+                    onTap: () => context.pushNamed(
+                      RouteName.dynamicViewer, 
+                      extra: button, 
+                      pathParameters: {"accountNumber": accountNumber}
+                    )
                   );
                 }
               );
@@ -40,7 +45,7 @@ class GridViewButtons extends StatelessWidget {
         if (state.status.isFailure) {
           return Center(child: Text(state.message));
         }
-        
+        // default
         return const SizedBox.shrink();
       }
     );

@@ -50,7 +50,7 @@ class DynamicDropdown extends StatelessWidget {
         if (state.status.isFailure) {
           return Center(child: Text(state.message));
         }
-        //
+        // default display
         return const SizedBox.shrink();
       }
     );

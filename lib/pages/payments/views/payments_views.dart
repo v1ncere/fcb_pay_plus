@@ -20,7 +20,8 @@ class PaymentsViews extends StatelessWidget {
             color: ColorString.jewel,
             fontWeight: FontWeight.w700
           )
-        )
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: BlocBuilder<AccountsHomeBloc, AccountsHomeState>(
         builder: (context, state) {
@@ -64,9 +65,8 @@ class PaymentsViews extends StatelessWidget {
               )
             );
           }
-          else {
-            return const SizedBox.shrink();
-          }
+          // default
+          return const SizedBox.shrink();
         }
       )
     );

@@ -89,6 +89,7 @@ class AppRouter {
           path: '/bottomNavbar',
           builder: (context, state) => const BottomNavbarPage(),
           routes: [
+            // (lvl1) account viewer page
             GoRoute(
               name: RouteName.account,
               path: 'account',
@@ -97,6 +98,7 @@ class AppRouter {
                 return AccountViewerPage(account: account);
               }
             ),
+            // (lvl1) notification page
             GoRoute(
               name: RouteName.notification,
               path: 'notification',
@@ -109,6 +111,7 @@ class AppRouter {
                 )
               ]
             ),
+            // (lvl1) scanner page
             GoRoute(
               name: RouteName.scanner,
               path: 'scanner',
@@ -121,11 +124,13 @@ class AppRouter {
                 )
               ]
             ),
+            // (lvl last) receipt page
             GoRoute(
               name: RouteName.receipt,
               path: 'receipt/:receiptId',
               builder: (context, state) => ReceiptPage(receiptId: state.pathParameters['receiptId']),
             ),
+            // (lvl2) dynamic page viewer
             GoRoute(
               name: RouteName.dynamicViewer,
               path: 'dynamicViewer/:accountNumber',
@@ -134,16 +139,19 @@ class AppRouter {
                 return DynamicViewerPage(accountNumber: state.pathParameters['accountNumber'], button: button,);
               }
             ),
+            // (lvl 2) add account page
             GoRoute(
               name: RouteName.addAccount,
               path: 'addAccount',
               builder: (context, state) => const AccountAddPage()
             ),
+            // (lvl 1) settings page
             GoRoute(
               name: RouteName.settings,
               path: 'settings',
               builder: (context, state) => const SettingsPage(),
             ),
+            // (lvl 2) update password page
             GoRoute(
               name: RouteName.updatePassword,
               path: 'updatePassword',

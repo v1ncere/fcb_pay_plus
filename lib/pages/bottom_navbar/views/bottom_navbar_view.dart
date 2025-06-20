@@ -12,8 +12,21 @@ import '../../scanner/scanner.dart';
 import '../../transfers/transfers.dart';
 import '../bottom_navbar.dart';
 
-class BottomNavbarView extends StatelessWidget {
+class BottomNavbarView extends StatefulWidget {
   const BottomNavbarView({super.key});
+
+  @override
+  State<BottomNavbarView> createState() => BottomNavbarState();
+
+}
+
+class BottomNavbarState extends State<BottomNavbarView> {
+  
+  @override
+  void initState() {
+    super.initState();
+    context.read<InactivityCubit>().resumeTimer();
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -21,7 +34,6 @@ class BottomNavbarView extends StatelessWidget {
       selector: (state) => state,
       builder: (context, tab) {
         final controller = PageController(initialPage: tab.index);
-        _inactivityResume(context);
         return InactivityDetector(
           onInactive: () => context.goNamed(RouteName.authPin),
           child: Scaffold(
@@ -36,7 +48,7 @@ class BottomNavbarView extends StatelessWidget {
                 PaymentsPage(),
                 ScannerPage(),
                 TransfersPage(),
-                AccountSettingsPage()
+                AccountSettingsPage(),
               ]
             ),
             bottomNavigationBar: bottomNavAppBar(tab: tab, controller: controller),
@@ -47,6 +59,4 @@ class BottomNavbarView extends StatelessWidget {
       }
     );
   }
-  // UTILITY METHODS
-  void _inactivityResume(BuildContext context) => context.read<InactivityCubit>().resumeTimer();
 }

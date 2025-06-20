@@ -20,7 +20,8 @@ class TransfersView extends StatelessWidget {
             color: ColorString.jewel,
             fontWeight: FontWeight.w700
           )
-        )
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: BlocBuilder<AccountsHomeBloc, AccountsHomeState>(
         builder: (context, state) {
@@ -35,10 +36,13 @@ class TransfersView extends StatelessWidget {
           if(state.status.isSuccess) {
             return RefreshIndicator.adaptive(
               onRefresh: () async => context.read<TransferButtonsBloc>().add(TransferButtonsRefreshed()),
-              child: const Column(
-                children: [
-                  TransferButtonCardMenu()
-                ]
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const Column(
+                  children: [
+                    TransferButtonCardMenu()
+                  ]
+                ),
               )
             );
           }
@@ -61,9 +65,8 @@ class TransfersView extends StatelessWidget {
               )
             );
           }
-          else {
-            return const SizedBox.shrink();
-          }
+          // default
+          return const SizedBox.shrink();
         }
       )
     );

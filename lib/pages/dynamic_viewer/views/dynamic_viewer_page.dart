@@ -18,7 +18,6 @@ class DynamicViewerPage extends StatelessWidget {
       providers: [
         // widgets bloc with event [widgets load] invoked
         BlocProvider(create: (context) => WidgetsBloc()
-        ..add(SourceAccountFetched(accountNumber ?? ''))
         ..add(WidgetsFetched(button.id))
         ..add(UserIdFetched())),
         // dropdown bloc 
@@ -30,7 +29,7 @@ class DynamicViewerPage extends StatelessWidget {
         BlocProvider(create: (context) => InactivityCubit()
         ..resumeTimer()),
       ],
-      child: DynamicViewerView(button: button)
+      child: DynamicViewerView(button: button, accountNumber: accountNumber)
     );
   }
 }
