@@ -6,8 +6,8 @@ import '../../../utils/utils.dart';
 import '../dynamic_viewer.dart';
 
 class DynamicDropdown extends StatelessWidget {
-  const DynamicDropdown({super.key, required this.widget, required this.focusNode});
-  final DynamicWidget widget;
+  const DynamicDropdown({super.key, required this.dynamicWidget, required this.focusNode});
+  final DynamicWidget dynamicWidget;
   final FocusNode focusNode;
 
   @override
@@ -26,12 +26,12 @@ class DynamicDropdown extends StatelessWidget {
             child: CustomDropdownButton(
               focusNode: focusNode,
               value: null,
-              hint: Text(widget.title!),
+              label: Text(dynamicWidget.title!),
               onChanged: (value) {
                 context.read<WidgetsBloc>().add(DynamicWidgetsValueChanged(
-                  id: widget.id,
-                  title: widget.title!,
-                  type: widget.dataType!,
+                  id: dynamicWidget.id,
+                  title: dynamicWidget.title!,
+                  type: dynamicWidget.dataType!,
                   value: value!
                 ));
               },

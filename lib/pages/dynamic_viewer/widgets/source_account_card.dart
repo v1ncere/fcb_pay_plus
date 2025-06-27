@@ -20,7 +20,7 @@ class SourceAccountCard extends StatelessWidget {
           margin: const EdgeInsets.all(0),
           clipBehavior: Clip.antiAlias,
           color:const Color(0xFF25C166),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -39,14 +39,20 @@ class SourceAccountCard extends StatelessWidget {
                   ? CustomRowText(
                     title: accountTypeNameString(account.type!.toLowerCase()),
                     titleColor: Colors.white,
-                    content: '',
+                    titleFlex: 1,
+                    content: 'Balance',
+                    contentColor: Colors.white,
+                    contentFontWeight: FontWeight.w600,
+                    contentFlex: 1,
                   ) : const SizedBox.shrink(),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   CustomRowText(
-                    title: 'Balance',
+                    title: '',
                     titleColor: Colors.white,
+                    titleFlex: 1,
                     contentColor: Colors.white,
                     content: f.format(account.balance),
+                    contentFlex: 1,
                   )
                 ]
               )

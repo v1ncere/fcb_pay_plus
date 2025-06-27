@@ -6,23 +6,24 @@ import '../dynamic_viewer.dart';
 import 'widgets.dart';
 
 class DropdownDisplay extends StatelessWidget {
-  const DropdownDisplay({super.key, required this.pageWidget, required this.focusNode});
-  final DynamicWidget pageWidget;
+  const DropdownDisplay({super.key, required this.accountNumber, required this.dynamicWidget, required this.focusNode});
+  final String? accountNumber;
+  final DynamicWidget dynamicWidget;
   final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
-    return _isAccountDropdown(pageWidget)
-    ? SourceDropdown(focusNode: focusNode, widget: pageWidget)
+    return _isAccountDropdown(dynamicWidget)
+    ? SourceDropdown(accountNumber: accountNumber, focusNode: focusNode, dynamicWidget: dynamicWidget)
     : BlocSelector<WidgetsBloc, WidgetsState, String>(
         selector: (state) => state.uid,
         builder: (context, uid) {
-          // *** fetch dropdown data
-          context.read<DropdownBloc>().add(DropdownFetched(node: pageWidget.node ?? '', uid: uid));
+          // *** fetch dropdown data ***
+          context.read<DropdownBloc>().add(DropdownFetched(node: dynamicWidget.node ?? '', uid: uid));
           return Column(
             children: [
-              DynamicDropdown(focusNode: focusNode, widget: pageWidget),
-              if (pageWidget.hasExtra ?? false) const ExtraWidgets()
+              DynamicDropdown(focusNode: focusNode, dynamicWidget: dynamicWidget),
+              if (dynamicWidget.hasExtra ?? false) const ExtraWidgets()
             ]
           );
         }

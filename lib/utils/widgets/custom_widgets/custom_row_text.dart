@@ -7,19 +7,24 @@ class CustomRowText extends StatelessWidget {
     this.titleColor,
     this.titleFontSize,
     this.titleFontWeight,
+    required this.titleFlex,
     required this.content,
     this.contentColor,
     this.contentFontSize,
     this.contentFontWeight,
+    required this.contentFlex,
   });
   final String title;
   final Color? titleColor;
   final double? titleFontSize;
   final FontWeight? titleFontWeight;
+  final int titleFlex;
+  //
   final String content;
   final Color? contentColor;
   final double? contentFontSize;
   final FontWeight? contentFontWeight;
+  final int contentFlex;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +34,7 @@ class CustomRowText extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       children: [
         Flexible(
+          flex: titleFlex,
           child: Text(
             title,
             style: TextStyle(
@@ -46,6 +52,7 @@ class CustomRowText extends StatelessWidget {
           )
         ),
         Flexible(
+          flex: contentFlex,
           child: Text(
             content,
             style: TextStyle(

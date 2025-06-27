@@ -22,7 +22,7 @@ class AccountDropdown extends StatelessWidget {
             builder: (scanContext, scanState) {
               return CustomDropdownButton(
                 value: scanState.accountDropdown.value,
-                hint: const Text('Select account'),
+                label: const Text('Select account'),
                 validator: (_) => scanState.accountDropdown.displayError?.text(),
                 onChanged: (value) => context.read<ScannerTransactionBloc>().add(ScannerAccountValueChanged(value!)),
                 items: state.accountList.map((item) {

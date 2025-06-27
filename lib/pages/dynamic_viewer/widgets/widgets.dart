@@ -10,3 +10,4 @@ export 'otp_dialog.dart';
 export 'source_account_card.dart';
 export 'source_dropdown.dart';
 export 'submit_button.dart';
+export 'wallet_account_text.dart';

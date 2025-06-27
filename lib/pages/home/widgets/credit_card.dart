@@ -52,7 +52,7 @@ Card creditCard({
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'CREDIT',
+                      accountTypeNameString(account.type ?? ''), // return  name of the account type,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: ColorString.white
@@ -134,19 +134,20 @@ Card creditCard({
   );
 }
 
-// METHODS ==========================================
-// ==================================================
+// *** METHODS ***
 
 double _availableCredit(double limit, double bal) {
   return limit - bal;
 }
 
 double _percentDecimal(double limit, double bal) {
+  if (limit == 0) return 0.0;
   double def = bal / limit ;
   return def.abs();
 }
 
 String _percentString(double limit, double bal) {
+  if (limit == 0) return "0.00";
   double res = (bal / limit) * 100;
   return res.abs().toStringAsFixed(2);
 }

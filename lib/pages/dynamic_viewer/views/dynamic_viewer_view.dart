@@ -76,8 +76,10 @@ class DynamicViewerView extends StatelessWidget {
                           switch(widget.widgetType) {
                             case 'accounttext':
                               return AccountText(widget: widget, accountNumber: accountNumber);
+                            case 'walletaccounttext':
+                              return WalletAccountText(widget: widget);
                             case 'dropdown':
-                              return DropdownDisplay(focusNode: focusNode, pageWidget: widget);
+                              return DropdownDisplay(accountNumber: accountNumber, focusNode: focusNode, dynamicWidget: widget);
                             case 'textfield':
                               return DynamicTextfield(widget: widget);
                             case 'text':

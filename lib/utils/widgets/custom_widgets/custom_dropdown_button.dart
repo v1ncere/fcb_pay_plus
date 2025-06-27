@@ -8,14 +8,14 @@ class CustomDropdownButton extends StatelessWidget {
   const CustomDropdownButton({
     super.key,
     required this.value,
-    required this.hint,
+    required this.label,
     required this.validator,
     required this.onChanged,
     required this.items,
     this.focusNode
   });
   final String? value;
-  final Widget? hint;
+  final Widget? label;
   final String? Function(String?)? validator;
   final void Function(String?)? onChanged;
   final List<DropdownMenuItem<String>>? items;
@@ -31,12 +31,9 @@ class CustomDropdownButton extends StatelessWidget {
         value: value,
         icon: const Icon(FontAwesomeIcons.caretDown, color: Colors.green, size: 16),
         dropdownColor: Colors.white,
-        style: const TextStyle(
-          color: Colors.black54,
-          fontWeight: FontWeight.w700, 
-        ),
         borderRadius: BorderRadius.circular(10.0),
         decoration: InputDecoration(
+          label: label,
           filled: true,
           fillColor: ColorString.algaeGreen,
           border: SelectedInputBorderWithShadow(
@@ -44,7 +41,6 @@ class CustomDropdownButton extends StatelessWidget {
             borderSide: BorderSide.none
           )
         ),
-        hint: hint,
         validator: validator,
         onChanged: onChanged,
         items: items

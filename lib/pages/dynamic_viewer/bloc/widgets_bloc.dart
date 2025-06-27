@@ -154,15 +154,13 @@ class WidgetsBloc extends Bloc<WidgetsEvent, WidgetsState> {
     emit(state.copyWith(submissionStatus: Status.loading));
     try {
       if (_areWidgetsValid(state.widgetList) && _areWidgetsValid(state.extraWidgetList)) {
-        final type = event.button.type!.trim().replaceAll(' ', '_').toLowerCase();
-
         // transaction in Map
         final Map<String, dynamic> transaction = {
           if (_areRequiredWidgetsExist(state.widgetList))
             "DynamicWidgets": _mapConvert(state.widgetList),
           if (_areRequiredWidgetsExist(state.extraWidgetList))
             "ExtraWidgets": _mapConvert(state.extraWidgetList),
-          "TransactionType": type,
+          "TransactionType": event.button.type!,
           "Owner": state.uid,
         };
         const graphQLDocument = '''
@@ -177,7 +175,6 @@ class WidgetsBloc extends Bloc<WidgetsEvent, WidgetsState> {
           }
         );
         final response = await Amplify.API.query(request: echoRequest).response;
-        
         if (!response.hasErrors) {
           final Map<String, dynamic> jsonMap = jsonDecode(response.data!);
           final process = ProcessTransactionResponse.fromJson(jsonMap);

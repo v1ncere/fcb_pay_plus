@@ -5,39 +5,26 @@ import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
 import '../dynamic_viewer.dart';
 
-class AccountText extends StatefulWidget {
-  const AccountText({super.key, required this.widget, required this.accountNumber});
+class WalletAccountText extends StatelessWidget {
+  const WalletAccountText({super.key, required this.widget});
   final DynamicWidget widget;
-  final String? accountNumber;
-  
-  @override
-  State<AccountText> createState() => AccountState();
-}
-
-class AccountState extends State<AccountText> {
-  
-  @override
-  void initState() {
-    super.initState();
-    context.read<WidgetsBloc>().add(SourceAccountFetched(widget.accountNumber ?? ''));
-  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WidgetsBloc, WidgetsState>(
       builder: (context, state) {
-        if (state.accountStatus.isLoading) {
+        if (state.userIdStatus.isLoading) {
           return const Padding(
             padding: EdgeInsets.only(top: 5.0 , bottom: 5.0),
             child: ShimmerRectLoading()
           );
         }
-        if (state.accountStatus.isSuccess) {
+        if (state.userIdStatus.isSuccess) {
           context.read<WidgetsBloc>().add(DynamicWidgetsValueChanged(
-            id: widget.widget.id,
-            title: widget.widget.title ?? '',
-            type: widget.widget.dataType ?? '',
-            value: state.account.accountNumber,
+            id: widget.id,
+            title: widget.title ?? '',
+            type: widget.dataType ?? '',
+            value: state.uid,
           ));
           //
           return Padding(
@@ -59,11 +46,11 @@ class AccountState extends State<AccountText> {
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: CustomRowText(
-                    title: widget.widget.title ?? '',
+                    title: widget.title ?? '',
                     titleColor: Colors.white,
                     titleFontSize: 12,
                     titleFlex: 1,
-                    content: state.account.accountNumber,
+                    content: state.uid,
                     contentColor: Colors.white,
                     contentFontWeight: FontWeight.w600,
                     contentFlex: 2,
@@ -73,7 +60,7 @@ class AccountState extends State<AccountText> {
             ),
           );
         }
-        if (state.accountStatus.isFailure) {
+        if (state.userIdStatus.isFailure) {
           return Center(child: Padding(
             padding: EdgeInsets.only(top: 5.0 , bottom: 5.0),
             child: Text(state.message),

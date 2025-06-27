@@ -13,19 +13,17 @@ class AccountDetailsView extends StatelessWidget {
     return BlocBuilder<CarouselCubit, CarouselState>(
       builder: (context, state) {
         final type = state.account.type!.toLowerCase();
-        
         if (type == AccountType.wlt.name
         || type ==  AccountType.psa.name
         || type ==  AccountType.ppr.name) {
           return ExtraDisplaySavings(account: state.account);
         }
-        
         if (type ==  AccountType.plc.name) {
           return ExtraDisplayCredit(account: state.account);
         }
-        
+        // default display
         return const SizedBox.shrink();
-      },
+      }
     );
   }
 }

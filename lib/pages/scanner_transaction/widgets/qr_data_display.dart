@@ -99,10 +99,12 @@ class QrDataDisplay extends StatelessWidget {
           title: data.title,
           titleColor: Colors.white,
           titleFontSize: 12,
+          titleFlex: 1,
           contentColor: Colors.white,
           content: data.data,
           contentFontWeight: FontWeight.w900,
           contentFontSize: 12,
+          contentFlex: 1,
         ),
         const SizedBox(height: 15)
       ]
@@ -149,10 +151,12 @@ class QrDataDisplay extends StatelessWidget {
             title: 'Convenience Fee',
             titleColor: Colors.white,
             titleFontSize: 12,
+            titleFlex: 1,
             contentColor: Colors.white,
             content: state.tip,
             contentFontWeight: FontWeight.w900,
             contentFontSize: 12,
+            contentFlex: 1,
           )
         ]
       );
@@ -164,10 +168,12 @@ class QrDataDisplay extends StatelessWidget {
             title: 'Convenience Fee %',
             titleColor: Colors.white,
             titleFontSize: 12,
+            titleFlex: 1,
             contentColor: Colors.white,
             content: state.tip,
             contentFontWeight: FontWeight.w900,
             contentFontSize: 12,
+            contentFlex: 1,
           )
         ]
       );

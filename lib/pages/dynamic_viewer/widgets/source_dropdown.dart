@@ -8,12 +8,9 @@ import '../../home/home.dart';
 import '../dynamic_viewer.dart';
 
 class SourceDropdown extends StatelessWidget {
-  const SourceDropdown({
-    super.key,
-    required this.widget,
-    required this.focusNode,
-  });
-  final DynamicWidget widget;
+  const SourceDropdown({super.key, required this.accountNumber, required this.dynamicWidget, required this.focusNode});
+  final String? accountNumber;
+  final DynamicWidget dynamicWidget;
   final FocusNode focusNode;
 
   @override
@@ -27,6 +24,7 @@ class SourceDropdown extends StatelessWidget {
           );
         }
         if (state.status.isSuccess) {
+          final list = state.accountList.where((e) => e.type?.toLowerCase() != "plc" && e.accountNumber != accountNumber).toList(); 
           return Padding(
             padding: const EdgeInsets.only(top: 5.0 , bottom: 5.0),
             child: ButtonTheme(
@@ -47,6 +45,7 @@ class SourceDropdown extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(10.0),
                 decoration: InputDecoration(
+                  label: Text(dynamicWidget.title!),
                   filled: true,
                   fillColor: ColorString.algaeGreen,
                   border: SelectedInputBorderWithShadow(
@@ -54,40 +53,39 @@ class SourceDropdown extends StatelessWidget {
                     borderSide: BorderSide.none,
                   )
                 ),
-                hint: Text(widget.title!),
                 onChanged: (value) {
                   context.read<WidgetsBloc>().add(
                     DynamicWidgetsValueChanged(
-                      id: widget.id,
-                      title: widget.title!,
+                      id: dynamicWidget.id,
+                      title: dynamicWidget.title!,
                       value: value!,
-                      type: widget.dataType!,
+                      type: dynamicWidget.dataType!,
                     )
                   );
                 },
                 selectedItemBuilder: (context) {
-                  final newList = state.accountList.where((e) => e.type!.toLowerCase() != 'plc');
-                  return newList.map((item) {
+                  return list.map((item) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(accountTypeString(item.type!)),
-                        Text("**** ${item.accountNumber.substring(item.accountNumber.length - 4)}"),
+                        Text(accountTypeNameString(item.type!)),
+                        Text(accountNumber ?? ''),
+                        // Text("***${item.accountNumber.substring(item.accountNumber.length - 4)}"),
                         Text('${Currency.php}${(item.balance)!.toStringAsFixed(2).replaceAllMapped(Currency.reg, Currency.mathFunc)}'),
                       ]
                     );
                   }).toList();
                 },
-                items: state.accountList.map((item) {
+                items: list.map((item) {
                   return DropdownMenuItem<String> (
                     value: item.accountNumber.toString(),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(accountTypeString(item.type!)),
-                        Text("**** ${item.accountNumber.substring(item.accountNumber.length - 4)}"),
+                        Text(accountTypeNameString(item.type!)),
+                        Text("***${item.accountNumber.substring(item.accountNumber.length - 4)}"),
                         Text('${Currency.php}${(item.balance)!.toStringAsFixed(2).replaceAllMapped(Currency.reg, Currency.mathFunc)}'),
                         const Divider()
                       ]

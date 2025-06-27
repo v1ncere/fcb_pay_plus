@@ -36,7 +36,7 @@ Column buildAccountNumber({
         fontSize: 21
       ),
       CustomText(
-        text: accountTypeString(type),
+        text: accountTypeNameString(type),
         color: ColorString.white,
         fontSize: 9,
         fontWeight: FontWeight.bold

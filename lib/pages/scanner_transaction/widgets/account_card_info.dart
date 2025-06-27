@@ -38,41 +38,51 @@ class AccountCardInfo extends StatelessWidget {
                   CustomRowText(
                     title: 'Balance',
                     titleColor: Colors.white,
+                    titleFlex: 1,
                     contentColor: Colors.white,
                     content: f.format(account.balance),
+                    contentFlex: 1,
                   ),
                   account.type!.toLowerCase() == 'cc'
                   ? CustomRowText(
                     title: 'Used amount',
                     titleColor: Colors.white,
+                    titleFlex: 1,
                     contentColor: Colors.white,
                     content: f.format( _usedAmount(account.creditLimit!, account.balance!)),
+                    contentFlex: 1,
                   ) : const SizedBox.shrink(),
                   account.type!.toLowerCase() == 'cc'
                   ? CustomRowText(
                     title: 'Credit Limit',
                     titleColor: Colors.white,
+                    titleFlex: 1,
                     contentColor: Colors.white,
                     content: f.format(account.creditLimit),
+                    contentFlex: 1,
                   ) : const SizedBox.shrink(),
                   const SizedBox(height: 20),
                   account.type!.isNotEmpty
                   ? CustomRowText(
                     title: account.type!.toUpperCase(),
                     titleColor: Colors.white,
+                    titleFlex: 1,
                     contentColor: Colors.white,
                     content: account.accountNumber.replaceRange(0,  account.accountNumber.length - 4, '***'),
                     contentFontSize: 12,
+                    contentFlex: 1,
                   ) : const SizedBox.shrink(),
                   account.type!.toLowerCase() == 'cc'
                   ? CustomRowText(
                     title: 'expiry',
                     titleColor: Colors.white,
                     titleFontSize: 12,
+                    titleFlex: 1,
                     contentColor: Colors.white,
                     content: getDateString(account.expiry!.getDateTimeInUtc()),
                     contentFontWeight: FontWeight.w900,
                     contentFontSize: 12,
+                    contentFlex: 1,
                   ) : const SizedBox.shrink()
                 ]
               )

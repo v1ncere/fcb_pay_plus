@@ -18,7 +18,16 @@ export const handler: Schema['processTransaction']['functionHandler'] = async (e
         result = await payment(inputData);
         break;
       case "transfer":
-        result = await transfer(inputData);
+        result = await transfer(inputData, transactionType);
+        break;
+      case "transferToAccount":
+        result = await transfer(inputData, transactionType);
+        break;
+      case "transferPlcToWallet":
+        result = await transfer(inputData, transactionType);
+        break;
+      case "paymentPlc":
+        result = await paymentPlc(inputData);
         break;
       default:
         throw new Error("Unsupported transaction type");
@@ -30,7 +39,7 @@ export const handler: Schema['processTransaction']['functionHandler'] = async (e
   }
 };
 
-// ---- GraphQL Caller ----
+// ---- GRAPHQL CALLER ----
 async function callAppSync<T>(query: string, variables: any): Promise<T> {
   const endpoint = new URL(env.API_ENDPOINT);
   const body = JSON.stringify({ query, variables });
@@ -66,29 +75,45 @@ async function callAppSync<T>(query: string, variables: any): Promise<T> {
   return json as T;
 }
 
-// Get User Account
+// GET ACCOUNT
 async function getAccount(accountNumber: string) {
   const query = `
     query GetAccount($accountNumber: String!) {
       getAccount(accountNumber: $accountNumber) {
         accountNumber
         balance
+        creditLimit
         type
         owner 
         ledgerStatus
       }
     }
   `;
-  const result = await callAppSync<{ data: { getAccount: any }, errors?: any }>(query, { accountNumber: accountNumber });
-  
-  if (result.errors) throw new Error(JSON.stringify(result.errors));
-  const account = result?.data?.getAccount;
-  if (!account) throw new Error('User account not found');
-  
+  const res = await callAppSync<{ data: { getAccount: any }, errors?: any }>(query, { accountNumber: accountNumber });
+  if (res.errors) throw new Error(JSON.stringify(res.errors));
+  const account = res?.data?.getAccount;
+  if (!account) throw new Error('Account not found');
   return account;
 }
 
-// Get Transferable User
+// GET ACCOUNT
+async function getMerchant(id: string) {
+  const query = `
+    query GetMerchant($id: ID!) {
+      getMerchant(id: $id) {
+        id
+        name
+      }
+    }
+  `;
+  const res = await callAppSync<{ data: { getMerchant: any }, errors?: any }>(query, { id: id });
+  if (res.errors) throw new Error(JSON.stringify(res.errors));
+  const merchant = res?.data?.getMerchant;
+  if (!merchant) throw new Error('Merchant not found');
+  return merchant;
+}
+
+// GET TRANSFERABLEUSER
 async function getTransferableUser(id: string) {
   const query = `
     query GetTransferableUser($id: ID!) {
@@ -100,16 +125,14 @@ async function getTransferableUser(id: string) {
       }
     }
   `;
-  const result = await callAppSync<{ data: { getTransferableUser: any }, errors?: any }>(query, { id: id });
-  
-  if (result.errors) throw new Error(JSON.stringify(result.errors));
-  const transferableUser = result?.data?.getTransferableUser;
-  if (!transferableUser) throw new Error('Transferable user not found');
-  
-  return transferableUser;
+  const res = await callAppSync<{ data: { getTransferableUser: any }, errors?: any }>(query, { id: id });
+  if (res.errors) throw new Error(JSON.stringify(res.errors));
+  const transferable = res?.data?.getTransferableUser;
+  if (!transferable) throw new Error('Transferable user not found');
+  return transferable;
 }
 
-// Update Account
+// UPDATE ACCOUNT
 async function updateAccount(accountNumber: string, balance: number, ledgerStatus: string) {
   const mutation = `
     mutation UpdateAccount($input: UpdateAccountInput!) {
@@ -118,17 +141,16 @@ async function updateAccount(accountNumber: string, balance: number, ledgerStatu
       }
     }
   `;
-  const result = await callAppSync<{ data: { updateAccount: any }, errors?: any }>(mutation, {
+  const res = await callAppSync<{ data: { updateAccount: any }, errors?: any }>(mutation, {
     input: { accountNumber, balance, ledgerStatus }
   });
-
-  if (result.errors) throw new Error(JSON.stringify(result.errors));
-  if (!result?.data?.updateAccount) throw new Error("Failed to update account");
-
-  return result?.data?.updateAccount?.balance;
+  if (res.errors) throw new Error(JSON.stringify(res.errors));
+  const account = res?.data?.updateAccount;
+  if (!account) throw new Error("Failed to update account");
+  return account.balance;
 }
 
-// Create Transaction
+// CREATE TRANSACTION
 async function createTransaction(input: any) {
   const mutation = `
     mutation CreateTransaction($input: CreateTransactionInput!) {
@@ -137,17 +159,14 @@ async function createTransaction(input: any) {
       }
     }
   `;
-  const result = await callAppSync<{ data: { createTransaction: any }, errors?: any }>(mutation, {
-    input
-  });
-  
-  if (result?.errors) throw new Error(JSON.stringify(result.errors));
-  if (!result?.data?.createTransaction) throw new Error("Failed to create transaction");
-
-  return result?.data?.createTransaction?.id;
+  const res = await callAppSync<{ data: { createTransaction: any }, errors?: any }>(mutation, { input });
+  if (res?.errors) throw new Error(JSON.stringify(res.errors));
+  const trans = res?.data?.createTransaction;
+  if (!trans) throw new Error("Failed to create transaction");
+  return trans.id;
 }
 
-// Create Notification
+// CREATE NOTIFICATION
 async function createNotification(content: string, sender: string, owner: string) {
   const mutation = `
     mutation CreateNotification($input: CreateNotificationInput!) {
@@ -156,14 +175,15 @@ async function createNotification(content: string, sender: string, owner: string
       }
     }
   `;
-  const result = await callAppSync<{ data: { createNotification: any }, errors?: any }>(mutation, {
+  const res = await callAppSync<{ data: { createNotification: any }, errors?: any }>(mutation, {
     input: { content, isRead: false, sender, owner }
   });
-
-  if (result?.errors) throw new Error(JSON.stringify(result.errors));
+  if (res?.errors) throw new Error(JSON.stringify(res.errors));
+  const notif = res?.data?.createNotification;
+  if (!notif) throw new Error("Failed to create notification");
 }
 
-// Create Receipt
+// CREATE RECEIPT
 async function createReceipt(data: object, owner: string, transactionId: string) {
   const mutation = `
     mutation CreateReceipt($input: CreateReceiptInput!) {
@@ -172,64 +192,70 @@ async function createReceipt(data: object, owner: string, transactionId: string)
       }
     }
   `;
-  const result = await callAppSync<{ data: { createReceipt: any }, errors?: any }>(mutation, {
+  const res = await callAppSync<{ data: { createReceipt: any }, errors?: any }>(mutation, {
     input: { data: JSON.stringify(data), owner, transactionId }
   });
-
-  if (result?.errors) throw new Error(JSON.stringify(result.errors));
-
-  return result?.data?.createReceipt?.id;
+  if (res?.errors) throw new Error(JSON.stringify(res.errors));
+  const receipt = res?.data?.createReceipt;
+  if (!receipt) throw new Error("Failed to create receipt");
+  return receipt.id;
 }
 
+// GENERATE REFERENCE
 function generateReceiptRef(): string {
   const timestamp = Date.now().toString(); // milliseconds since epoch
   const randomSuffix = Math.floor(Math.random() * 1000).toString().padStart(3, '0'); // 000–999
   return `FCBPay-${timestamp}${randomSuffix}`;
 }
 
-// --- Main Payment Function ---
+// --- PAYMENT FUNCTION ---
 async function payment(inputData: any): Promise<any> {
   const { DynamicWidgets, ExtraWidgets, TransactionType, Owner } = inputData;
-  const account = DynamicWidgets?.SourceAccount;
-  const amount = parseFloat(DynamicWidgets?.Amount) || 0;
-  const merchant = DynamicWidgets?.Merchant;
+  const sourceAccountId = DynamicWidgets?.SourceAccount;
+  const merchantId = DynamicWidgets?.Merchant;
+  const rawAmount = DynamicWidgets?.Amount;
 
-  if (!account || !amount) throw new Error("Missing account or amount");
+  if (!sourceAccountId || !rawAmount) throw new Error("Missing required parameter.");
 
-  // get the user
-  const sourceAccount = await getAccount(account);
-  const originalBalance = sourceAccount.balance;
+  const amount = parseFloat(typeof rawAmount === 'string' ? rawAmount.replace(/,/g, '') : rawAmount) || 0;
 
+  // GET SOURCE ACCOUNT
+  const sourceAccount = await getAccount(sourceAccountId);
+  const sourceBalance = sourceAccount.balance;
   if (sourceAccount.ledgerStatus === "ND") throw new Error("Transaction in progress. Please wait a moment.");
-  if (originalBalance < amount) throw new Error("Insufficient balance");
+
+  if (sourceBalance < amount) throw new Error("Insufficient balance");
+
+  // GET MERCHANT
+  const merchant = await getMerchant(merchantId);
   
-  // update the user
-  const updatedBalance = await updateAccount(sourceAccount.accountNumber, originalBalance - amount, "ND");
+  // UPDATE ACCOUNT
+  const updatedSourceAccountBalance = await updateAccount(sourceAccount.accountNumber, sourceBalance - amount, "ND");
 
   try {
-    // create user transaction
+    // CREATE TRANSACTION
     const transactionId = await createTransaction({
       accountNumber: sourceAccount.accountNumber, 
       accountType: sourceAccount.type,
-      details: TransactionType,
+      details: `Payment of ₱${amount} to ${merchant.name} from ${sourceAccount.accountNumber}`,
       owner: Owner,
       accountId: sourceAccount.accountNumber,
     });
 
-    // create user notification
+    // CREATE NOTIFICATION
     await createNotification(
-      `Payment amounting of ₱${amount} to ${merchant} has been made.`,
+      `Payment amounting of ₱${amount} to ${merchant.name} has been made.`,
       sourceAccount.accountNumber,
       Owner,
     );
 
-    // create user receipt
+    // CREATE RECEIPT
     const receiptId = await createReceipt(
       {
         "Reference ID": generateReceiptRef(),
         "Mode": TransactionType,
         "From Account": sourceAccount.accountNumber,
-        "Paid to Account": merchant,
+        "Paid to Account": merchant.name,
         "Amount": amount,
         "Date": new Date().toISOString(),
       },
@@ -239,12 +265,12 @@ async function payment(inputData: any): Promise<any> {
 
     return {
       transactionId: transactionId,
-      balance: updatedBalance,
+      balance: updatedSourceAccountBalance,
       receiptId: receiptId
     }
   } catch (error: any) {
     // Rollback balance
-    await updateAccount(sourceAccount.accountNumber, originalBalance, "VL").catch(e => {
+    await updateAccount(sourceAccount.accountNumber, sourceBalance, sourceAccount.ledgerStatus).catch(e => {
       console.error("Rollback failed:", e);
       throw new Error("Critical error: transaction failed and rollback also failed.");
     });
@@ -252,74 +278,92 @@ async function payment(inputData: any): Promise<any> {
   }
 }
 
-// --- Main Transfer Function ---
-async function transfer(inputData: any): Promise<any> {
+// --- TRANSFER FUNCTION ---
+async function transfer(inputData: any, transferType: string): Promise<any> {
   const { DynamicWidgets, ExtraWidgets, TransactionType, Owner } = inputData;
-  const account = DynamicWidgets?.SourceAccount;
-  const transferableUserId = DynamicWidgets?.DestinationAccount;
+  const sourceAccountId = DynamicWidgets?.SourceAccount;
+  const destinationAccountId = DynamicWidgets?.DestinationAccount;
   const rawAmount = DynamicWidgets?.Amount;
 
-  if (!account || !rawAmount || !transferableUserId) throw new Error("Missing required parameter.");
+  if (!sourceAccountId || !destinationAccountId || !rawAmount) throw new Error("Missing required parameter.");
 
-  const amount = parseFloat(typeof rawAmount === 'string' ? rawAmount.replace(/,/g, '') : rawAmount) || 0;
+  const amount = parseFloat(typeof rawAmount === "string" ? rawAmount.replace(/,/g, "") : rawAmount) || 0;
 
-  // GET SENDER ACCOUNT
-  const sourceAccount = await getAccount(account);
-  const sourceAccountBalance = sourceAccount.balance;
-
+  // SOURCE ACCOUNT
+  const sourceAccount = await getAccount(sourceAccountId);
+  const sourceBalance = sourceAccount.balance;
   if (sourceAccount.ledgerStatus === "ND") throw new Error("Transaction in progress. Please wait a moment.");
-  if (sourceAccountBalance < amount) throw new Error("Insufficient account balance");
-
-  // get the transferable user
-  const transferableUser = await getTransferableUser(transferableUserId);
-
-  if (transferableUser.isTransferable === false) throw new Error("Transfer could not be completed. The destination account may be invalid or restricted. Please verify the account details and try again.");
-
-  const destinationAccount = await getAccount(transferableUser.accountId);
-  const destinationAccountBalance = destinationAccount.balance;
-
-  if (destinationAccount.ledgerStatus === "ND") throw new Error("Transaction in progress. Please wait a moment.");
   
-  // update the user
-  const updatedSourceBalance = await updateAccount(sourceAccount.accountNumber, sourceAccountBalance - amount, 'ND');
-  await updateAccount(transferableUser.accountId, destinationAccountBalance + amount, 'ND');
+  let account;
+  if (transferType === "transfer") {
+    // TRANSFERABLE USER
+    const transferableUser = await getTransferableUser(destinationAccountId);
+    if (transferableUser.isTransferable === false) throw new Error("Transfer could not be completed. The destination account may be invalid or restricted. Please verify the account details and try again.");
+    account = transferableUser.accountId; // the account number of the transferable user
+  } else {
+    account = destinationAccountId;
+  }
+
+  // DESTINATION ACCOUNT
+  const destinationAccount = await getAccount(account);
+  const destinationBalance = destinationAccount.balance;
+  if (destinationAccount.ledgerStatus === "NC") throw new Error("Transaction in progress. Please wait a moment.");
+  
+  // EVENT PROCESS
+  let sourceResult: number = 0;
+  let destinationResult: number = 0;
+  if (transferType === "transfer" || transferType === "transferToAccount") {
+    if (sourceBalance < amount) throw new Error("Insufficient account balance");
+    sourceResult = sourceBalance - amount;
+    destinationResult = destinationBalance + amount;
+  } else if (transferType === "transferPlcToWallet") {
+    sourceResult = sourceBalance + amount;
+    if (sourceResult > sourceAccount.creditLimit) throw new Error("Your credit limit has been reached. Please pay down your balance or adjust the transfer amount to continue.")
+    destinationResult = destinationBalance + amount;
+  }
+  
+  // UPDATE ACCOUNTS
+  const updatedSourceBalance = await updateAccount(sourceAccount.accountNumber, sourceResult, "ND");
+  await updateAccount(destinationAccount.accountNumber, destinationResult, "NC");
 
   try {
-    // create sender transaction
+    // CREATE TRANSACTION
     const transactionId = await createTransaction({
       accountNumber: sourceAccount.accountNumber, 
       accountType: sourceAccount.type,
-      details: TransactionType,
+      details: `Transferred to ${destinationAccount.$accountNumber}`,
       owner: Owner,
       accountId: sourceAccount.accountNumber,
     });
 
-    // create sender notification
+    // CREATE SOURCE NOTIFICATION
     await createNotification(
       `A transfer of ₱${amount} to ${destinationAccount.ownerName} was successfully processed. Ref: ${transactionId}`,
       sourceAccount.accountNumber,
       Owner,
     );
 
-    // create receiver notification
-    await createNotification(
-      `You have received ₱${amount} from ${sourceAccount.ownerName}. Ref ${transactionId}`,
-      sourceAccount.accountNumber,
-      destinationAccount.owner,
-    );
+    // CREATE RECEIVER NOTIFICATION
+    if (transferType === "transfer") {
+      await createNotification(
+        `You have received ₱${amount} from ${sourceAccount.ownerName}. Ref ${transactionId}`,
+        sourceAccount.accountNumber,
+        destinationAccount.owner,
+      );
+    }
 
-    // create user receipt
+    // CREATE RECEIPT
     const receiptId = await createReceipt(
       {
         "Reference ID": generateReceiptRef(),
-        "Mode": TransactionType,
+        "Mode": "Transfer",
         "From Account": sourceAccount.accountNumber,
         "Transfer to Account": destinationAccount.accountNumber,
         "Amount": `₱${amount}`,
         "Date": new Date().toISOString(),
       },
       Owner,
-      transactionId
+      transactionId,
     );
 
     return {
@@ -329,11 +373,91 @@ async function transfer(inputData: any): Promise<any> {
     }
   } catch (error: any) {
     // Rollback balance
-    await updateAccount(sourceAccount.accountNumber, sourceAccountBalance, sourceAccount.ledgerStatus).catch(e => {
+    await updateAccount(sourceAccount.accountNumber, sourceBalance, sourceAccount.ledgerStatus).catch(e => {
       console.error(`Rollback failed for sender ${sourceAccount.accountNumber}:`, e);
       throw new Error("Critical error: transaction failed and rollback also failed.");
     });
-    await updateAccount(destinationAccount.accountNumber, destinationAccountBalance, destinationAccount.ledgerStatus).catch(e => {
+    await updateAccount(destinationAccount.accountNumber, destinationBalance, destinationAccount.ledgerStatus).catch(e => {
+      console.error(`Rollback failed for receiver ${destinationAccount.accountNumber}:`, e);
+      throw new Error("Critical error: transaction failed and rollback also failed.");
+    });
+    throw error;
+  }
+}
+
+// --- PLC PAY NOW FUNCTION ---
+async function paymentPlc(inputData: any): Promise<any> {
+  const { DynamicWidgets, ExtraWidgets, TransactionType, Owner } = inputData;
+  const sourceAccountId = DynamicWidgets?.SourceAccount;
+  const destinationAccountId = DynamicWidgets?.DestinationAccount;
+  const rawAmount = DynamicWidgets?.Amount;
+
+  if (!sourceAccountId || !destinationAccountId || !rawAmount) throw new Error("Missing required parameter.");
+
+  const amount = parseFloat(typeof rawAmount === "string" ? rawAmount.replace(/,/g, "") : rawAmount) || 0;
+
+  // SOURCE ACCOUNT
+  const sourceAccount = await getAccount(sourceAccountId);
+  const sourceBalance = sourceAccount.balance;
+  if (sourceAccount.ledgerStatus === "ND") throw new Error("Transaction in progress. Please wait a moment.");
+
+  // DESTINATION ACCOUNT
+  const destinationAccount = await getAccount(destinationAccountId);
+  const destinationBalance = destinationAccount.balance;
+  if (destinationAccount.ledgerStatus === "NC") throw new Error("Transaction in progress. Please wait a moment.");
+  
+  // CHECK PROCESS
+  if (destinationBalance <= 0) throw new Error("There is no outstanding balance to pay."); // check no payment
+  if (sourceBalance < amount) throw new Error("Insufficient account balance"); // check source balance sufficient
+  if (destinationBalance < amount) throw new Error("Payment amount exceeds outstanding balance."); // check exceed payment
+  
+  // UPDATE ACCOUNTS
+  await updateAccount(sourceAccount.accountNumber, sourceBalance - amount, "ND");
+  const updatedDestinationBalance = await updateAccount(destinationAccount.accountNumber, destinationBalance - amount, "NC");
+
+  try {
+    // CREATE TRANSACTION
+    const transactionId = await createTransaction({
+      accountNumber: destinationAccount.accountNumber, 
+      accountType: destinationAccount.type,
+      details: `Payment to Pitakard Line of Credit ${destinationAccount.accountNumber} from ${sourceAccount.accountNumber}`,
+      owner: Owner,
+      accountId: destinationAccount.accountNumber,
+    });
+
+    // CREATE NOTIFICATION
+    await createNotification(
+      `A payment of ₱${amount} to your Pitakard Line of Credit was successfully processed. Ref: ${transactionId}`,
+      destinationAccount.accountNumber,
+      Owner,
+    );
+
+    // CREATE RECEIPT
+    const receiptId = await createReceipt(
+      {
+        "Reference ID": generateReceiptRef(),
+        "Mode": "Payment",
+        "From Account": sourceAccount.accountNumber,
+        "Paid to Account": destinationAccount.accountNumber,
+        "Amount": `₱${amount}`,
+        "Date": new Date().toISOString(),
+      },
+      Owner,
+      transactionId,
+    );
+
+    return {
+      transactionId: transactionId,
+      balance: updatedDestinationBalance,
+      receiptId: receiptId
+    }
+  } catch (error: any) {
+    // Rollback balance
+    await updateAccount(sourceAccount.accountNumber, sourceBalance, sourceAccount.ledgerStatus).catch(e => {
+      console.error(`Rollback failed for sender ${sourceAccount.accountNumber}:`, e);
+      throw new Error("Critical error: transaction failed and rollback also failed.");
+    });
+    await updateAccount(destinationAccount.accountNumber, destinationBalance, destinationAccount.ledgerStatus).catch(e => {
       console.error(`Rollback failed for receiver ${destinationAccount.accountNumber}:`, e);
       throw new Error("Critical error: transaction failed and rollback also failed.");
     });

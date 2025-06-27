@@ -33,24 +33,30 @@ class CustomCard extends StatelessWidget {
                       return CustomRowText(
                         title: key.toString().replaceAll('_', ' '),
                         titleColor: Colors.black45,
+                        titleFlex: 1,
                         content: getDateStringfromMillis(int.parse(receipts[key].toString())),
                         contentColor: Colors.green,
+                        contentFlex: 1,
                       );
                     }
                     if (key.toString() == 'amount') {
                       return CustomRowText(
                         title: key.toString(),
                         titleColor: Colors.black45,
+                        titleFlex: 1,
                         content: formatCurrency(double.parse(receipts[key].toString()), 'fil_PH'),
                         contentColor: Colors.green,
+                        contentFlex: 1,
                       );
                     }
                     else {
                       return CustomRowText(
                         title: key.toString().replaceAll('_', ' '),
                         titleColor: Colors.black45,
+                        titleFlex: 1,
                         content: receipts[key].toString(),
                         contentColor: Colors.green,
+                        contentFlex: 1,
                       );
                     }
                   },

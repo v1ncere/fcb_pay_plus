@@ -17,17 +17,3 @@ class AssetString {
   static const String profileData  = 'assets/svg/profile_data.svg';
   static const String transferMoney  = 'assets/svg/transfer_money.svg';
 }
-
-String accountTypeString(String type) {
-  final data = type.toLowerCase();
-  switch (data) {
-    case 'wallet':
-      return 'WALLET';
-    case 'sa':
-      return 'SAVINGS';
-    case 'cc':
-      return 'CREDIT';
-    default:
-      return '';
-  }
-}
