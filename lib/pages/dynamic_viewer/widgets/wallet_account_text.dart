@@ -5,6 +5,8 @@ import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
 import '../dynamic_viewer.dart';
 
+// * This widget is for wallet destination only, 
+// * any usage not meant for this will cause an error.
 class WalletAccountText extends StatelessWidget {
   const WalletAccountText({super.key, required this.widget});
   final DynamicWidget widget;

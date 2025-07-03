@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 
 import '../../../utils/utils.dart';
 
@@ -24,7 +24,7 @@ class SaveReceiptCubit extends Cubit<SaveReceiptState> {
     if (byteData != null) {
       try {
         Uint8List pngBytes = byteData.buffer.asUint8List();
-        await ImageGallerySaver.saveImage(
+        await ImageGallerySaverPlus.saveImage(
           Uint8List.fromList(pngBytes),
           quality: 90,
           name: 'screenshot-${DateTime.now()}.png'

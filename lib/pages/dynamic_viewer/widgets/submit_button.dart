@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
@@ -26,26 +27,37 @@ class SubmitButton extends StatelessWidget {
           color: Colors.teal
         ),
         const SizedBox(height: 15),
-        CustomElevatedButton(
-          buttonColor: const Color(0xFF25C166),
-          title: widget.title!,
-          titleColor: Colors.white,
-          icon: iconMapper(button.icon!),
-          iconColor: Colors.white,
-          onPressed: () => showDialog(
-            context: context,
-            builder: (ctx) => BlocProvider.value(
-              value: BlocProvider.of<WidgetsBloc>(context),
-              child: CustomAlertDialog(
-                description: 'Are you sure you want to proceed?', 
-                title: button.title!, 
-                onPressed: () {
-                  context.read<WidgetsBloc>().add(ButtonSubmitted(button));
-                  Navigator.of(ctx).pop();
-                }
+        BlocBuilder<WidgetsBloc, WidgetsState>(
+          builder: (context, state) {
+            return state.submissionStatus.isLoading
+            ? Center(
+                child: SpinKitCircle(
+                  color: ColorString.eucalyptus,
+                  size: 26,
+                )
               )
-            )
-          )
+            :  CustomElevatedButton(
+              buttonColor: const Color(0xFF25C166),
+              title: widget.title!,
+              titleColor: Colors.white,
+              icon: iconMapper(button.icon!),
+              iconColor: Colors.white,
+              onPressed: () => showDialog(
+                context: context,
+                builder: (ctx) => BlocProvider.value(
+                  value: BlocProvider.of<WidgetsBloc>(context),
+                  child: CustomAlertDialog(
+                    description: 'Are you sure you want to proceed?', 
+                    title: button.title!, 
+                    onPressed: () {
+                      context.read<WidgetsBloc>().add(ButtonSubmitted(button));
+                      Navigator.of(ctx).pop();
+                    }
+                  )
+                )
+              )
+            );
+          }
         )
       ]
     );

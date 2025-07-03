@@ -9,11 +9,11 @@ sealed class AccountsHomeEvent extends Equatable {
 
 final class AccountsHomeFetched extends AccountsHomeEvent {}
 
-final class AccountsHomeOnCreateStreamed extends AccountsHomeEvent {}
+final class AccountsHomeOnCreatedStream extends AccountsHomeEvent {}
 
-final class AccountsHomeOnUpdateStreamed extends AccountsHomeEvent {}
+final class AccountsHomeOnUpdatedStream extends AccountsHomeEvent {}
 
-final class AccountsHomeOnDeleteStreamed extends AccountsHomeEvent {}
+final class AccountsHomeOnDeletedStream extends AccountsHomeEvent {}
 
 final class AccountsHomeStreamUpdated extends AccountsHomeEvent {
   const AccountsHomeStreamUpdated(this.account, this.isDelete);

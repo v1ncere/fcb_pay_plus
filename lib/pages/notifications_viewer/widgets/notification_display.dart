@@ -23,13 +23,16 @@ class NotificationDisplay extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      state.notification.sender!,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black54
+                    Expanded(
+                      child: Text(
+                        state.notification.sender!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black54
+                        )
                       )
                     ),
+                    SizedBox(width: 5),
                     Text(
                       getDateString(state.notification.createdAt!.getDateTimeInUtc()),
                       style: const TextStyle(
@@ -48,7 +51,7 @@ class NotificationDisplay extends StatelessWidget {
                   )
                 )
               ]
-            ),
+            )
           );
         }
         if (state is NotificationsViewerError) {
@@ -56,9 +59,8 @@ class NotificationDisplay extends StatelessWidget {
             child: Text(state.message),
           );
         } 
-        else {
-          return const SizedBox.shrink();
-        }
+        // default display
+        return const SizedBox.shrink();
       }
     );
   }

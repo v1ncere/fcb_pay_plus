@@ -96,7 +96,7 @@ async function getAccount(accountNumber: string) {
   return account;
 }
 
-// GET ACCOUNT
+// GET MERCHANT
 async function getMerchant(id: string) {
   const query = `
     query GetMerchant($id: ID!) {

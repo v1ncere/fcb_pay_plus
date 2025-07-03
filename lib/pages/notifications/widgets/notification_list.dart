@@ -22,61 +22,58 @@ class NotificationList extends StatelessWidget {
         }
         if (state.status.isSuccess) {
           final notifications = state.notifications;
-          return Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: ListView.builder(
-              itemCount: notifications.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                final isRead = notification.isRead;
-                
-                return Container(
-                  color: isRead! ? const Color.fromARGB(15, 0, 0, 0) : null,
-                  child: ListTile(
-                    key: ValueKey(notification),
-                    leading: isRead
-                    ? const Icon(FontAwesomeIcons.solidEnvelope, color: Color.fromARGB(193, 76, 175, 79))
-                    : const Badge(
-                      largeSize: 8,
-                      smallSize: 8,
-                      child: Icon(FontAwesomeIcons.solidEnvelope),
-                    ),
-                    title: Text(
-                      notification.sender!,
-                      style: TextStyle(
-                        color: isRead ? Colors.black54 : Colors.black,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.w600
-                      )
-                    ),
-                    subtitle: Text(
-                      notification.content!,
-                      style: TextStyle(
-                        color: isRead ? Colors.black54 : Colors.black87,
-                        overflow: TextOverflow.ellipsis,
-                        fontSize: 12
-                      )
-                    ),
-                    trailing: Text(
-                      getDynamicDateString(notification.createdAt!.getDateTimeInUtc()),
-                      style: TextStyle(
-                        color: isRead ? Colors.black54 : Colors.black87,
-                        overflow: TextOverflow.ellipsis,
-                        fontSize: 12
-                      )
-                    ),
-                    horizontalTitleGap: 5,
-                    selected: true,
-                    selectedColor: Colors.green,
-                    onTap: () {
-                      context.read<NotificationsBloc>().add(NotificationsUpdateIsRead(notification));
-                      context.pushNamed(RouteName.notificationViewer, pathParameters: {'id' : notification.id});
-                    }
-                  )
-                );
-              }
-            )
+          return ListView.builder(
+            itemCount: notifications.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              final notification = notifications[index];
+              final isRead = notification.isRead;
+              
+              return Container(
+                color: isRead! ? const Color.fromARGB(15, 0, 0, 0) : null,
+                child: ListTile(
+                  key: ValueKey(notification),
+                  leading: isRead
+                  ? const Icon(FontAwesomeIcons.solidEnvelope, color: Color.fromARGB(193, 76, 175, 79))
+                  : const Badge(
+                    largeSize: 8,
+                    smallSize: 8,
+                    child: Icon(FontAwesomeIcons.solidEnvelope),
+                  ),
+                  title: Text(
+                    notification.sender!,
+                    style: TextStyle(
+                      color: isRead ? Colors.black54 : Colors.black,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.w600
+                    )
+                  ),
+                  subtitle: Text(
+                    notification.content!,
+                    style: TextStyle(
+                      color: isRead ? Colors.black54 : Colors.black87,
+                      overflow: TextOverflow.ellipsis,
+                      fontSize: 12
+                    )
+                  ),
+                  trailing: Text(
+                    getDynamicDateString(notification.createdAt!.getDateTimeInUtc()),
+                    style: TextStyle(
+                      color: isRead ? Colors.black54 : Colors.black87,
+                      overflow: TextOverflow.ellipsis,
+                      fontSize: 12
+                    )
+                  ),
+                  horizontalTitleGap: 5,
+                  selected: true,
+                  selectedColor: Colors.green,
+                  onTap: () {
+                    context.read<NotificationsBloc>().add(NotificationsUpdateIsRead(notification));
+                    context.pushNamed(RouteName.notificationViewer, pathParameters: {'id' : notification.id});
+                  }
+                )
+              );
+            }
           );
         }
         if (state.status.isFailure) {

@@ -31,16 +31,7 @@ class NotificationView extends StatelessWidget {
               )
             ]
           ),
-          body: const Column(
-            children: [
-              SizedBox(height: 10),
-              ContainerBody(
-                children: [
-                  NotificationList()
-                ]
-              )
-            ]
-          )
+          body: NotificationList()
         )
       )
     );

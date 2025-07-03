@@ -19,9 +19,9 @@ class BottomNavbarPage extends StatelessWidget {
         BlocProvider(create: (context) => AccountsHomeBloc(hiveRepository: HiveRepository())
         ..add(UserAttributesFetched())
         ..add(AccountsHomeFetched())
-        ..add(AccountsHomeOnCreateStreamed())
-        ..add(AccountsHomeOnDeleteStreamed())
-        ..add(AccountsHomeOnUpdateStreamed())),
+        ..add(AccountsHomeOnCreatedStream())
+        ..add(AccountsHomeOnDeletedStream())
+        ..add(AccountsHomeOnUpdatedStream())),
         BlocProvider(create: (context) => PaymentButtonsBloc()
         ..add(PaymentButtonsUserIdFetched())
         ..add(PaymentButtonsFetched())),

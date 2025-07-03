@@ -104,7 +104,7 @@ String qrDataTitleWidget(String data, String req) {
       case 58:
         return (req == 'title') ? 'Country Code' : 'text';
       case 59:
-        return (req == 'title') ? 'Merchant Name' : 'text';
+        return (req == 'title') ? 'Merchant' : 'text'; // Merchant Name
       case 60:
         return (req == 'title') ? 'Merchant City' : 'text';
       case 61:

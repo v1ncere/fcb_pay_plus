@@ -16,9 +16,9 @@ class ScannerView extends StatefulWidget {
 }
 
 class ScannerViewState extends State<ScannerView> {
-  final _controller = MobileScannerController(
+  final MobileScannerController _controller = MobileScannerController(
     formats: const [BarcodeFormat.qrCode],
-    detectionSpeed: DetectionSpeed.normal,
+    detectionSpeed: DetectionSpeed.noDuplicates,
     detectionTimeoutMs: 1000,
   );
 
@@ -32,16 +32,13 @@ class ScannerViewState extends State<ScannerView> {
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
     double area = screen.width < 400 || screen.height < 400 ? 250.0 : 360.0;
-    // final scanWindow = Rect.fromLTWH((screen.width - area)/ 2, (screen.height - area)/ 2, area, area);
     final scanWindow = Rect.fromCenter(
       center: MediaQuery.of(context).size.center(Offset.zero),
       width: area,
       height: area,
     );
     return InactivityDetector(
-      onInactive: () {
-        context.goNamed(RouteName.authPin);
-      },
+      onInactive: () => context.goNamed(RouteName.authPin),
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -54,7 +51,6 @@ class ScannerViewState extends State<ScannerView> {
           actions: [toggleTorch()]
         ),
         body: BlocListener<ScannerCubit, ScannerState>(
-          listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) {
             if (state.status.isSuccess) {
               context.pushNamed(RouteName.scannerTransaction);
@@ -69,38 +65,31 @@ class ScannerViewState extends State<ScannerView> {
             children: [
               MobileScanner(
                 controller: _controller,
-                placeholderBuilder: (_, __) => Container(color: Colors.black),
-                errorBuilder: (context, error, child) {
+                placeholderBuilder: (context) => Container(color: Colors.black),
+                errorBuilder: (context, error) {
                   return ScannerErrorWidget(error: error, area: area);
                 },
                 scanWindow: scanWindow,
-                onDetect: (capture) {
-                  final List<Barcode> barcodes = capture.barcodes;
-                  for (final barcode in barcodes) {
-                    context.read<ScannerCubit>().saveQRCode(barcode.rawValue!);
-                  }
-                }
+                onDetect: _handleBarcode
               ),
-              CustomPaint(painter: ScannerOverlay(scanWindow)),
-              // Positioned.fill(
-              //   child: Container(
-              //     decoration: ShapeDecoration(
-              //       shape: QrScannerOverlayShape(
-              //         borderColor: const Color(0xFF02AE08),
-              //         borderRadius: 10,
-              //         borderLength: 20,
-              //         borderWidth: 8,
-              //         cutOutSize: area
-              //       )
-              //     )
-              //   )
-              // ),
-              const ScannerText()
+              ScanWindowOverlay(
+                controller: _controller,
+                scanWindow: scanWindow,
+                borderColor: ColorString.eucalyptus,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              const ScannerText(),
             ]
           )
         )
-      ),
+      )
     );
+  }
+
+  // *** UTILITY METHODS ***
+
+  void _handleBarcode(BarcodeCapture event) {
+    context.read<ScannerCubit>().saveQRCode(event.barcodes.first.rawValue!);
   }
 
   Widget toggleTorch() {

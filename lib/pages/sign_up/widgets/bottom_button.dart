@@ -130,7 +130,7 @@ class BottomButton extends StatelessWidget {
   }
 
   // show failure snackbar
-  _showFailureSnackbar(BuildContext context, String message) {
+  void _showFailureSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(customSnackBar(

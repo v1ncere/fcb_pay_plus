@@ -20,9 +20,9 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   })  : _hiveRepository = hiveRepository,
         super(AccountsHomeState(credit: emptyAccount, payroll: emptyAccount, savings: emptyAccount, wallet: emptyAccount)) {
           on<UserAttributesFetched>(_onUserAttributesFetched);
-          on<AccountsHomeOnCreateStreamed>(_onAccountsHomeOnCreateStreamed);
-          on<AccountsHomeOnDeleteStreamed>(_onAccountsHomeOnDeleteStreamed);
-          on<AccountsHomeOnUpdateStreamed>(_onAccountsHomeOnUpdateStreamed);
+          on<AccountsHomeOnCreatedStream>(_onAccountsHomeOnCreatedStream);
+          on<AccountsHomeOnDeletedStream>(_onAccountsHomeOnDeletedStream);
+          on<AccountsHomeOnUpdatedStream>(_onAccountsHomeOnUpdatedStream);
           on<AccountsHomeStreamUpdated>(_onAccountsHomeStreamUpdated);
           on<AccountsHomeFetched>(_onAccountsHomeLoaded);
           on<AccountDisplayChanged>(_onAccountDisplayChanged);
@@ -49,7 +49,7 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   }
 
   // listening on create
-  FutureOr<void> _onAccountsHomeOnCreateStreamed(AccountsHomeOnCreateStreamed event, Emitter<AccountsHomeState> emit) async {
+  FutureOr<void> _onAccountsHomeOnCreatedStream(AccountsHomeOnCreatedStream event, Emitter<AccountsHomeState> emit) async {
     final authUser = await Amplify.Auth.getCurrentUser();
     final request = ModelSubscriptions.onCreate(Account.classType, where: Account.OWNER.eq(authUser.userId));
     final operation = Amplify.API.subscribe(request);
@@ -60,7 +60,7 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   }
 
   // listening on update
-  FutureOr<void> _onAccountsHomeOnUpdateStreamed(AccountsHomeOnUpdateStreamed event, Emitter<AccountsHomeState> emit) async {
+  FutureOr<void> _onAccountsHomeOnUpdatedStream(AccountsHomeOnUpdatedStream event, Emitter<AccountsHomeState> emit) async {
     final authUser = await Amplify.Auth.getCurrentUser();
     final request = ModelSubscriptions.onUpdate(Account.classType, where: Account.OWNER.eq(authUser.userId));
     final operation = Amplify.API.subscribe(request);
@@ -71,7 +71,7 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   }
 
   // listening on delete
-  FutureOr<void> _onAccountsHomeOnDeleteStreamed(AccountsHomeOnDeleteStreamed event, Emitter<AccountsHomeState> emit) async {
+  FutureOr<void> _onAccountsHomeOnDeletedStream(AccountsHomeOnDeletedStream event, Emitter<AccountsHomeState> emit) async {
     final authUser = await Amplify.Auth.getCurrentUser();
     final request = ModelSubscriptions.onDelete(Account.classType, where: Account.OWNER.eq(authUser.userId));
     final operation = Amplify.API.subscribe(request);

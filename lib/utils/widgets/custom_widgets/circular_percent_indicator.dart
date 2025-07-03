@@ -224,7 +224,7 @@ class CircularPercentIndicatorState extends State<CircularPercentIndicator>
     _checkIfNeedCancelAnimation(oldWidget);
   }
 
-  _updateProgress() {
+  void _updateProgress() {
     setState(() => _percent = widget.percent);
   }
 

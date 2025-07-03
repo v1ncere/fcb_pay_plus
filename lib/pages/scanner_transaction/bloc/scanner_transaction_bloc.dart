@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,15 +21,36 @@ class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransa
     required HiveRepository hiveRepository
   }) : _hiveRepository = hiveRepository,
   super(ScannerTransactionState(account: emptyAccount)) {
+    on<ScannerSourceAccountFetched>(_onScannerSourceAccountFetched);
     on<ScannerTransactionDisplayLoaded>(_onScannerTransactionDisplayLoaded);
-    on<ScannerAccountValueChanged>(_onScannerAccountValueChanged);
-    on<ScannerAccountModelChanged>(_onScannerAccountModelChanged);
     on<ScannerAmountValueChanged>(_onScannerAmountValueChanged);
     on<ScannerExtraWidgetValueChanged>(_onScannerExtraWidgetValueChanged);
     on<ScannerTransactionSubmitted>(_onScannerTransactionSubmitted);
     on<ScannerTipValueChanged>(_onScannerTipValueChanged);
   }
   final HiveRepository _hiveRepository;
+
+  Future<void> _onScannerSourceAccountFetched(ScannerSourceAccountFetched event, Emitter<ScannerTransactionState> emit) async {
+    emit(state.copyWith(accountStatus: Status.loading));
+    try {
+      final authUser = await Amplify.Auth.getCurrentUser();
+      final request = ModelQueries.get(Account.classType, AccountModelIdentifier(accountNumber: authUser.userId));
+      final response = await Amplify.API.query(request: request).response;
+      final account = response.data;
+
+      emit(
+        account != null && !response.hasErrors
+        ? state.copyWith(accountStatus: Status.success, account: account)
+        : state.copyWith(accountStatus: Status.failure, message: response.errors.first.message)
+      );
+    } on AuthException catch (e) {
+      emit(state.copyWith(formStatus: FormzSubmissionStatus.failure, message: e.message));
+    } on ApiException catch (e) {
+      emit(state.copyWith(accountStatus: Status.failure, message: e.message));
+    } catch (_) {
+      emit(state.copyWith(accountStatus: Status.failure, message: TextString.error));
+    }
+  }
 
   Future<void> _onScannerTransactionDisplayLoaded(ScannerTransactionDisplayLoaded event, Emitter<ScannerTransactionState> emit) async {
     emit(state.copyWith(status: Status.loading));
@@ -86,16 +108,8 @@ class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransa
     emit(state.copyWith(tip: event.tip));
   }
 
-  void _onScannerAccountValueChanged(ScannerAccountValueChanged event, Emitter<ScannerTransactionState> emit) {
-    emit(state.copyWith(accountDropdown: AccountDropdown.dirty(event.account)));
-  }
-
   void _onScannerAmountValueChanged(ScannerAmountValueChanged event, Emitter<ScannerTransactionState> emit) {
     emit(state.copyWith(inputAmount: Amount.dirty(event.amount)));
-  }
-
-  void _onScannerAccountModelChanged(ScannerAccountModelChanged event, Emitter<ScannerTransactionState> emit) {
-    emit(state.copyWith(account: event.account));
   }
 
   void _onScannerExtraWidgetValueChanged(ScannerExtraWidgetValueChanged event, Emitter<ScannerTransactionState> emit) {
@@ -127,19 +141,27 @@ class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransa
           final qrMap = _getFormSubmissionData();
           final qrExtraMap = _extraFieldSubmissionData();
           final index = state.qrDataList.indexWhere((e) => e.id == 'main55');
+          final authUser = await Amplify.Auth.getCurrentUser();
+          
           if (index != -1) {
-            qrMap.addAll({'Account': state.accountDropdown.value, 'Amount': state.inputAmount.value, 'TipCon': state.tip});
+            qrMap.addAll({
+              'SourceAccount': state.account.accountNumber,
+              'Amount': state.inputAmount.value,
+              'TipCon': state.tip
+            });
           } else {
-            qrMap.addAll({'Account': state.accountDropdown.value, 'Amount': state.inputAmount.value});
+            qrMap.addAll({
+              'SourceAccount': state.account.accountNumber, 
+              'Amount': state.inputAmount.value
+            });
           }
 
-          final authUser = await Amplify.Auth.getCurrentUser();
           // transaction in Map
           final Map<String, dynamic> transaction = {
-            "DynamicWidget": qrMap,
+            "DynamicWidgets": qrMap,
             if (_containsExtraFields())
               "ExtraWidgets": qrExtraMap,
-            "TransactionType": 'Payment',
+            "TransactionType": 'payment',
             "Owner": authUser.userId,
           };
           const graphQLDocument = '''
@@ -167,6 +189,8 @@ class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransa
           } else {
             emit(state.copyWith(formStatus: FormzSubmissionStatus.failure, message: response.errors.first.message));
           }
+        } on AuthException catch (e) {
+          emit(state.copyWith(formStatus: FormzSubmissionStatus.failure, message: e.message));
         } on ApiException catch (e) {
           emit(state.copyWith(formStatus: FormzSubmissionStatus.failure, message: e.message));
         } catch (e) {

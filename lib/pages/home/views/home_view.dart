@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../utils/utils.dart';
+import '../../notifications/notifications.dart';
 import '../home.dart';
 import '../widgets/widgets.dart';
 
@@ -31,9 +32,21 @@ class AccountHomeView extends StatelessWidget {
             actions: [
               IconButton(
                 splashRadius: 25,
-                icon: Icon(
-                  FontAwesomeIcons.solidBell,
-                  color: ColorString.eucalyptus
+                icon: BlocBuilder<NotificationsBloc, NotificationsState>(
+                  builder: (context, state) {
+                    final isRead = state.notifications.every((e) => e.isRead == true);
+                    return isRead 
+                    ? Icon(
+                        FontAwesomeIcons.solidBell,
+                        color: ColorString.eucalyptus
+                      )
+                    : Badge(
+                        child: Icon(
+                          FontAwesomeIcons.solidBell,
+                          color: ColorString.eucalyptus
+                        )
+                      );
+                  }
                 ),
                 onPressed: () => context.pushNamed(RouteName.notification),
               ),

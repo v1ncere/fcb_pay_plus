@@ -78,7 +78,7 @@ class SignUpView extends StatelessWidget {
                     physics: const ScrollPhysics(),
                     steps: getSteps(currentStep, state),
                     onStepTapped: context.read<SignUpStepperCubit>().stepTapped,
-                    controlsBuilder: (_, __) => const SizedBox.shrink()
+                    controlsBuilder: (_, _) => const SizedBox.shrink()
                   ),
                   bottomNavigationBar: currentStep != 3
                   ? BottomButton(current: currentStep)
@@ -187,7 +187,7 @@ class SignUpView extends StatelessWidget {
   }
 
   // show success dialog 
-  _showSuccessSnackbar(BuildContext context, String message) {
+  void _showSuccessSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(customSnackBar(
@@ -199,7 +199,7 @@ class SignUpView extends StatelessWidget {
   }
 
   // show failure snackbar
-  _showFailureSnackbar(BuildContext context, String message) {
+  void _showFailureSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(customSnackBar(

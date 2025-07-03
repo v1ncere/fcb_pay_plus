@@ -71,10 +71,8 @@ class QrDataDisplay extends StatelessWidget {
                     if (data.widget == 'textfield') { // e.g Mobile Number,
                       return textFields(context, data);
                     }
-                    else {
-                      return const SizedBox.shrink();
-                    }
-                    // end condition
+                    // default display
+                    return const SizedBox.shrink();
                   }).toList()
                 )
               )
@@ -84,9 +82,8 @@ class QrDataDisplay extends StatelessWidget {
         if (state.status.isFailure) {
           return Center(child: Text(state.message));
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        // default display
+        return const SizedBox.shrink();
       }
     );
   }
@@ -241,9 +238,7 @@ class QrDataDisplay extends StatelessWidget {
         )
       );
     }
-    else {
-      return const SizedBox.shrink();
-    }
+    // default display
+    return const SizedBox.shrink();
   }
-  // end
 }

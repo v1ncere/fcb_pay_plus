@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:formz/formz.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../utils/utils.dart';
 import '../scanner_transaction.dart';
@@ -12,34 +12,15 @@ class SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ScannerTransactionBloc, ScannerTransactionState>(
-      listener: (context, state) {
-        if(state.formStatus.isSuccess) {
-          context.pushNamed(RouteName.receipt, pathParameters: {'receiptId': state.receiptId});
-          ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(customSnackBar(
-            text: 'Payment sent!',
-            icon: FontAwesomeIcons.solidCircleCheck,
-            backgroundColor: ColorString.eucalyptus,
-            foregroundColor: ColorString.mystic,
-          ));
-        }
-        if(state.formStatus.isFailure) {
-          ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(customSnackBar(
-            text: state.message, 
-            icon: FontAwesomeIcons.triangleExclamation,
-            backgroundColor: ColorString.guardsmanRed,
-            foregroundColor: ColorString.mystic,
-          ));
-        }
-      },
-      buildWhen: (previous, current) => previous.formStatus != current.formStatus || current.isValid,
+    return BlocBuilder<ScannerTransactionBloc, ScannerTransactionState>(
       builder: (context, state) {
         return state.formStatus.isInProgress
-        ? const CircularProgressIndicator()
+        ? Center(
+            child: SpinKitCircle(
+              color: ColorString.eucalyptus,
+              size: 26,
+            )
+          )
         : ElevatedButton(
           onPressed: state.isValid
           ? () => context.read<ScannerTransactionBloc>().add(ScannerTransactionSubmitted())

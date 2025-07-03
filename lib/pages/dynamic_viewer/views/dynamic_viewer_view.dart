@@ -45,7 +45,6 @@ class DynamicViewerView extends StatelessWidget {
                 onPressed: () {
                   context.read<InactivityCubit>().resumeTimer();
                   context.pop();
-                  // context.pushReplacementNamed(RouteName.bottomNavbar);
                 },
                 icon: const Icon(FontAwesomeIcons.x, size: 18)
               )
@@ -68,7 +67,7 @@ class DynamicViewerView extends StatelessWidget {
                   child: state.dropdownHasData
                   ? Column(
                     children: [
-                      SourceAccountCard(),
+                      SourceAccountCard(), // this will display if source account is fetch
                       SizedBox(height: 10),
                       CustomCardContainer(
                         color: const Color(0xFFFFFFFF),
@@ -77,7 +76,7 @@ class DynamicViewerView extends StatelessWidget {
                             case 'accounttext':
                               return AccountText(widget: widget, accountNumber: accountNumber);
                             case 'walletaccounttext':
-                              return WalletAccountText(widget: widget);
+                              return WalletAccountText(widget: widget); // This is for Destination Account, no fetching needed
                             case 'dropdown':
                               return DropdownDisplay(accountNumber: accountNumber, focusNode: focusNode, dynamicWidget: widget);
                             case 'textfield':
@@ -124,7 +123,7 @@ class DynamicViewerView extends StatelessWidget {
   }
 
     // show success dialog 
-  _showSuccessDialog(BuildContext context, String message) {
+  void _showSuccessDialog(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(customSnackBar(
@@ -136,7 +135,7 @@ class DynamicViewerView extends StatelessWidget {
   }
 
   // show failure snackbar
-  _showFailureSnackbar(BuildContext context, String message) {
+  void _showFailureSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(customSnackBar(

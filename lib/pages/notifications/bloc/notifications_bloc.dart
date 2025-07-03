@@ -110,6 +110,9 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   List<Notification> _sortNotifications(List<Notification> notification) {
     final unread = notification.where((e) => !e.isRead!).toList();
     final read = notification.where((e) => e.isRead!).toList();
+    
+    unread.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+    read.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
     return [...unread, ...read];
   }
 

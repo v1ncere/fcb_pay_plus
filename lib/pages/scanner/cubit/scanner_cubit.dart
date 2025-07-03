@@ -14,12 +14,10 @@ class ScannerCubit extends Cubit<ScannerState> {
 
   void saveQRCode(String data) async {
     emit(state.copyWith(status: Status.loading));
-    
     try {
       if (data.isEmpty) {
         throw QRCodeFailure.fromCode('qr-empty');
       }
-
       if (_validateQRCodeCRC(data)) {
         final qrObjectList = qrDataParser(data); // parse qr data into List<QRModel>
         
@@ -33,8 +31,7 @@ class ScannerCubit extends Cubit<ScannerState> {
       }
     } on QRCodeFailure catch (e) {
       emit(state.copyWith(status: Status.failure, message: e.message));
-    } 
-    catch (e) {
+    } catch (e) {
       emit(state.copyWith(status: Status.failure, message: e.toString().replaceAll('Exception: ', '')));
     }
   }

@@ -16,9 +16,7 @@ class NotificationsViewerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: InactivityDetector(
-        onInactive: () {
-          context.goNamed(RouteName.authPin);
-        },
+        onInactive: () => context.goNamed(RouteName.authPin),
         child: Scaffold(
           appBar: AppBar(
             title: const Text(

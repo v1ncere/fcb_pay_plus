@@ -7,15 +7,9 @@ sealed class ScannerTransactionEvent extends Equatable {
   List<Object> get props => [];
 }
 
+final class ScannerSourceAccountFetched extends ScannerTransactionEvent {}
+
 final class ScannerTransactionDisplayLoaded extends ScannerTransactionEvent {}
-
-final class ScannerAccountValueChanged extends ScannerTransactionEvent {
-  const ScannerAccountValueChanged(this.account);
-  final String account;
-
-  @override
-  List<Object> get props => [account];
-}
 
 final class ScannerTipValueChanged extends ScannerTransactionEvent {
   const ScannerTipValueChanged(this.tip);
@@ -23,14 +17,6 @@ final class ScannerTipValueChanged extends ScannerTransactionEvent {
 
   @override
   List<Object> get props => [tip];
-}
-
-final class ScannerAccountModelChanged extends ScannerTransactionEvent {
-  const ScannerAccountModelChanged(this.account);
-  final Account account;
-
-  @override
-  List<Object> get props => [account];
 }
 
 final class ScannerAmountValueChanged extends ScannerTransactionEvent {

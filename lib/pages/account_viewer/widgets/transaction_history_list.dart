@@ -29,38 +29,41 @@ class TransactionHistoryList extends StatelessWidget {
               }
               return true;
             },
-            child: ListView.separated(
-              itemCount: state.transactionList.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                final transaction = state.transactionList[index]; // specific [transaction] indexed
-                return ListTile(
-                  key: ValueKey(transaction),
-                  leading: Text(transaction.accountType!),
-                  title: Text(transaction.accountNumber!),
-                  subtitle: Text(transaction.details!, overflow: TextOverflow.ellipsis,),
-                  trailing: CustomText(
-                    text: getDynamicDateString(state.transactionList[index].createdAt!.getDateTimeInUtc().toLocal()),
-                    color: Colors.black45,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  horizontalTitleGap: 0, // gap between title and leading
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      useRootNavigator: false,
-                      builder: (ctx) => showHistoryDialog(ctx, transaction)
-                    );
-                  }
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return const Divider(
-                  thickness: 1.0,
-                  color: Color.fromARGB(50, 37, 193, 102),
-                );
-              }
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height *.5,
+              child: ListView.separated(
+                itemCount: state.transactionList.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  final transaction = state.transactionList[index]; // specific [transaction] indexed
+                  return ListTile(
+                    key: ValueKey(transaction),
+                    leading: Text(transaction.accountType!),
+                    title: Text(transaction.accountNumber!),
+                    subtitle: Text(transaction.details!, overflow: TextOverflow.ellipsis,),
+                    trailing: CustomText(
+                      text: getDynamicDateString(state.transactionList[index].createdAt!.getDateTimeInUtc().toLocal()),
+                      color: Colors.black45,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    horizontalTitleGap: 0, // gap between title and leading
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        useRootNavigator: false,
+                        builder: (ctx) => showHistoryDialog(ctx, transaction)
+                      );
+                    }
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Divider(
+                    thickness: 1.0,
+                    color: Color.fromARGB(50, 37, 193, 102),
+                  );
+                }
+              ),
             )
           );
         }
