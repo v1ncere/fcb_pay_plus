@@ -61,9 +61,12 @@ class TextString {
   // IMAGE
   static const String imageNote = 'Note: Please upload a clear image of your valid ID, ensuring the card is readable by the app.';
   static const String imageRetake = 'Please retake the photo.';
+  static const String imageEmpty = "We couldn't detect any text from your ID. Please try again in good lighting and ensure the entire ID is visible.";
+  static const String imageNameMisMatch = "The name on your ID does not match your registered account name. Please ensure you're using the correct ID.";
   static const String imageError = 'Image is not a valid ID';
   static const String invalidImage = 'Invalid image';
   static const String selectImage = 'Please select valid ID';
+  static const String imageNotSelected = "No photo selected. Please choose or take a photo of your ID to continue.";
   static const String imageNotMatch = 'No face matches found.';
   // PAYMENT
    static const String paymentNote = 'Please verify your data for accuracy and completeness before proceeding with the payment.';

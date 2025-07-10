@@ -11,6 +11,7 @@ class ConfirmPasswordTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
+      buildWhen: (previous, current) => previous.confirmPassword != current.confirmPassword || previous.obscureConfirmPassword != current.obscureConfirmPassword,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +36,7 @@ class ConfirmPasswordTextField extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       IconButton(
-                        icon: state.obscureConfirmPassword 
+                        icon: state.obscureConfirmPassword
                         ? const Icon(FontAwesomeIcons.eye)
                         : const Icon(FontAwesomeIcons.eyeSlash),
                         iconSize: 18,

@@ -20,7 +20,7 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
     on<FaceLivenessResultFetched>(_onFaceLivenessResultFetched);
   }
 
-  // Fetch FaceLiveness Session
+  // FETCH FACELIVENESS SESSION
   Future<void> _onFaceLivenessSessionIdFetched(FaceLivenessSessionIdFetched event, Emitter<FaceLivenessState> emit) async {
     emit(state.copyWith(sessionStatus: Status.loading));
     try {
@@ -57,7 +57,7 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
     emit(state.copyWith(sessionStatus: Status.initial));
   }
 
-  // Invoke FaceLiveness Method Channel
+  // INVOKE FACELIVENESS METHOD CHANNEL
   Future<void> _onFaceLivenessMethodChannelInvoked(FaceLivenessMethodChannelInvoked event, Emitter<FaceLivenessState> emit) async {
     emit(state.copyWith(invokeStatus: Status.loading));
     try {
@@ -89,7 +89,7 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
     emit(state.copyWith(invokeStatus: Status.initial));
   }
 
-  // Fetch FaceLiveness Result
+  // FETCH FACELIVENESS RESULT
   Future<void> _onFaceLivenessResultFetched(FaceLivenessResultFetched event, Emitter<FaceLivenessState> emit) async {
     emit(state.copyWith(resultStatus: Status.loading));
     try {
@@ -135,8 +135,10 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
     } catch (e) {
       emit(state.copyWith(resultStatus: Status.failure, message: TextString.error));
     }
+    emit(state.copyWith(resultStatus: Status.initial));
   }
 
+  // AWS SIGNER
   Future<AWSSigV4Signer> _awsSigV4Signer() async {
     final cognito = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
     final result = await cognito.fetchAuthSession();
@@ -153,6 +155,7 @@ class FaceLivenessBloc extends Bloc<FaceLivenessEvent, FaceLivenessState> {
     );
   }
 
+  // SORT BYTES FROM MAP
   List<int> mapBytesSorter(Map<String, dynamic> rawBytes) {
     // convert map keys into list
     var sortedKeys = rawBytes.keys.toList()

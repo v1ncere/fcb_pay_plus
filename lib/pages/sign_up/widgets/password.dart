@@ -13,6 +13,7 @@ class PasswordTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
+      buildWhen: (previous, current) => previous.password != current.password || previous.obscurePassword != current.obscurePassword,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

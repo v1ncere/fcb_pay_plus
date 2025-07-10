@@ -172,7 +172,7 @@ final class StatusRefreshed extends SignUpEvent {}
 
 final class FaceComparisonFetched extends SignUpEvent {}
 
-final class FormSubmitted extends SignUpEvent {}
+final class UploadImageToS3 extends SignUpEvent {}
 
 final class ImageUploadProgressed extends SignUpEvent {
   const ImageUploadProgressed(this.progress);
@@ -182,20 +182,22 @@ final class ImageUploadProgressed extends SignUpEvent {
   List<Object> get props => [progress];
 }
 
-final class HandleSignUp extends SignUpEvent {
-  const HandleSignUp(this.url);
-  final String url;
+final class HandleSignUp extends SignUpEvent {}
 
-  @override
-  List<Object> get props => [url];
-}
-
-final class HandleSignupResult extends SignUpEvent {
-  const HandleSignupResult(this.result);
+final class HandleSignUpResult extends SignUpEvent {
+  const HandleSignUpResult(this.result);
   final SignUpResult result;
 
   @override
   List<Object> get props => [result];
+}
+
+final class PinCodeSubmitted extends SignUpEvent {
+  const PinCodeSubmitted(this.code);
+  final String code;
+
+  @override
+  List<Object> get props => [code];
 }
 
 final class AuthSignupStepConfirmed extends SignUpEvent {

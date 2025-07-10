@@ -45,5 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string> App wants to access your camera</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string> App wants to access your microphone</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need permission to access your photo library to view and select your photos and videos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need permission to save photos and videos to your library for your convenience.</string>
 </dict>
 </plist>

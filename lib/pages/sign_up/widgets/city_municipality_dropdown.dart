@@ -10,6 +10,9 @@ class MunicipalityDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
+      buildWhen: (previous, current) => previous.cityMunicipalityList != current.cityMunicipalityList
+      || previous.cityMunicipality != current.cityMunicipality
+      || previous.cityMunicipalStatus != current.cityMunicipalStatus,
       builder: (context, state) {
         if (state.cityMunicipalStatus.isLoading) {
           return const Padding(
@@ -41,10 +44,10 @@ class MunicipalityDropdown extends StatelessWidget {
                         onTap: () => context.read<SignUpBloc>().add(BarangayFetched(e.code)),
                       );
                     }).toList()
-                  ),
-                ),
-              ),
-            ],
+                  )
+                )
+              )
+            ]
           );
         }
         if (state.cityMunicipalStatus.isFailure) {
@@ -52,9 +55,8 @@ class MunicipalityDropdown extends StatelessWidget {
             child: Text(state.message)
           );
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        // default display
+        return const SizedBox.shrink();
       }
     );
   }

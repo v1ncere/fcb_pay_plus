@@ -58,10 +58,11 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     on<ValidIDTitleChanged>(_onValidIDChanged);
     on<StatusRefreshed>(_onStatusRefreshed);
     on<FaceComparisonFetched>(_onFaceComparisonFetched);
-    on<FormSubmitted>(_onFormSubmitted);
+    on<UploadImageToS3>(_onUploadImageToS3);
     on<HandleSignUp>(_onHandleSignUp);
-    on<HandleSignupResult>(_onHandleSignupResult);
+    on<HandleSignUpResult>(_onHandleSignupResult);
     on<ImageUploadProgressed>(_onImageUploadProgressed);
+    on<PinCodeSubmitted>(_onPinCodeSubmitted);
     on<AuthSignupStepConfirmed>(_onAuthSignupStepConfirmed);
     on<AuthSignupStepDone>(_onAuthSignupStepDone);
     on<HydrateStateChanged>(_onHydrateStateChanged);
@@ -116,20 +117,24 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     await _isScannedTextExists(event.image, emit);
   }
 
+  // *** LOST DATA RETRIEVER ***
   Future<void> _onLostDataRetrieved(LostDataRetrieved events, Emitter<SignUpState> emit) async {
     try {
-      final lostDataResponse = await _picker.retrieveLostData();
-      if (lostDataResponse.isEmpty) {
+      final response = await _picker.retrieveLostData();
+      
+      if (response.isEmpty) {
         return;
       }
+
       emit(state.copyWith(imageStatus: Status.loading));
-      final xFile = lostDataResponse.file;
+      final xFile = response.file;
+
       if (xFile != null) {
         await _isScannedTextExists(xFile, emit);
       } else {
-        emit(state.copyWith(imageStatus: Status.failure, message: lostDataResponse.exception?.message ?? TextString.error));
+        emit(state.copyWith(imageStatus: Status.failure, message: response.exception?.message ?? TextString.error));
       }
-    } catch (e) {
+    } catch (_) {
       emit(state.copyWith(imageStatus: Status.failure, message: TextString.error));
     }
   }
@@ -181,33 +186,41 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(obscureConfirmPassword: !state.obscureConfirmPassword));
   }
 
-  // ====================================================================================
+  void _onZipCodeFetched(ZipCodeFetched event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(zipCodeStatus: Status.success));
+  }
+
+  // *** FETCH PROVINCE FROM URL ***
   Future<void> _onProvinceFetched(ProvinceFetched event, Emitter<SignUpState> emit) async {
     emit(state.copyWith(provinceStatus: Status.loading));
+    
     try {
       final url = Uri.https(dotenv.get('ADDRESS_HOST'), '/api/provinces.json');
       final response = await http.get(url);
-      // 
+      
       if (response.statusCode == 200) {
-        final List<dynamic> parsed = json.decode(response.body);
-        final provincies = parsed.map((e) => Province.fromJson(e)).toList();
+        final List<dynamic> parsedData = json.decode(response.body);
+        final provincies = parsedData.map((e) => Province.fromJson(e)).toList();
         provincies.sort((a, b) => a.name.compareTo(b.name));
         final noneProvince = Province('', 'N/A', '', '');
         emit(state.copyWith(provinceStatus: Status.success, provinceList: [noneProvince, ...provincies]));
       } else {
         emit(state.copyWith(provinceStatus: Status.failure, message: response.body));
       }
-    } catch (e) {
+    } catch (_) {
       emit(state.copyWith(provinceStatus: Status.failure, message: TextString.error));
     }
   }
 
+  // *** FETCH CITY/MUNICIPALITY FROM URL ***
   Future<void> _onMunicipalFetched(MunicipalFetched event, Emitter<SignUpState> emit) async {
     emit(state.copyWith(cityMunicipalStatus: Status.loading));
+    
     try {
       if (event.provinceCode.isEmpty) {
         final url = Uri.https(dotenv.get('ADDRESS_HOST'), '/api/cities-municipalities.json');
         final response = await http.get(url);
+        
         if (response.statusCode == 200) {
           final List<dynamic> parsed = json.decode(response.body);
           final municipalities = parsed.map((e) => CityMunicipality.fromJson(e)).toList();
@@ -220,6 +233,7 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
       } else {
         final url = Uri.https(dotenv.get('ADDRESS_HOST'), '/api/provinces/${event.provinceCode}/cities-municipalities.json');
         final response = await http.get(url);
+        
         if (response.statusCode == 200) {
           final List<dynamic> parsed = json.decode(response.body);
           final municipalities = parsed.map((e) => CityMunicipality.fromJson(e)).toList();
@@ -229,17 +243,20 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
           emit(state.copyWith(cityMunicipalStatus: Status.failure, message: response.body));
         }
       }
-    } catch (e) {
+    } catch (_) {
       emit(state.copyWith(cityMunicipalStatus: Status.failure, message: TextString.error));
     }
   }
 
+  // *** FETCH BARANGAY FROM URL ***
   Future<void> _onBarangayFetched(BarangayFetched event, Emitter<SignUpState> emit) async {
     emit(state.copyWith(barangayStatus: Status.loading));
+    
     try {
       if (event.municipalityCode.isEmpty) return;
       final url = Uri.https(dotenv.get("ADDRESS_HOST"), '/api/cities-municipalities/${event.municipalityCode}/barangays.json');
       final response = await http.get(url);
+      
       if (response.statusCode == 200) {
         final List<dynamic> jsonResponse = json.decode(response.body);
         final barangays = jsonResponse.map((e) => Barangay.fromJson(e)).toList();
@@ -248,13 +265,9 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
       } else {
         emit(state.copyWith(barangayStatus: Status.failure, message: response.body));
       }
-    } catch (e) {
+    } catch (_) {
       emit(state.copyWith(barangayStatus: Status.failure, message: TextString.error));
     }
-  }
-
-  void _onZipCodeFetched(ZipCodeFetched event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(zipCodeStatus: Status.success));
   }
 
   void _onStatusRefreshed(StatusRefreshed event, Emitter<SignUpState> emit) {
@@ -266,8 +279,11 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     ));
   }
 
+
+  // *** FACE COMPARISON ***
   Future<void> _onFaceComparisonFetched(FaceComparisonFetched event, Emitter<SignUpState> emit) async {
     emit(state.copyWith(faceComparisonStatus: Status.loading));
+    
     try {
       final scope = AWSCredentialScope(region: dotenv.get('COGNITO_REGION'), service: AWSService(dotenv.get('SERVICE')));
       final endpoint = Uri.https(dotenv.get('FACE_COMPARISON_HOST'), dotenv.get('FACE_COMPARISON_PATH'));
@@ -298,13 +314,14 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> map = jsonDecode(response.body);
-        // 
+        
         if (map.containsKey('FaceMatches') && (map['FaceMatches'] as List).isNotEmpty) {
           final List<dynamic> faceMatches = map['FaceMatches'];
           final double similarity = faceMatches.first['Similarity'] as double;
 
           if(similarity >= 90) {
-            add(FormSubmitted());
+            // add(UploadImageToS3()); // proceed to upload
+            add(HandleSignUp());
             emit(state.copyWith(faceComparisonStatus: Status.success, similarity: similarity));
           } else {
             emit(state.copyWith(faceComparisonStatus: Status.failure, message: TextString.imageNotMatch));
@@ -322,29 +339,31 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     }
   }
 
-  Future<void> _onFormSubmitted(FormSubmitted event, Emitter<SignUpState> emit) async {
+  // *** UPLOAD IMAGE TO S3 ***
+  Future<void> _onUploadImageToS3(UploadImageToS3 event, Emitter<SignUpState> emit) async {
     final image = state.userImage;
+    
     if (image == null) {
+      emit(state.copyWith(uploadStatus: Status.failure, message: TextString.imageNotSelected));
       return;
     }
-    //
-    emit(state.copyWith(status: Status.loading));
+    emit(state.copyWith(uploadStatus: Status.loading));
+
     try {
-      final result = await Amplify.Storage.uploadFile(
+      await Amplify.Storage.uploadFile(
         localFile: AWSFile.fromPath(image.path),
         path: StoragePath.fromString('picture-submission/${_fileName(image)}'), // path must be edited in resource
         onProgress: (progress) {
-          emit(state.copyWith(status: Status.progress));
-          final total = progress.transferredBytes / progress.totalBytes;
-          add(ImageUploadProgressed(total));
+          emit(state.copyWith(uploadStatus: Status.progress));
+          add(ImageUploadProgressed(progress.transferredBytes / progress.totalBytes));
         },
       ).result;
-      //
-      add(HandleSignUp(result.uploadedItem.path));
+
+      emit(state.copyWith(uploadStatus: Status.success, message: TextString.signUpComplete));
     } on StorageException catch (e) {
-      _emitErrorAndReset(emit, e.message);
+      emit(state.copyWith(uploadStatus: Status.failure, message: e.message));
     } catch (e) {
-      _emitErrorAndReset(emit, TextString.error);
+      emit(state.copyWith(uploadStatus: Status.failure, message: TextString.error));
     }
   }
 
@@ -352,8 +371,16 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(progress: event.progress));
   }
 
+  // *** SIGN UP METHOD ***
   Future<void> _onHandleSignUp(HandleSignUp event, Emitter<SignUpState> emit) async {
+    final image = state.userImage;
+    
+    if (image == null) {
+      _emitErrorAndReset(emit, TextString.imageNotSelected);
+      return;
+    }
     emit(state.copyWith(status: Status.loading));
+    
     try {
       final result = await Amplify.Auth.signUp(
         username: state.email.value.trim(),
@@ -364,22 +391,40 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
             AuthUserAttributeKey.phoneNumber: '+63${state.mobile.value.trim()}',
             AuthUserAttributeKey.familyName: state.lastName.value.trim(),
             AuthUserAttributeKey.givenName: state.firstName.value.trim(),
-            AuthUserAttributeKey.profile: event.url,
+            AuthUserAttributeKey.profile: 'picture-submission/${_fileName(image)}',
             AuthUserAttributeKey.address: '${state.barangay.value.trim()}, ${state.cityMunicipality.value.trim()}, ${state.province.value.trim()} ${state.zipCode.value.trim()}'
           }
         ),
       );
-      //
-      add(HandleSignupResult(result));
+      add(HandleSignUpResult(result));
       add(const HydrateStateChanged(isHydrated: false));
     } on AuthException catch (e) {
       _emitErrorAndReset(emit, e.message);
-    } catch (e) {
+    } catch (_) {
       _emitErrorAndReset(emit, TextString.error);
     }
   }
 
-  Future<void> _onHandleSignupResult(HandleSignupResult event, Emitter<SignUpState> emit) async {
+  // * PINCODE SUBMITTED * //
+  Future<void> _onPinCodeSubmitted(PinCodeSubmitted event, Emitter<SignUpState> emit) async {
+    emit(state.copyWith(confirmStatus: Status.loading));
+    try {
+      fetchCognitoAuthSession();
+      final result = await Amplify.Auth.confirmSignUp(
+        username: state.email.value.trim(),
+        confirmationCode: event.code.trim(),
+      );
+      add(HandleSignUpResult(result));
+    } on AuthException catch (e) {
+      emit(state.copyWith(confirmStatus: Status.failure, message: 'Error confirming user: ${e.message}'));
+    } catch (e) {
+      emit(state.copyWith(confirmStatus: Status.failure, message: 'Error confirming user: ${e.toString()}'));
+    }
+    emit(state.copyWith(confirmStatus: Status.initial));
+  }
+
+  // *** SIGN UP RESULT ***
+  Future<void> _onHandleSignupResult(HandleSignUpResult event, Emitter<SignUpState> emit) async {
     final step = event.result.nextStep.signUpStep;
     switch (step) {
       case AuthSignUpStep.confirmSignUp:
@@ -391,6 +436,7 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     }
   }
 
+  // *** CONFIRM SIGN UP ***
   void _onAuthSignupStepConfirmed(AuthSignupStepConfirmed event, Emitter<SignUpState> emit) {
     final details = event.result.nextStep.codeDeliveryDetails!;
     emit(state.copyWith(
@@ -399,27 +445,48 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     ));
   }
 
+  // *** SIGN UP DONE ***
   void _onAuthSignupStepDone(AuthSignupStepDone event, Emitter<SignUpState> emit) {
     emit(state.copyWith(status: Status.success, message: TextString.signUpComplete));
+    add(UploadImageToS3());
   }
 
+  // *** HYDRATE STATE CHANGE ***
   void _onHydrateStateChanged(HydrateStateChanged event, Emitter<SignUpState> emit) {
     emit(state.copyWith(isHydrated: event.isHydrated));
   }
 
-  // UTILITY METHODS ===========================================================
-  // ===========================================================================
+  // * ============================== UTILITY METHODS ============================== * //
 
- Future<void> _isScannedTextExists(XFile? image, Emitter<SignUpState> emit) async {
+  Future<void> fetchCognitoAuthSession() async {
+    try {
+      final cognitoPlugin = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
+      final result = await cognitoPlugin.fetchAuthSession();
+      final identityId = result.identityIdResult.value;
+      safePrint("Current user's identity ID: $identityId");
+    } on AuthException catch (e) {
+      safePrint('Error retrieving auth session: ${e.message}');
+    }
+  } 
+
+  // *** TEXT SCANNING ***
+  Future<void> _isScannedTextExists(XFile? image, Emitter<SignUpState> emit) async {
     if (state.validIDTitle.isEmpty) {
       emit(state.copyWith(imageStatus: Status.failure, message: TextString.selectImage));
       return;
     }
+
+    if (image == null) {
+      emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageNotSelected));
+      return;
+    }
+
     emit(state.copyWith(imageStatus: Status.loading));
+    
     try {
       final scope = AWSCredentialScope(region: dotenv.get('COGNITO_REGION'), service: AWSService(dotenv.get('SERVICE')));
       final endpoint = Uri.https(dotenv.get('TEXT_IN_IMAGE_HOST'), dotenv.get('TEXT_IN_IMAGE_PATH'));
-      final imageBytes = await image!.readAsBytes();
+      final imageBytes = await image.readAsBytes();
 
       final request = AWSHttpRequest(
         method: AWSHttpMethod.post,
@@ -444,28 +511,28 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> map = jsonDecode(response.body);
-        //
+        
         if (map['TextDetections'].isNotEmpty) {
           List<dynamic> textDetectionList = map['TextDetections'];
           final title = _isTextExists(textDetectionList, state.validIDTitle.trim().toLowerCase());
           final first = _isTextExists(textDetectionList, state.firstName.value.trim().toLowerCase());
           final last = _isTextExists(textDetectionList, state.lastName.value.trim().toLowerCase());
-          //
+          
           if (title && first && last) {
             emit(state.copyWith(imageStatus: Status.success, userImage: image));
           } else {
-            emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageError));
+            emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageNameMisMatch, userImage: null));
           }
         } else {
-          emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageError));
+          emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageEmpty, userImage: null));
         }
       } else {
         final Map<String, dynamic> map = jsonDecode(response.body);
         final message = map['message'] ?? TextString.error;
-        emit(state.copyWith(imageStatus: Status.failure, message: message));
+        emit(state.copyWith(imageStatus: Status.failure, message: message, userImage: null));
       }
-    } catch (e) {
-      emit(state.copyWith(imageStatus: Status.failure, message: TextString.error));
+    } catch (_) {
+      emit(state.copyWith(imageStatus: Status.failure, message: TextString.error, userImage: null));
     }
   }
 

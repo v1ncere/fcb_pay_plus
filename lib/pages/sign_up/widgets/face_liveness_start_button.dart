@@ -14,15 +14,13 @@ class FaceLivenessStartButton extends StatelessWidget {
       builder: (context, state) {
         if (state.resultStatus.isLoading) {
           return Center(
-            child: SpinKitChasingDots(
+            child: SpinKitFadingCircle(
               color: ColorString.eucalyptus,
-              size: 24,
+              size: 30,
             )
           );
         }
-        if (state.resultStatus.isSuccess) {
-          return const SizedBox.shrink();
-        }
+        // default display
         return ElevatedButton(
           style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(ColorString.eucalyptus),

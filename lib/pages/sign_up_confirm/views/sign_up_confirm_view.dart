@@ -78,8 +78,8 @@ class SignUpConfirmView extends StatelessWidget{
     );
   }
 
-  // UTILITY METHODS
-  // =========================================================
+  // *** UTILITY METHODS
+  
   // show failure snackbar
   void _showFailureSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context)

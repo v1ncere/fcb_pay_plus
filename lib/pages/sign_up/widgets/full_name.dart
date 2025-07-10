@@ -12,6 +12,7 @@ class FullName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
+      buildWhen: (previous, current) => previous.firstName != current.firstName || previous.lastName != current.lastName,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

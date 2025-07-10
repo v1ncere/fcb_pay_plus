@@ -15,10 +15,13 @@ class FourthScreen extends StatelessWidget {
     return BlocBuilder<FaceLivenessBloc, FaceLivenessState>(
       builder: (context, state) {
         return state.sessionStatus.isLoading
-        ? Center(
-            child: SpinKitChasingDots(
-              color: ColorString.eucalyptus,
-              size: 24,
+        ? SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Center(
+              child: SpinKitFadingCircle(
+                color: ColorString.eucalyptus,
+                size: 30,
+              )
             )
           )
         : Column(

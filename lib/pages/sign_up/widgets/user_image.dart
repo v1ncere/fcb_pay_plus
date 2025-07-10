@@ -51,27 +51,28 @@ class UserImage extends StatelessWidget {
         )
       );
     }
-    if (state.imageStatus.isFailure) {
-      backgroundColor = ColorString.zombie;
-      child = Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(FontAwesomeIcons.circleInfo, size: 18, color: ColorString.white),
-          Text(
-            TextString.imageRetake,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: ColorString.white, fontWeight: FontWeight.bold),
-          )
-        ],
-      );
-    }
+    // if (state.imageStatus.isFailure) {
+    //   backgroundColor = ColorString.zombie;
+    //   child = Column(
+    //     mainAxisSize: MainAxisSize.min,
+    //     children: [
+    //       Icon(FontAwesomeIcons.circleInfo, size: 18, color: ColorString.white),
+    //       Text(
+    //         TextString.imageRetake,
+    //         textAlign: TextAlign.center,
+    //         style: TextStyle(color: ColorString.white, fontWeight: FontWeight.bold),
+    //       )
+    //     ]
+    //   );
+    // }
+    // default display
     return Container(
       width: MediaQuery.of(context).size.width,
       decoration: decoration.copyWith(color: backgroundColor),
       child: AspectRatio(
         aspectRatio: 16 / 9,
         child: Center(child: child)
-      ),
+      )
     );
   }
 
@@ -114,6 +115,7 @@ class UserImage extends StatelessWidget {
       if(image != null) {
         if(context.mounted) context.read<SignUpBloc>().add(UserImageChanged(image));
       }
+
       if(context.mounted) Navigator.of(context).pop();
     });
   }

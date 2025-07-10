@@ -12,8 +12,9 @@ class ZipCodeTextfield extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
+      buildWhen: (previous, current) => previous.zipCode != current.zipCode || previous.zipCodeStatus != current.zipCodeStatus,
       builder: (context, state) {
-        if(state.zipCodeStatus.isLoading) {
+        if (state.zipCodeStatus.isLoading) {
           return const Padding(
             padding: EdgeInsets.only(top: 5.0),
             child: ShimmerRectLoading()
@@ -39,10 +40,9 @@ class ZipCodeTextfield extends StatelessWidget {
             ),
             style: const TextStyle(height: 1.5),
           );
-        } 
-        else {
-          return const SizedBox.shrink();  
         }
+        // default display
+        return const SizedBox.shrink();
       },
     );
   }

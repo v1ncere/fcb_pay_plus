@@ -10,6 +10,9 @@ class BaranggayDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
+      buildWhen: (previous, current) => previous.barangayList != current.barangayList
+      || previous.barangay != current.barangay
+      || previous.barangayStatus != current.barangayStatus,
       builder: (context, state) {
         if (state.barangayStatus.isLoading) {
           return const Padding(
@@ -52,9 +55,8 @@ class BaranggayDropdown extends StatelessWidget {
             child: Text(state.message)
           );
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        // default display
+        return const SizedBox.shrink();
       }
     );
   }

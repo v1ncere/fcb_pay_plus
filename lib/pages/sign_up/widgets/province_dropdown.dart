@@ -10,6 +10,9 @@ class ProvinceDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
+      buildWhen: (previous, current) => previous.provinceList != current.provinceList
+      || previous.province != current.province
+      || previous.provinceStatus != current.provinceStatus,
       builder: (context, state) {
         if (state.provinceStatus.isLoading) {
           return const Padding(
@@ -44,10 +47,10 @@ class ProvinceDropdown extends StatelessWidget {
                         },
                       );
                     }).toList()
-                  ),
-                ),
-              ),
-            ],
+                  )
+                )
+              )
+            ]
           );
         }
         if (state.provinceStatus.isFailure) {
@@ -61,9 +64,8 @@ class ProvinceDropdown extends StatelessWidget {
             )
           );
         }
-        else {
-          return const SizedBox.shrink();
-        }
+        // default display
+        return const SizedBox.shrink();
       }
     );
   }

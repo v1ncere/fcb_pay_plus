@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../utils/utils.dart';
@@ -17,38 +16,17 @@ class FifthScreen extends StatelessWidget {
     return BlocBuilder<SignUpBloc, SignUpState> (
       builder: (context, state) {
         if (state.faceComparisonStatus.isLoading) {
-          return Center(
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
             child: Center(
-              child: SpinKitChasingDots(
+              child: SpinKitFadingCircle(
                 color: ColorString.eucalyptus,
-                size: 24,
+                size: 30,
               )
             )
           );
         }
-        if (state.faceComparisonStatus.isSuccess) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                FontAwesomeIcons.circleCheck, 
-                color: ColorString.eucalyptus,
-                size: 50,
-              ),
-              SizedBox(height: 20),
-              Text(
-                TextString.submitText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 25,
-                  color: ColorString.eucalyptus
-                ),
-              )
-            ]
-          );
-        }
-        //
+        // default display
         return Align(
           alignment: Alignment.center,
           child: Column(
@@ -56,9 +34,9 @@ class FifthScreen extends StatelessWidget {
             children: [
               const ValidIdDropdown(),
               const SizedBox(height: 20),
-              if(state.validIDTitle.isNotEmpty) UserImage(picker: picker),
-              if(state.validIDTitle.isNotEmpty) const SizedBox(height: 5),
-              if(state.validIDTitle.isNotEmpty) const Text(
+              if (state.validIDTitle.isNotEmpty) UserImage(picker: picker),
+              if (state.validIDTitle.isNotEmpty) const SizedBox(height: 5),
+              if (state.validIDTitle.isNotEmpty) const Text(
                 TextString.imageNote,
                 textAlign: TextAlign.justify,
                 style: TextStyle(
