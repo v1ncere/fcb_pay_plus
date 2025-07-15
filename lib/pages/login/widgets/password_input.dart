@@ -12,6 +12,7 @@ class PasswordInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
+      buildWhen: (previous, current) => previous.password != current.password || previous.isObscure != current.isObscure,
       builder: (context, state) {
         return TextField(
           onChanged: (value) => context.read<LoginBloc>().add(LoginPasswordChanged(value)),

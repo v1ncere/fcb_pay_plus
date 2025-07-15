@@ -12,6 +12,8 @@ class PasswordInputConfirm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
+      buildWhen: (previous, current) => previous.isConfirmObscure != current.isConfirmObscure
+      || previous.confirmedPassword  != current.confirmedPassword,
       builder: (context, state) {
         return TextField(
           onChanged: (value) => context.read<LoginBloc>().add(LoginConfirmPasswordChanged(confirmPassword: value, password: state.password.value)),
@@ -31,7 +33,7 @@ class PasswordInputConfirm extends StatelessWidget {
               onPressed: () => context.read<LoginBloc>().add(LoginConfirmPasswordObscured()), 
               icon: Icon(
                 state.isConfirmObscure 
-                ? FontAwesomeIcons.eyeSlash 
+                ? FontAwesomeIcons.eyeSlash
                 : FontAwesomeIcons.eye,
                 color: Colors.black12,
               )
