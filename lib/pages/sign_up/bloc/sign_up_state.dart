@@ -219,10 +219,10 @@ class SignUpState extends Equatable with FormzMixin {
 
   @override
   List<FormzInput> get inputs => [
-    email,
     firstName,
     lastName,
     mobile,
+    email,
     password,
     confirmPassword
   ];

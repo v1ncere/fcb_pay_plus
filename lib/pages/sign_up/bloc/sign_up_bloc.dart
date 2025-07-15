@@ -67,7 +67,6 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     on<AuthSignupStepDone>(_onAuthSignupStepDone);
     on<HydrateStateChanged>(_onHydrateStateChanged);
   }
-  final ImagePicker _picker = ImagePicker();
 
   void _onEmailChanged(EmailChanged event, Emitter<SignUpState> emit) {
     emit(state.copyWith(email: Email.dirty(event.email)));
@@ -119,23 +118,20 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
 
   // *** LOST DATA RETRIEVER ***
   Future<void> _onLostDataRetrieved(LostDataRetrieved events, Emitter<SignUpState> emit) async {
-    try {
-      final response = await _picker.retrieveLostData();
+    final ImagePicker picker = ImagePicker();
+    final LostDataResponse response = await picker.retrieveLostData();
       
-      if (response.isEmpty) {
-        return;
-      }
+    if (response.isEmpty) {
+      return;
+    }
 
-      emit(state.copyWith(imageStatus: Status.loading));
-      final xFile = response.file;
+    emit(state.copyWith(imageStatus: Status.loading));
+    final xFile = response.file;
 
-      if (xFile != null) {
-        await _isScannedTextExists(xFile, emit);
-      } else {
-        emit(state.copyWith(imageStatus: Status.failure, message: response.exception?.message ?? TextString.error));
-      }
-    } catch (_) {
-      emit(state.copyWith(imageStatus: Status.failure, message: TextString.error));
+    if (xFile != null) {
+      await _isScannedTextExists(xFile, emit);
+    } else {
+      emit(state.copyWith(imageStatus: Status.failure, message: response.exception?.message ?? TextString.error));
     }
   }
 
