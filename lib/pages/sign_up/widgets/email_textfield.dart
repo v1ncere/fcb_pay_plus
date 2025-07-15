@@ -11,7 +11,8 @@ class EmailTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
-      buildWhen: (previous, current) => previous.email != current.email,
+      buildWhen: (previous, current) => previous.email != current.email
+      || previous.emailController != current.emailController,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

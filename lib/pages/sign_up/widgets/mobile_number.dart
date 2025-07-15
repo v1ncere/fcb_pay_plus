@@ -12,7 +12,8 @@ class MobileNumber extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
-      buildWhen: (previous, current) => previous.mobile != current.mobile,
+      buildWhen: (previous, current) => previous.mobile != current.mobile
+      || previous.mobileController != current.mobileController,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

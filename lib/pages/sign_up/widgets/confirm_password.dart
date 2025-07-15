@@ -11,7 +11,10 @@ class ConfirmPasswordTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
-      buildWhen: (previous, current) => previous.confirmPassword != current.confirmPassword || previous.obscureConfirmPassword != current.obscureConfirmPassword,
+      buildWhen: (previous, current) => previous.confirmPassword != current.confirmPassword
+      || previous.password != current.password
+      || previous.obscureConfirmPassword != current.obscureConfirmPassword
+      || previous.confirmPasswordController != current.confirmPasswordController,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

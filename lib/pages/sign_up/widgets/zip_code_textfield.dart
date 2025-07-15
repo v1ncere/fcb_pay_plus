@@ -12,7 +12,9 @@ class ZipCodeTextfield extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
-      buildWhen: (previous, current) => previous.zipCode != current.zipCode || previous.zipCodeStatus != current.zipCodeStatus,
+      buildWhen: (previous, current) => previous.zipCode != current.zipCode 
+      || previous.zipCodeStatus != current.zipCodeStatus
+      || previous.zipCodeController != current.zipCodeController,
       builder: (context, state) {
         if (state.zipCodeStatus.isLoading) {
           return const Padding(
@@ -23,7 +25,7 @@ class ZipCodeTextfield extends StatelessWidget {
         if (state.zipCodeStatus.isSuccess) {
           return TextFormField(
             controller: state.zipCodeController,
-            keyboardType: TextInputType.number,
+            keyboardType: TextInputType.name,
             onChanged: (value) => context.read<SignUpBloc>().add(ZipCodeChanged(value)),
             decoration: InputDecoration(
               filled: true,
@@ -43,7 +45,7 @@ class ZipCodeTextfield extends StatelessWidget {
         }
         // default display
         return const SizedBox.shrink();
-      },
+      }
     );
   }
 }
