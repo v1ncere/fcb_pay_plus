@@ -22,9 +22,9 @@ extension AmountValidationErrorX on AmountValidationError {
   String text() {
     switch (this) {
       case AmountValidationError.required:
-        return 'Amount is required';
+        return 'Please enter an amount.';
       case AmountValidationError.invalid:
-        return 'Amount is invalid. Please try again.';
+        return 'Please enter a valid amount.';
     }
   }
 }

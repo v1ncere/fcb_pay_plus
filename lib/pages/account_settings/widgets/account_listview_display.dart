@@ -17,7 +17,7 @@ class AccountListViewDisplay extends StatelessWidget {
           return const ListViewShimmer();
         }
         if (state.status.isSuccess) {
-          final accounts = state.accountList.where((e) => e.type != AccountType.wlt.name).toList(); // only linked accounts not wallet
+          final accounts = state.accountList.where((e) => e.accountType != AccountType.wallet.name).toList(); // only linked accounts not wallet
           return ListView.separated(
             separatorBuilder: (context, index) => const Divider(height: 10.0,),
             shrinkWrap: true,

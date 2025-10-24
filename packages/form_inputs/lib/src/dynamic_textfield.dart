@@ -27,9 +27,9 @@ extension DynamicTextFieldValidationErrorX on DynamicTextFieldValidationError {
   String text() {
     switch (this) {
       case DynamicTextFieldValidationError.required:
-        return 'Input is required';
+        return 'This field is required.';
       case DynamicTextFieldValidationError.invalid:
-        return 'Input is invalid. Please try again.';
+        return 'Please enter a valid value.';
     }
   }
 }

@@ -82,4 +82,7 @@ class TextString {
   // Sign up
   static const String signUpComplete = 'Sign up is complete';
   static const String submitText = "Processing your sign-up, please wait...";
+  // QR CODE
+  static const String merchantExists = 'Merchant has already been added.';
+  static const String noMerchant = 'Merchant not found.';
 }

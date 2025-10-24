@@ -28,7 +28,7 @@ class AccountSettingsBloc extends Bloc<AccountSettingsEvent, AccountSettingsStat
           final response = await Amplify.API.mutate(request: request).response;
           
           if (!response.hasErrors) {
-            await _hiveRepository.deleteAccountNumber('${event.account.type}');
+            await _hiveRepository.deleteAccountNumber('${event.account.accountType}');
             emit(state.copyWith(status: Status.success));
           } else {
             emit(state.copyWith(status: Status.failure, message: response.errors.first.message));

@@ -86,34 +86,27 @@ class BottomButton extends StatelessWidget {
         if (step <= 0) {
           context.goNamed('login');
         } else {
-          context.read<SignUpStepperCubit>().stepCancelled();
+          
         }
         break;
       case ButtonName.trailing:
         switch (step) {
           case 0:
-            if (state.email.isValid && state.firstName.isValid && state.lastName.isValid && state.mobile.isValid) {
-              context.read<SignUpStepperCubit>().stepContinued();
+            if (state.email.isPure && state.mobile.isPure)
+            {
+              
             } else {
               _showFailureSnackbar(context, TextString.incompleteForm);
             }
             break;
           case 1:
-            if (state.password.isValid && state.confirmPassword.isValid) {
-              context.read<SignUpStepperCubit>().stepContinued();
-            } else {
-              _showFailureSnackbar(context, TextString.incompleteForm);
-            }
+            
             break;
           case 2:
-            if (state.province.isValid && state.cityMunicipality.isValid && state.barangay.isValid && state.zipCode.isValid) {
-              context.read<SignUpStepperCubit>().stepContinued();
-            } else {
-              _showFailureSnackbar(context, TextString.incompleteForm);
-            }
+            
           case 3:
             if (state.livenessImageBytes.isNotEmpty) {
-              context.read<SignUpStepperCubit>().stepContinued();
+              
             } else {
               _showFailureSnackbar(context, TextString.incompleteForm);
             }
@@ -127,6 +120,12 @@ class BottomButton extends StatelessWidget {
         }
         break;
     }
+  }
+
+  //** UTILITY */
+  bool isBirthdateValid(String birthDate) {
+    final isMatch = RegExp(r'^(0[1-9]|1\d|2\d|3[01])/(0[1-9]|1[0-2])/(19[5-9]\d|20\d{2})$').hasMatch(birthDate);
+    return birthDate.isNotEmpty && isMatch;
   }
 
   // show failure snackbar

@@ -14,14 +14,11 @@ const client = generateClient<Schema>();
 export const handler: PostConfirmationTriggerHandler = async (event) => {
     await client.models.Account.create({
         accountNumber: event.request.userAttributes.sub,
-        balance: 0,
-        creditLimit: 0,
+        accountType: 'WALLET',
+        creditLimit: 100000,
         expiry: new Date().toISOString(),
-        type: 'wlt',
-        ownerName: `${event.request.userAttributes['given_name']} ${event.request.userAttributes['family_name']}`,
         owner: event.request.userAttributes.sub,
-        ledgerStatus: 'ND',
-        isActive: false,
+        status: 'NA',
     });
     return event;
 };

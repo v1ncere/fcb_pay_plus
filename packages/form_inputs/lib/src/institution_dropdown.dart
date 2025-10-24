@@ -18,9 +18,9 @@ extension InstitutionDropdownValidationErrorX on InstitutionDropdownValidationEr
   String text() {
     switch(this) {
       case InstitutionDropdownValidationError.empty:
-        return 'Please select an option.';
+        return 'Please make a selection.';
       case InstitutionDropdownValidationError.invalid:
-        return 'Something went wrong. Please try again later.';
+        return 'We couldn\'t load the options. Please try again later.';
     }
   }
 }

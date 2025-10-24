@@ -13,15 +13,15 @@ PopupMenuButton settingsPopUp ({
     tooltip: 'Select account to be displayed',
     onSelected: onSelected,
     itemBuilder: (context) {
-      final newList = accountList.where((e) => e.type == type).toList();
+      final newList = accountList.where((e) => e.accountType == type).toList();
       return newList.map((value) {
         return PopupMenuItem<Account>(
           value: value,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildAccountNumber(type: value.type ?? '', value: value.accountNumber),
-              _detailsBlock(label: 'CARD HOLDER', value: value.ownerName ?? ''),
+              _buildAccountNumber(type: value.accountType ?? '', value: value.accountNumber),
+              _detailsBlock(label: 'CARD HOLDER', value: 'REMOVE FROM ACCOUNT'),
               const Divider(color: Colors.black12)
             ]
           )

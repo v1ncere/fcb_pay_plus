@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_repository/hive_repository.dart';
 
+import '../cubit/scanner_cubit.dart';
 import '../scanner.dart';
 
 class ScannerPage extends StatelessWidget {

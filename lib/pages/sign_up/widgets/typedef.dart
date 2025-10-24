@@ -1,0 +1,1 @@
+typedef ValidityCallback = void Function(bool isValid);

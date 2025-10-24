@@ -24,7 +24,7 @@ class SourceDropdown extends StatelessWidget {
           );
         }
         if (state.status.isSuccess) {
-          final list = state.accountList.where((e) => e.type?.toLowerCase() != "plc" && e.accountNumber != accountNumber).toList(); 
+          final list = state.accountList.where((e) => e.accountType?.toLowerCase() != "plc" && e.accountNumber != accountNumber).toList(); 
           return Padding(
             padding: const EdgeInsets.only(top: 5.0 , bottom: 5.0),
             child: ButtonTheme(
@@ -65,28 +65,29 @@ class SourceDropdown extends StatelessWidget {
                 },
                 selectedItemBuilder: (context) {
                   return list.map((item) {
+                    final bal = 0.0; // TODO: get from Transaction table
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(accountTypeNameString(item.type!)),
-                        Text(accountNumber ?? ''),
-                        // Text("***${item.accountNumber.substring(item.accountNumber.length - 4)}"),
-                        Text('${Currency.php}${(item.balance)!.toStringAsFixed(2).replaceAllMapped(Currency.reg, Currency.mathFunc)}'),
+                        Text(accountTypeNameString(item.accountType!)),
+                        Text("***${item.accountNumber.substring(item.accountNumber.length - 4)}"),
+                        Text('${Currency.php}${(bal).toStringAsFixed(2).replaceAllMapped(Currency.reg, Currency.mathFunc)}'),
                       ]
                     );
                   }).toList();
                 },
                 items: list.map((item) {
+                  final bal = 0.0; // TODO: get from Transaction table
                   return DropdownMenuItem<String> (
                     value: item.accountNumber.toString(),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(accountTypeNameString(item.type!)),
+                        Text(accountTypeNameString(item.accountType!)),
                         Text("***${item.accountNumber.substring(item.accountNumber.length - 4)}"),
-                        Text('${Currency.php}${(item.balance)!.toStringAsFixed(2).replaceAllMapped(Currency.reg, Currency.mathFunc)}'),
+                        Text('${Currency.php}${(bal).toStringAsFixed(2).replaceAllMapped(Currency.reg, Currency.mathFunc)}'),
                         const Divider()
                       ]
                     )

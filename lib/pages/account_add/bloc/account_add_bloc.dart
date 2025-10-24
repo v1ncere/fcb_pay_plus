@@ -7,13 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
-import '../../../models/ModelProvider.dart';
+import '../../../models/ModelProvider.dart' hide AccountType;
 import '../../../utils/utils.dart';
 
 part 'account_add_event.dart';
 part 'account_add_state.dart';
 
-final emptyAccount = Account(accountNumber: '', owner: '', ledgerStatus: '');
+final emptyAccount = Account(accountNumber: '', owner: '');
 
 class AccountAddBloc extends Bloc<AccountAddEvent, AccountAddState> {
   AccountAddBloc() : super(AccountAddState()) {
@@ -57,14 +57,11 @@ class AccountAddBloc extends Bloc<AccountAddEvent, AccountAddState> {
           final request = ModelMutations.create(
             Account(
               accountNumber: acctNumber,
-              ledgerStatus: 'ND',
               owner: authUser.userId,
-              ownerName: '${state.firstName.value} ${state.lastName.value}',
-              type: state.accountType.name,
-              balance: 0,
+              accountType: state.accountType.name,
               creditLimit: 0,
               expiry: TemporalDateTime(DateTime.now()),
-              isActive: false,
+              status: 'NA',
             )
           );
           final response = await Amplify.API.mutate(request: request).response;

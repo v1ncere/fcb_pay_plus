@@ -1,23 +1,29 @@
-enum AccountType { unknown, wlt, ppr, psa, plc }
+enum AccountType { unknown, wallet, pitakard, plc, sa, dd, loans }
 
 extension AccountTypeX on AccountType {
   bool get isUnknown => this == AccountType.unknown;
-  bool get isWallet => this == AccountType.wlt;
-  bool get isSavings => this == AccountType.psa;
-  bool get isPayroll => this == AccountType.ppr;
+  bool get isWallet => this == AccountType.wallet;
+  bool get isSavings => this == AccountType.sa;
+  bool get isPitakard => this == AccountType.pitakard;
   bool get isPLC => this == AccountType.plc;
+  bool get isDD => this == AccountType.dd;
+  bool get isLoans => this == AccountType.loans;
 }
 
 String accountTypeName(AccountType type) {
   switch(type) {
-    case AccountType.wlt:
+    case AccountType.wallet:
       return 'Wallet';
-    case AccountType.ppr:
-      return 'Pitakard Payroll';
-    case AccountType.psa:
-      return 'Pitakard Savings';
+    case AccountType.pitakard:
+      return 'PITAKArd';
     case AccountType.plc:
-      return 'Pitakard Line of Credit';
+      return 'PITAKArd Line of Credit';
+    case AccountType.sa:
+      return 'Savings Account';
+    case AccountType.dd:
+      return 'Demand Draft';
+    case AccountType.loans:
+      return 'Loans';
     case AccountType.unknown:
       return '';
   }
@@ -25,14 +31,18 @@ String accountTypeName(AccountType type) {
 
 String accountTypeNameString(String type) {
   switch(type) {
-    case 'wlt':
+    case 'wallet':
       return 'Wallet';
-    case 'ppr':
-      return 'Pitakard Payroll';
-    case 'psa':
-      return 'Pitakard Savings';
+    case 'pitakard':
+      return 'PITAKArd';
     case 'plc':
-      return 'Pitakard Line of Credit';
+      return 'PITAKArd Line of Credit';
+    case 'sa':
+      return 'Savings Account';
+    case 'dd':
+      return 'Demand Draft';
+    case 'loans':
+      return 'Loans';
     default:
       return type;
   }

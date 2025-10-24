@@ -12,10 +12,10 @@ class HeadersCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.0),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black54, // Shadow color
+            color: Colors.black26, // Shadow color
             spreadRadius: 1,
-            blurRadius: 4,
-            offset: Offset(0, 3)
+            blurRadius: 2,
+            offset: Offset(0, 1)
           )
         ]
       ),

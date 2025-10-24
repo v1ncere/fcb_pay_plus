@@ -18,9 +18,9 @@ extension UsernameValidationErrorX on UsernameValidationError {
   String text() {
     switch (this) {
       case UsernameValidationError.required:
-        return 'Username is required';
+        return 'Please enter a username.';
       case UsernameValidationError.invalid:
-        return 'Username is invalid. Please try again.';
+        return 'Invalid username. Please try again.';
     }
   }
 }

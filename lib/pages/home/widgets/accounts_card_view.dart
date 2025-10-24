@@ -8,7 +8,7 @@ import 'widgets.dart';
 
 class AccountsCardView extends StatelessWidget {
   const AccountsCardView({super.key});
-  static final emptyAccount = Account(accountNumber: '', owner: '', ledgerStatus: '');
+  static final emptyAccount = Account(accountNumber: '', owner: '');
 
   @override
   Widget build(BuildContext context) {

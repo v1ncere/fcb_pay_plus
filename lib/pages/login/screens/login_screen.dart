@@ -35,7 +35,9 @@ class LoginScreen extends StatelessWidget {
                 indent: MediaQuery.of(context).size.width * 0.35,
                 color: ColorString.algaeGreen,
               ),
-              const SignUpButton(),
+              const SignUpWithPitakardButton(),
+              const CreateAccountButton(),
+              const ForgotPassword()
             ]
           )
         )

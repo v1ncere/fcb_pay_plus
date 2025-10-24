@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
-
-import '../sign_up.dart';
 
 class PinInputs extends StatelessWidget {
   const PinInputs({super.key});
@@ -24,7 +21,7 @@ class PinInputs extends StatelessWidget {
           fontWeight: FontWeight.w600,
         )
       ),
-      onCompleted: (value) => context.read<SignUpBloc>().add(PinCodeSubmitted(value)),
+      onCompleted: (value) {},
       closeKeyboardWhenCompleted: true,
     );
   }

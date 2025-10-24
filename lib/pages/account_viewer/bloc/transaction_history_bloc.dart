@@ -58,13 +58,15 @@ class TransactionHistoryBloc extends Bloc<TransactionHistoryEvent, TransactionHi
         newList.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
       } else if (filterQuery == 'oldest') {
         newList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
-      } else {
-        newList = newList.where((e) => e.accountType!.trim().toLowerCase().contains(filterQuery)).toList();
-      }
+      } 
+      // else {
+      //   newList = newList.where((e) => e.accountType!.trim().toLowerCase().contains(filterQuery)).toList();
+      // }
     }
 
     if (search.isNotEmpty) {
-      newList = newList.where((e) => e.details!.toLowerCase().contains(searchQuery)).toList();
+      // TODO: from details(removed from table) to accountNumber
+      newList = newList.where((e) => e.account!.accountNumber.toLowerCase().contains(searchQuery)).toList();
     }
     // return filtered list
     return newList;

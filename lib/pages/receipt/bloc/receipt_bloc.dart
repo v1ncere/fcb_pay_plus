@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
@@ -20,14 +19,20 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
   Future<void> _onReceiptFetched(ReceiptFetched event, Emitter<ReceiptState> emit) async {
     emit(state.copyWith(status: Status.loading));
     try {
-      final request = ModelQueries.get(Receipt.classType, ReceiptModelIdentifier(id: event.id));
+      final request = ModelQueries.get(Transaction.classType, TransactionModelIdentifier(
+        accountNumber: event.accountNumber,
+        transDate: event.transDate,
+        transCode: event.transCode,
+        referenceId: event.referenceId
+      ));
       final response = await Amplify.API.query(request: request).response;
       // 
       if (!response.hasErrors) {
-        final receipt = response.data;
+        final transactions = response.data;
         //
-        if (receipt != null) {
-          final Map<String, dynamic> newData = jsonDecode(receipt.data!);
+        if (transactions != null) {
+          final Map<String, dynamic> newData = {};
+          // final Map<String, dynamic> newData = jsonDecode(transactions.data!);
           emit(state.copyWith(status: Status.success, receiptMap: newData));
         } else {
           emit(state.copyWith(status: Status.failure, message: TextString.empty));

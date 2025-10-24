@@ -74,7 +74,7 @@ List<QRModel> qrDataParser(String qr) {
 String qrDataTitleWidget(String data, String req) {
   final ids = data.trim().substring(0, 4);
   
-  if(ids.contains('main')) { // id: main<##> e.g. 'main52'
+  if (ids.contains('main')) { // id: main<##> e.g. 'main52'
     final id = int.parse(data.trim().substring(4, 6));
     
     switch(id) {

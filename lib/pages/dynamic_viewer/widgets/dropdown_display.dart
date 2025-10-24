@@ -23,7 +23,7 @@ class DropdownDisplay extends StatelessWidget {
           return Column(
             children: [
               DynamicDropdown(focusNode: focusNode, dynamicWidget: dynamicWidget),
-              if (dynamicWidget.hasExtra ?? false) const ExtraWidgets()
+              if (dynamicWidget.hasExtra ?? false) const ExtraWidgets(),
             ]
           );
         }

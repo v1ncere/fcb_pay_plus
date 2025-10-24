@@ -27,27 +27,37 @@ import 'DynamicRoute.dart';
 import 'DynamicWidget.dart';
 import 'Merchant.dart';
 import 'Notification.dart';
-import 'Receipt.dart';
+import 'OtpRequest.dart';
+import 'SignupRequest.dart';
 import 'Transaction.dart';
+import 'TransactionDetail.dart';
+import 'TransactionTransactionDetail.dart';
 import 'TransferableUser.dart';
+import 'VerifyAccount.dart';
 
 export 'Account.dart';
 export 'AccountButton.dart';
+export 'AccountStatus.dart';
+export 'AccountType.dart';
 export 'Button.dart';
 export 'DynamicRoute.dart';
 export 'DynamicWidget.dart';
+export 'LedgerStatus.dart';
 export 'Merchant.dart';
 export 'Notification.dart';
-export 'Receipt.dart';
-export 'SearchFilter.dart';
+export 'OtpRequest.dart';
+export 'SignupRequest.dart';
 export 'Transaction.dart';
+export 'TransactionDetail.dart';
+export 'TransactionTransactionDetail.dart';
 export 'TransferableUser.dart';
+export 'VerifyAccount.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "7325339e1269ac6eb89b198b04262547";
+  String version = "cbbe1914ea41de91b353c8769200781d";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [Account.schema, AccountButton.schema, Button.schema, DynamicRoute.schema, DynamicWidget.schema, Merchant.schema, Notification.schema, Receipt.schema, Transaction.schema, TransferableUser.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [Account.schema, AccountButton.schema, Button.schema, DynamicRoute.schema, DynamicWidget.schema, Merchant.schema, Notification.schema, OtpRequest.schema, SignupRequest.schema, Transaction.schema, TransactionDetail.schema, TransactionTransactionDetail.schema, TransferableUser.schema, VerifyAccount.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -70,12 +80,20 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return Merchant.classType;
       case "Notification":
         return Notification.classType;
-      case "Receipt":
-        return Receipt.classType;
+      case "OtpRequest":
+        return OtpRequest.classType;
+      case "SignupRequest":
+        return SignupRequest.classType;
       case "Transaction":
         return Transaction.classType;
+      case "TransactionDetail":
+        return TransactionDetail.classType;
+      case "TransactionTransactionDetail":
+        return TransactionTransactionDetail.classType;
       case "TransferableUser":
         return TransferableUser.classType;
+      case "VerifyAccount":
+        return VerifyAccount.classType;
       default:
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }

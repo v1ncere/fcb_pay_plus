@@ -1,4 +1,4 @@
+export 'enums/enums.dart';
+export 'models/models.dart' hide Currency;
 export 'utilities/utilities.dart';
 export 'widgets/widgets.dart';
-export 'models/models.dart';
-export 'enums/enums.dart';

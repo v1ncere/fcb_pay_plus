@@ -36,6 +36,7 @@ class AccountCardInfoState extends State<AccountCardInfo> {
         if (state.accountStatus.isSuccess) {
           final f = NumberFormat('#,##0.00', 'en_US');
           final account = state.account;
+          final bal = 0.0;
           return Card(
             elevation: 2.0,
             margin: const EdgeInsets.all(0),
@@ -61,13 +62,13 @@ class AccountCardInfoState extends State<AccountCardInfo> {
                       titleColor: Colors.white,
                       titleFlex: 1,
                       contentColor: Colors.white,
-                      content: f.format(account.balance),
+                      content: f.format(bal),
                       contentFlex: 1,
                     ),
                     const SizedBox(height: 20),
-                    account.type!.isNotEmpty
+                    account.accountType!.isNotEmpty
                     ? CustomRowText(
-                      title: accountTypeNameString(account.type!.toLowerCase()),
+                      title: accountTypeNameString(account.accountType!.toLowerCase()),
                       titleColor: Colors.white,
                       titleFlex: 1,
                       contentColor: Colors.white,

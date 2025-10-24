@@ -1,11 +1,13 @@
 export 'confirm_submit.dart';
 export 'confirmation_input.dart';
+export 'create_account_button.dart';
 export 'email_input.dart';
+export 'forgot_password.dart';
 export 'login_button.dart';
 export 'mfa_selection_dropdown.dart';
 export 'password_input.dart';
 export 'password_input_confirm.dart';
 export 'pin_inputs.dart';
 export 'sign_in_text.dart';
-export 'sign_up_button.dart';
+export 'sign_up_with_pitakard_button.dart';
 export 'username_display.dart';

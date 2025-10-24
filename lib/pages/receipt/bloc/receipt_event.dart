@@ -8,9 +8,17 @@ sealed class ReceiptEvent extends Equatable {
 }
 
 final class ReceiptFetched extends ReceiptEvent {
-  const ReceiptFetched(this.id);
-  final String id;
+  const ReceiptFetched(this.accountNumber, this.transCode, this.referenceId, this.transDate);
+  final String accountNumber;
+  final String transCode;
+  final String referenceId;
+  final TemporalDate transDate;
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [
+    accountNumber,
+    transCode,
+    referenceId,
+    transDate,
+  ];
 }

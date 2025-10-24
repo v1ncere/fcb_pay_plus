@@ -2,9 +2,9 @@ class RouteName {
   static const splash = 'splash';
   static const walkThrough = 'walkThrough';
   static const login = 'login';
-  static const signUpVerify = 'signUpVerify';
   static const signUp = 'signUp';
-  static const signUpConfirm = 'signUpConfirm';
+  static const forgotPassword = 'forgotPassword';
+  static const signupPitakard = 'signupPitakard';
   static const authPin = 'authPin';
   static const createPin = 'createPin';
   static const updatePin  = 'updatePin';
@@ -19,4 +19,5 @@ class RouteName {
   static const receipt = 'receipt';
   static const settings = 'settings';
   static const updatePassword = 'updatePassword';
+  static const addMerchant = 'addMerchant';
 }

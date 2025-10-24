@@ -18,9 +18,9 @@ extension FilterPopUpMenuValidationErrorX on FilterPopUpMenuValidationError {
   String text() {
     switch(this) {
       case FilterPopUpMenuValidationError.empty:
-        return 'Please select an option.';
+        return 'Please make a selection.';
       case FilterPopUpMenuValidationError.invalid:
-        return 'Something went wrong. Please try again later.';
+        return 'We couldn\'t load the options. Please try again later.';
     }
   }
 }

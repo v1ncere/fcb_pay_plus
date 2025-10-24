@@ -21,9 +21,9 @@ extension EmailValidationErrorX on EmailValidationError {
   String text() {
     switch (this) {
       case EmailValidationError.required:
-        return 'Email is required';
+        return 'Please enter your email address.';
       case EmailValidationError.invalid:
-        return 'Email is invalid. Please try again.';
+        return 'Please enter a valid email address.';
     }
   }
 }

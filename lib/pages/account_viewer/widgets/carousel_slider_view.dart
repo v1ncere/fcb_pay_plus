@@ -35,11 +35,11 @@ class CarouselSliderView extends StatelessWidget {
                   }
                 ),
                 items: state.accountList.map((data) {
-                  if (data.type ==  AccountType.plc.name) {
+                  if (data.accountType ==  AccountType.plc.name) {
                     return CardCredit(
                       cardExpiration: getDateString(data.expiry!.getDateTimeInUtc()),
-                      cardHolder: data.ownerName!,
-                      type: data.type!,
+                      cardHolder: 'remove from table',
+                      type: data.accountType!,
                       cardNumber: data.accountNumber,
                       onTap: () {
                         // timer paused, to halt the navigation process
@@ -48,13 +48,13 @@ class CarouselSliderView extends StatelessWidget {
                       }
                     );
                   }
-                  if (data.type == AccountType.wlt.name 
-                  || data.type == AccountType.psa.name 
-                  || data.type == AccountType.ppr.name) {
+                  if (data.accountType == AccountType.wallet.name 
+                  || data.accountType == AccountType.sa.name 
+                  || data.accountType == AccountType.pitakard.name) {
                     return SavingsCard(
-                      cardHolder: data.ownerName!,
+                      cardHolder: 'remove from table',
                       cardNumber: data.accountNumber,
-                      type: data.type!,
+                      type: data.accountType!,
                       onTap: () {
                         // timer paused, to halt the navigation process
                         context.read<InactivityCubit>().pauseTimer();

@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/ModelProvider.dart';
-import '../../../utils/utils.dart';
+import '../../../utils/utils.dart' hide AccountType;
 
 part 'filter_event.dart';
 part 'filter_state.dart';
@@ -16,8 +16,9 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
   void _onFilteredFetched(FilterFetched event, Emitter<FilterState> emit) async {
     emit(state.copyWith(status: Status.loading));
     try {
-      List<String> filterList = SearchFilter.values.map((e) => e.name).toList();
-      emit(state.copyWith(status: Status.success, filters: filterList));
+      final filterList = AccountType.values.map((e) => e.name).toList();
+      final newFilterList = ['NEWEST', 'OLDEST', ...filterList];
+      emit(state.copyWith(status: Status.success, filters: newFilterList));
     } on ApiException catch (e) {
       emit(state.copyWith(status: Status.failure, message: e.message));
     } catch (e) {

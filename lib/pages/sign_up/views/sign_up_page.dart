@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../../../utils/utils.dart';
+import '../cubit/top_stepper_cubit.dart';
 import '../sign_up.dart';
 
 class SignupRoute extends StatelessWidget {
@@ -28,11 +29,11 @@ class SignUpPage extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => SignUpBloc()
         ..add(LostDataRetrieved())
-        ..add(ProvinceFetched())),
-        BlocProvider(create: (context) => SignUpStepperCubit(length: 5)), // if modify length, count starts at (1 not 0)
-        BlocProvider(create: (context) => FaceLivenessBloc())
+        ..add(BridgeTokenGenerated())),
+        BlocProvider(create: (context) => FaceLivenessBloc()),
+        BlocProvider(create: (context) => TopStepperCubit(length: 5)),
       ],
-      child: const SignUpView()
+      child: const SignUpView(),
     );
   }
 }

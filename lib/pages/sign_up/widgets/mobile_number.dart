@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_inputs/form_inputs.dart';
 
+import '../../../utils/utils.dart';
 import '../sign_up.dart';
+import 'widgets.dart';
 
 class MobileNumber extends StatelessWidget {
   const MobileNumber({super.key});
@@ -18,37 +20,41 @@ class MobileNumber extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your mobile number', style: Theme.of(context).textTheme.labelLarge),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: state.mobileController,
-              inputFormatters: [LengthLimitingTextInputFormatter(10)],
-              keyboardType: TextInputType.phone,
-              onChanged: (value) => context.read<SignUpBloc>().add(MobileNumberChanged(value)),
-              decoration: InputDecoration(
-                filled: true,
-                border: const UnderlineInputBorder(),
-                label: const Text('Mobile Number'),
-                prefix: const Padding(
-                  padding: EdgeInsets.only(right: 5.0),
-                  child: Text('+63'),
-                ),
-                prefixStyle: const TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16
-                ),
-                errorText: state.mobile.displayError?.text(),
-                suffixIcon: !state.mobile.isPure
-                ? IconButton(
-                    icon: const Icon(FontAwesomeIcons.xmark),
-                    iconSize: 18,
-                    onPressed: () => context.read<SignUpBloc>().add(MobileTextErased())
-                  )
-                : null
+            Text(
+              'Mobile Number',
+              style: TextStyle(
+                color: ColorString.jewel,
+                fontWeight: FontWeight.w700,
               ),
-              style: const TextStyle(height: 1.5),
-            )
-          ]
+            ),
+            SizedBox(height: 2.0),
+            CustomTextformfield(
+              controller: state.mobileController,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly, Group334Formatter()],
+              keyboardType: TextInputType.phone,
+              onChanged: (value) => context.read<SignUpBloc>().add(MobileNumberChanged(value.replaceAll(' ', ''))),
+              hintText: 'xxx xxx xxxx',
+              prefixIcon: Padding( // visible in unfocused, because Text is not visible in prefix
+                padding: const EdgeInsets.only(left: 10.0),
+                child: Text(
+                  '+63',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w600
+                  )
+                ),
+              ),
+              errorText: state.mobile.displayError?.text(),
+              suffixIcon: !state.mobile.isPure
+              ? IconButton(
+                  icon: const Icon(FontAwesomeIcons.xmark),
+                  iconSize: 18,
+                  onPressed: () => context.read<SignUpBloc>().add(MobileTextErased())
+                )
+              : null,
+            ),
+          ],
         );
       }
     );

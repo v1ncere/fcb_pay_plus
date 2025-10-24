@@ -24,9 +24,9 @@ extension MobileNumberValidationErrorX on MobileNumberValidationError {
   String text() {
     switch (this) {
       case MobileNumberValidationError.required:
-        return 'Mobile number is required';
+        return 'Please enter your mobile number.';
       case MobileNumberValidationError.invalid:
-        return 'This mobile number is invalid. Please try again.';
+        return 'Please enter a valid mobile number.';
     }
   }
 }

@@ -10,6 +10,7 @@ Card walletCard({
   required BuildContext context,
   required Account account
 }) {
+  final bal = 0.0; // TODO: get this from Transaction model running balance
   return Card(
     elevation: 2.0,
     color: ColorString.eucalyptus,
@@ -66,14 +67,14 @@ Card walletCard({
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      buildAccountNumber(value: account.accountNumber, type: account.type ?? ''),
+                      buildAccountNumber(value: account.accountNumber, type: account.accountType ?? ''),
                       Icon(FontAwesomeIcons.chevronRight, size: 18, color: ColorString.white)
                     ]
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      buildDetailsBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(account.balance))
+                      buildDetailsBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(bal))
                     ]
                   )
                 ]

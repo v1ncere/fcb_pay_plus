@@ -5,7 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../app/widgets/widgets.dart';
 import '../../../utils/utils.dart';
-import '../scanner.dart';
+import '../cubit/scanner_cubit.dart';
 import '../widgets/widgets.dart';
 
 class ScannerView extends StatefulWidget {

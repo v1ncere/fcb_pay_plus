@@ -11,19 +11,16 @@ and "delete" any "Todo" records.
 const schema = a.schema({
   // Account
   Account: a.model({
-    accountNumber: a.string().required(),
-    balance: a.float(),
-    creditLimit: a.float(),
-    expiry: a.datetime(),
-    type: a.string(),
-    ownerName: a.string(),
-    owner: a.string().required(),
-    ledgerStatus: a.string().required(), // [VL, NC, ND]
-    isActive: a.boolean(), 
+    accountNumber: a.string().required(), // account number (identifier, primary key)
+    accountType: a.string(),              // options: WALLET(default)|PITAKARD|PLC|SA|DD|LOANS
+    creditLimit: a.float(),               // credit limit of the account type (WALLET, PLC)
+    expiry: a.datetime(),                 // expiry of the (PLC)
+    status: a.string(),                   // options: NA(new)(default)|AC(active)|LC(locked)|CL(closed)|BL(blocked)
+    owner: a.string().required(),         // owner id of the account
     // relationships
-    transactions: a.hasMany('Transaction', 'accountId'), // one to many
+    transactions: a.hasMany('Transaction', 'accountNumber'), // one to many
     transferableUser: a.hasOne('TransferableUser', 'accountId')
-  }).identifier(['accountNumber'])
+  }).identifier(['accountNumber']) // [accountNumber]
   .authorization((allow) => [
     allow.authenticated(),
     allow.ownerDefinedIn("owner") // experiment
@@ -44,7 +41,7 @@ const schema = a.schema({
   
   // Account Action Button
   AccountButton: a.model({
-    type: a.string().required(), // plc, psa, wlt, ppr
+    type: a.string().required(), // options: WALLET(default)|PITAKARD|PLC|SA|DD|LOANS
     name: a.string(),
     // relationships
     buttons: a.hasMany('Button', 'accountButtonId'), // one to many
@@ -64,19 +61,20 @@ const schema = a.schema({
     titleColor: a.string(),
     type: a.string(),
     // relationship
-    accountButtonId: a.id(), // foreign key to link with Action Button
+    accountButtonId: a.id(), // foreign key to link with AccountButton
     accountButton: a.belongsTo('AccountButton', 'accountButtonId'), // relationship to Action Button
     dynamicRouteId: a.id(), // foreign key to link with DynamicWidget Viewer
     dynamicRoute: a.belongsTo('DynamicRoute', 'dynamicRouteId'), // relationship to DynamicWidget Viewer
-    widgets: a.hasMany('DynamicWidget', 'buttonId') // one to many
+    widgets: a.hasMany('DynamicWidget', 'buttonId'), // one to many
   }).authorization((allow) => [
     allow.authenticated(),
     allow.owner(),
   ]),
 
-  // Dynamic Viewer Widget
-  DynamicRoute: a.model({
+  // Dynamic Viewer
+  DynamicRoute: a.model({ // can be the parent of the button, dynamic page or category
     title: a.string(),
+    category: a.string(),
     buttons: a.hasMany('Button', 'dynamicRouteId'), // one to many
   }).authorization((allow) => [
     allow.authenticated(),
@@ -104,17 +102,46 @@ const schema = a.schema({
     allow.owner()
   ]),
   
-  // Institution(deprecated) Merchant(latest)
+  // Merchant(latest)
   Merchant: a.model({
     name: a.string(),
     tag: a.string(),
     qrCode: a.string(),
     // relationships
     widget: a.hasMany('DynamicWidget', 'merchantWidgetId'),
-    extraWidget: a.hasMany('DynamicWidget', 'merchantExtraId')
+    extraWidget: a.hasMany('DynamicWidget', 'merchantExtraId'),
   }).authorization((allow) => [
     allow.authenticated(),
     allow.owner(),
+  ]),
+
+  //* ACCOUNT VERIFICATION **/
+  VerifyAccount: a.model({
+    accountNumber: a.string(),
+    accountAlias: a.string(),
+  }).authorization((allow) => [
+    allow.guest(),
+  ]),
+
+  //* OTP REQUEST **/
+  OtpRequest: a.model({
+    email: a.string(),
+    mobileNumber: a.string(),
+  }).authorization((allow) => [
+    allow.guest(),
+  ]),
+
+  //* SIGNUP **/
+  SignupRequest: a.model({
+    accountNumber: a.string(),
+    accountAlias: a.string(),
+    email: a.string(),
+    mobileNumber: a.string(),
+    details: a.json(),
+    profileRef: a.string(),
+    validIdRef: a.string(),
+  }).authorization((allow) => [
+    allow.guest(),
   ]),
 
   // Notification
@@ -128,37 +155,89 @@ const schema = a.schema({
     allow.owner()
   ]),
 
-  // Transaction History
-  Transaction: a.model({
-    accountNumber: a.string(),
-    accountType: a.string(),
-    details: a.string(),
-    owner: a.string(),
+  TransactionTransactionDetail: a.model({
+    accountNumber: a.string().required(),
+    transDate: a.date().required(),
+    referenceId: a.string().required(),
+    transCode: a.string().required(),
     // relationships
-    accountId: a.id(), // foreign key to link with Account
-    account: a.belongsTo('Account', 'accountId'), // relationship to Account
-    receipt: a.hasOne('Receipt', 'transactionId'),
-  }).authorization((allow) => [
-    allow.authenticated(),
-    allow.owner()
-  ]),
-
-  // Receipt 
-  Receipt: a.model({
-    data: a.json(),
-    owner: a.string(),
-    // relationships
-    transactionId: a.id(),
-    transaction: a.belongsTo('Transaction', 'transactionId'),
+    transaction: a.belongsTo('Transaction', ['transDate', 'referenceId', 'transCode', 'accountNumber']),
+    transactionDetail: a.belongsTo('TransactionDetail', ['transDate', 'referenceId', 'transCode']),
   }).authorization((allow) => [
     allow.authenticated(),
     allow.owner(),
   ]),
- 
-  // SearchFilter
-  SearchFilter: a.enum(['newest,oldest,plc,ppr,psa,wlt']),
 
-  // API's
+  // Transaction History
+  Transaction: a.model({
+    accountNumber: a.string().required(),
+    transDate: a.date().required(),
+    referenceId: a.string().required(),
+    transCode: a.string().required(),
+    transAmount: a.float(),
+    amountType: a.string(),
+    balanceActual: a.float(),
+    balanceCleared: a.float(),
+    ledgerStatus: a.string(),
+    // relationships
+    account: a.belongsTo('Account', 'accountNumber'), // relationship to Account
+    transactionDetails: a.hasMany('TransactionTransactionDetail', ['transDate', 'referenceId', 'transCode', 'accountNumber']), // has many transactionDetail
+    // only for the TS linter to accept the updatedAt
+    updatedAt: a.datetime(),
+  }).identifier(['transDate', 'referenceId', 'transCode', 'accountNumber'])
+  .secondaryIndexes((index) => [
+    index('accountNumber')
+    .sortKeys(['updatedAt'])
+    .queryField('transactionsByAccountUpdatedAt'),
+  ])
+  .authorization((allow) => [
+    allow.authenticated(),
+    allow.owner(),
+  ]),
+
+  TransactionDetail: a.model({
+    transDate: a.date().required(),
+    referenceId: a.string().required(),
+    transCode: a.string().required(),
+    sourceAccount: a.string(),
+    destinationAccount: a.string(),
+    otherInformation: a.string(),
+    deviceInfo: a.string(),
+    // relationships
+    transactions: a.hasMany('TransactionTransactionDetail', ['transDate', 'referenceId', 'transCode']), // has many transaction
+  }).identifier(['transDate', 'referenceId', 'transCode']) //
+  .authorization((allow => [
+    allow.authenticated(),
+    allow.owner(),
+  ])),
+
+  // AccountType
+  AccountType: a.enum([
+    'wallet',   //
+    'pitakard', //
+    'plc',      //
+    'sa',       //
+    'dd',       //
+    'loans',    //
+  ]),
+
+  // AccountStatus
+  AccountStatus: a.enum([
+    'NA', // new account
+    'AC', // active
+    'BL', // blocked
+    'LC', // locked
+    'CL', // closed
+  ]),
+
+  // LedgerStatus
+  LedgerStatus: a.enum([
+    'VL', // verified ledger
+    'ND', // non-verified debit
+    'NC', // non-verified credit
+  ]),
+
+  // API's for process the transaction
   processTransaction: a
     .query()
     .arguments({

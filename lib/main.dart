@@ -15,6 +15,7 @@ Future<void> main() async {
   await Hive.initFlutter();
   await dotenv.load(fileName: ".env");
   Hive.registerAdapter(QRModelAdapter());
+  Hive.registerAdapter(MerchantModelAdapter());
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: HydratedStorageDirectory((await getTemporaryDirectory()).path)
   );

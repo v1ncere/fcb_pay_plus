@@ -22,9 +22,9 @@ extension PinValidationErrorX on PinValidationError {
   String text() {
     switch (this) {
       case PinValidationError.required:
-        return 'Pin is required.';
+        return 'Please enter your PIN.';
       case PinValidationError.invalid:
-        return 'Pin is invalid. Please try again.';
+        return 'Please enter a valid PIN.';
     }
   }
 }

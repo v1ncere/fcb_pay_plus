@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../../utils/utils.dart';
 import '../dynamic_viewer.dart';
@@ -13,13 +14,12 @@ class ExtraWidgets extends StatelessWidget {
     return BlocBuilder<WidgetsBloc, WidgetsState>(
       builder: (context, state) {
         if (state.extraWidgetStatus.isLoading) {
-          return const Padding(
-            padding: EdgeInsets.all(8.0),
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Center(
-              child: SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(strokeWidth: 3)
+              child: SpinKitFadingCircle(
+                color: ColorString.eucalyptus,
+                size: 30,
               )
             )
           );
@@ -34,7 +34,7 @@ class ExtraWidgets extends StatelessWidget {
                 children: state.extraWidgetList.map((item) {
                   switch (item.widgetType!) {
                     case 'textfield':
-                      if(item.dataType == 'int') {
+                      if (item.dataType == 'int') {
                         return Padding(
                           padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
                           child: CustomTextFormField(
@@ -59,7 +59,7 @@ class ExtraWidgets extends StatelessWidget {
                             }
                           )
                         );
-                      } else if(item.dataType == 'string') {
+                      } else if (item.dataType == 'string') {
                         return Padding(
                           padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
                           child: CustomTextFormField(
@@ -103,20 +103,23 @@ class ExtraWidgets extends StatelessWidget {
           );
         } 
         if (state.extraWidgetStatus.isFailure) {
-          return Text(
-            state.message,
-            style: const TextStyle(
-              color: Colors.black54,
-              fontWeight: FontWeight.w700
+          return state.message != 'Empty'
+          ? Text(
+              state.message,
+              style: const TextStyle(
+                color: Colors.black54,
+                fontWeight: FontWeight.w700
+              )
             )
-          );
+          : const SizedBox.shrink();
         }
-        // 
+        // default display
         return const SizedBox.shrink();
       }
     );
   }
-  //
+  
+  // *** UTILITY METHODS ***
   Widget _description() {
     return const Row(
       children: [

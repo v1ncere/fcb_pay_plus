@@ -22,9 +22,9 @@ extension AccountNumberValidationErrorX on AccountNumberValidationError {
   String text() {
     switch (this) {
       case AccountNumberValidationError.required:
-        return 'Account number is required';
+        return 'An account number is required.';
       case AccountNumberValidationError.invalid:
-        return 'Account number is invalid.';
+        return 'Please enter a valid account number.';
     }
   }
 }

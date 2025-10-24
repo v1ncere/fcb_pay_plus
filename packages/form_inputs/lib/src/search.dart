@@ -18,9 +18,9 @@ extension SearchValidationErrorX on SearchValidationError {
   String text() {
     switch (this) {
       case SearchValidationError.required:
-        return 'Name is required';
+        return 'Please enter a search term.';
       case SearchValidationError.invalid:
-        return 'Name is invalid. Please try again.';
+        return 'Please enter a valid search term.';
     }
   }
 }

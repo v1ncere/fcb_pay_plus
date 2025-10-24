@@ -11,6 +11,7 @@ class DynamicViewerPage extends StatelessWidget {
   const DynamicViewerPage({super.key, required this.accountNumber, required this.button});
   final String? accountNumber;
   final Button button;
+  static final _hiveRepository = HiveRepository();
   
   @override
   Widget build(BuildContext context) {
@@ -21,9 +22,9 @@ class DynamicViewerPage extends StatelessWidget {
         ..add(WidgetsFetched(button.id))
         ..add(UserIdFetched())),
         // dropdown bloc 
-        BlocProvider(create: (context) => DropdownBloc()),
+        BlocProvider(create: (context) => DropdownBloc(hiveRepository: _hiveRepository)),
         // accounts home bloc with event [accounts home load] invoked
-        BlocProvider(create: (context) => AccountsHomeBloc(hiveRepository: HiveRepository())
+        BlocProvider(create: (context) => AccountsHomeBloc(hiveRepository: _hiveRepository)
         ..add(AccountsHomeFetched())),
         // inactivity cubit with event [resume timer] invoked
         BlocProvider(create: (context) => InactivityCubit()

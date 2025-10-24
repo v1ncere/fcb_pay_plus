@@ -93,8 +93,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   Future<void> _onSignInResults(SignInResults event, Emitter<LoginState> emit) async {
-    final step = event.result.nextStep.signInStep;
-    switch(step) {
+    switch(event.result.nextStep.signInStep) {
       case AuthSignInStep.confirmSignInWithSmsMfaCode:
         add(ConfirmSignInWithSmsMfaCode(event.result));
         break;

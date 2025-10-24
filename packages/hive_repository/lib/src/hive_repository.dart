@@ -129,6 +129,36 @@ class HiveRepository {
     }
   }
 
+  // ================== MERCHANT =====================
+    static const String _merchantBox = 'MERCHANT_BOX';
+  // =================================================
+  
+  Future<void> addMerchant(MerchantModel model) async {
+    final box = await Hive.openBox<MerchantModel>(_merchantBox);
+    await box.put(model.id, model);
+  }
+
+  Future<List<MerchantModel>> getMerchants() async {
+    try {
+      final box = await Hive.openBox<MerchantModel>(_merchantBox);
+      return box.values.toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> deleteMerchant(String id) async {
+    final box = await Hive.openBox<MerchantModel>(_merchantBox);
+    await box.delete(id);
+  }
+
+  Future<void> closeMerchantBox() async {
+    if (Hive.isBoxOpen(_merchantBox)) {
+      final box = Hive.box<String>(_merchantBox);
+      await box.close();
+    }
+  }
+
   // ===================== ONBOARDING =====================
     static const String _onboardingBox = 'ONBOARDING_BOX';
     static const String _onBoardingStaticKey = '4f4e';

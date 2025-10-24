@@ -21,77 +21,140 @@
 
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
+import 'package:collection/collection.dart';
 
 
 /** This is an auto generated class representing the Transaction type in your schema. */
 class Transaction extends amplify_core.Model {
   static const classType = const _TransactionModelType();
-  final String id;
-  final String? _accountNumber;
-  final String? _accountType;
-  final String? _details;
-  final String? _owner;
+  final amplify_core.TemporalDate? _transDate;
+  final String? _referenceId;
+  final String? _transCode;
+  final double? _transAmount;
+  final String? _amountType;
+  final double? _balanceActual;
+  final double? _balanceCleared;
+  final String? _ledgerStatus;
   final Account? _account;
-  final Receipt? _receipt;
-  final amplify_core.TemporalDateTime? _createdAt;
+  final List<TransactionTransactionDetail>? _transactionDetails;
   final amplify_core.TemporalDateTime? _updatedAt;
+  final amplify_core.TemporalDateTime? _createdAt;
 
   @override
   getInstanceType() => classType;
   
   @Deprecated('[getId] is being deprecated in favor of custom primary key feature. Use getter [modelIdentifier] to get model identifier.')
   @override
-  String getId() => id;
+  String getId() => modelIdentifier.serializeAsString();
   
   TransactionModelIdentifier get modelIdentifier {
+    try {
       return TransactionModelIdentifier(
-        id: id
+        transDate: _transDate!,
+        referenceId: _referenceId!,
+        transCode: _transCode!,
+        accountNumber: _accountNumber!
       );
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  String? get accountNumber {
-    return _accountNumber;
+  amplify_core.TemporalDate get transDate {
+    try {
+      return _transDate!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  String? get accountType {
-    return _accountType;
+  String get referenceId {
+    try {
+      return _referenceId!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  String? get details {
-    return _details;
+  String get transCode {
+    try {
+      return _transCode!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  String? get owner {
-    return _owner;
+  double? get transAmount {
+    return _transAmount;
+  }
+  
+  String? get amountType {
+    return _amountType;
+  }
+  
+  double? get balanceActual {
+    return _balanceActual;
+  }
+  
+  double? get balanceCleared {
+    return _balanceCleared;
+  }
+  
+  String? get ledgerStatus {
+    return _ledgerStatus;
   }
   
   Account? get account {
     return _account;
   }
   
-  Receipt? get receipt {
-    return _receipt;
-  }
-  
-  amplify_core.TemporalDateTime? get createdAt {
-    return _createdAt;
+  List<TransactionTransactionDetail>? get transactionDetails {
+    return _transactionDetails;
   }
   
   amplify_core.TemporalDateTime? get updatedAt {
     return _updatedAt;
   }
   
-  const Transaction._internal({required this.id, accountNumber, accountType, details, owner, account, receipt, createdAt, updatedAt}): _accountNumber = accountNumber, _accountType = accountType, _details = details, _owner = owner, _account = account, _receipt = receipt, _createdAt = createdAt, _updatedAt = updatedAt;
+  amplify_core.TemporalDateTime? get createdAt {
+    return _createdAt;
+  }
   
-  factory Transaction({String? id, String? accountNumber, String? accountType, String? details, String? owner, Account? account, Receipt? receipt}) {
+  const Transaction._internal({required transDate, required referenceId, required transCode, transAmount, amountType, balanceActual, balanceCleared, ledgerStatus, account, transactionDetails, updatedAt, createdAt}): _transDate = transDate, _referenceId = referenceId, _transCode = transCode, _transAmount = transAmount, _amountType = amountType, _balanceActual = balanceActual, _balanceCleared = balanceCleared, _ledgerStatus = ledgerStatus, _account = account, _transactionDetails = transactionDetails, _updatedAt = updatedAt, _createdAt = createdAt;
+  
+  factory Transaction({required amplify_core.TemporalDate transDate, required String referenceId, required String transCode, double? transAmount, String? amountType, double? balanceActual, double? balanceCleared, String? ledgerStatus, Account? account, List<TransactionTransactionDetail>? transactionDetails, amplify_core.TemporalDateTime? updatedAt}) {
     return Transaction._internal(
-      id: id == null ? amplify_core.UUID.getUUID() : id,
-      accountNumber: accountNumber,
-      accountType: accountType,
-      details: details,
-      owner: owner,
+      transDate: transDate,
+      referenceId: referenceId,
+      transCode: transCode,
+      transAmount: transAmount,
+      amountType: amountType,
+      balanceActual: balanceActual,
+      balanceCleared: balanceCleared,
+      ledgerStatus: ledgerStatus,
       account: account,
-      receipt: receipt);
+      transactionDetails: transactionDetails != null ? List<TransactionTransactionDetail>.unmodifiable(transactionDetails) : transactionDetails,
+      updatedAt: updatedAt);
   }
   
   bool equals(Object other) {
@@ -102,13 +165,17 @@ class Transaction extends amplify_core.Model {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Transaction &&
-      id == other.id &&
-      _accountNumber == other._accountNumber &&
-      _accountType == other._accountType &&
-      _details == other._details &&
-      _owner == other._owner &&
+      _transDate == other._transDate &&
+      _referenceId == other._referenceId &&
+      _transCode == other._transCode &&
+      _transAmount == other._transAmount &&
+      _amountType == other._amountType &&
+      _balanceActual == other._balanceActual &&
+      _balanceCleared == other._balanceCleared &&
+      _ledgerStatus == other._ledgerStatus &&
       _account == other._account &&
-      _receipt == other._receipt;
+      DeepCollectionEquality().equals(_transactionDetails, other._transactionDetails) &&
+      _updatedAt == other._updatedAt;
   }
   
   @override
@@ -119,96 +186,127 @@ class Transaction extends amplify_core.Model {
     var buffer = new StringBuffer();
     
     buffer.write("Transaction {");
-    buffer.write("id=" + "$id" + ", ");
-    buffer.write("accountNumber=" + "$_accountNumber" + ", ");
-    buffer.write("accountType=" + "$_accountType" + ", ");
-    buffer.write("details=" + "$_details" + ", ");
-    buffer.write("owner=" + "$_owner" + ", ");
+    buffer.write("transDate=" + (_transDate != null ? _transDate!.format() : "null") + ", ");
+    buffer.write("referenceId=" + "$_referenceId" + ", ");
+    buffer.write("transCode=" + "$_transCode" + ", ");
+    buffer.write("transAmount=" + (_transAmount != null ? _transAmount!.toString() : "null") + ", ");
+    buffer.write("amountType=" + "$_amountType" + ", ");
+    buffer.write("balanceActual=" + (_balanceActual != null ? _balanceActual!.toString() : "null") + ", ");
+    buffer.write("balanceCleared=" + (_balanceCleared != null ? _balanceCleared!.toString() : "null") + ", ");
+    buffer.write("ledgerStatus=" + "$_ledgerStatus" + ", ");
     buffer.write("account=" + (_account != null ? _account!.toString() : "null") + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Transaction copyWith({String? accountNumber, String? accountType, String? details, String? owner, Account? account, Receipt? receipt}) {
+  Transaction copyWith({double? transAmount, String? amountType, double? balanceActual, double? balanceCleared, String? ledgerStatus, Account? account, List<TransactionTransactionDetail>? transactionDetails, amplify_core.TemporalDateTime? updatedAt}) {
     return Transaction._internal(
-      id: id,
-      accountNumber: accountNumber ?? this.accountNumber,
-      accountType: accountType ?? this.accountType,
-      details: details ?? this.details,
-      owner: owner ?? this.owner,
+      transDate: transDate,
+      referenceId: referenceId,
+      transCode: transCode,
+      transAmount: transAmount ?? this.transAmount,
+      amountType: amountType ?? this.amountType,
+      balanceActual: balanceActual ?? this.balanceActual,
+      balanceCleared: balanceCleared ?? this.balanceCleared,
+      ledgerStatus: ledgerStatus ?? this.ledgerStatus,
       account: account ?? this.account,
-      receipt: receipt ?? this.receipt);
+      transactionDetails: transactionDetails ?? this.transactionDetails,
+      updatedAt: updatedAt ?? this.updatedAt);
   }
   
   Transaction copyWithModelFieldValues({
-    ModelFieldValue<String?>? accountNumber,
-    ModelFieldValue<String?>? accountType,
-    ModelFieldValue<String?>? details,
-    ModelFieldValue<String?>? owner,
+    ModelFieldValue<double?>? transAmount,
+    ModelFieldValue<String?>? amountType,
+    ModelFieldValue<double?>? balanceActual,
+    ModelFieldValue<double?>? balanceCleared,
+    ModelFieldValue<String?>? ledgerStatus,
     ModelFieldValue<Account?>? account,
-    ModelFieldValue<Receipt?>? receipt
+    ModelFieldValue<List<TransactionTransactionDetail>?>? transactionDetails,
+    ModelFieldValue<amplify_core.TemporalDateTime?>? updatedAt
   }) {
     return Transaction._internal(
-      id: id,
-      accountNumber: accountNumber == null ? this.accountNumber : accountNumber.value,
-      accountType: accountType == null ? this.accountType : accountType.value,
-      details: details == null ? this.details : details.value,
-      owner: owner == null ? this.owner : owner.value,
+      transDate: transDate,
+      referenceId: referenceId,
+      transCode: transCode,
+      transAmount: transAmount == null ? this.transAmount : transAmount.value,
+      amountType: amountType == null ? this.amountType : amountType.value,
+      balanceActual: balanceActual == null ? this.balanceActual : balanceActual.value,
+      balanceCleared: balanceCleared == null ? this.balanceCleared : balanceCleared.value,
+      ledgerStatus: ledgerStatus == null ? this.ledgerStatus : ledgerStatus.value,
       account: account == null ? this.account : account.value,
-      receipt: receipt == null ? this.receipt : receipt.value
+      transactionDetails: transactionDetails == null ? this.transactionDetails : transactionDetails.value,
+      updatedAt: updatedAt == null ? this.updatedAt : updatedAt.value
     );
   }
   
   Transaction.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      _accountNumber = json['accountNumber'],
-      _accountType = json['accountType'],
-      _details = json['details'],
-      _owner = json['owner'],
+    : _transDate = json['transDate'] != null ? amplify_core.TemporalDate.fromString(json['transDate']) : null,
+      _referenceId = json['referenceId'],
+      _transCode = json['transCode'],
+      _transAmount = (json['transAmount'] as num?)?.toDouble(),
+      _amountType = json['amountType'],
+      _balanceActual = (json['balanceActual'] as num?)?.toDouble(),
+      _balanceCleared = (json['balanceCleared'] as num?)?.toDouble(),
+      _ledgerStatus = json['ledgerStatus'],
       _account = json['account'] != null
         ? json['account']['serializedData'] != null
           ? Account.fromJson(new Map<String, dynamic>.from(json['account']['serializedData']))
           : Account.fromJson(new Map<String, dynamic>.from(json['account']))
         : null,
-      _receipt = json['receipt'] != null
-        ? json['receipt']['serializedData'] != null
-          ? Receipt.fromJson(new Map<String, dynamic>.from(json['receipt']['serializedData']))
-          : Receipt.fromJson(new Map<String, dynamic>.from(json['receipt']))
-        : null,
-      _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
-      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
+      _transactionDetails = json['transactionDetails']  is Map
+        ? (json['transactionDetails']['items'] is List
+          ? (json['transactionDetails']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => TransactionTransactionDetail.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['transactionDetails'] is List
+          ? (json['transactionDetails'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => TransactionTransactionDetail.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
+      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null,
+      _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'accountNumber': _accountNumber, 'accountType': _accountType, 'details': _details, 'owner': _owner, 'account': _account?.toJson(), 'receipt': _receipt?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'transDate': _transDate?.format(), 'referenceId': _referenceId, 'transCode': _transCode, 'transAmount': _transAmount, 'amountType': _amountType, 'balanceActual': _balanceActual, 'balanceCleared': _balanceCleared, 'ledgerStatus': _ledgerStatus, 'account': _account?.toJson(), 'transactionDetails': _transactionDetails?.map((TransactionTransactionDetail? e) => e?.toJson()).toList(), 'updatedAt': _updatedAt?.format(), 'createdAt': _createdAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id,
-    'accountNumber': _accountNumber,
-    'accountType': _accountType,
-    'details': _details,
-    'owner': _owner,
+    'transDate': _transDate,
+    'referenceId': _referenceId,
+    'transCode': _transCode,
+    'transAmount': _transAmount,
+    'amountType': _amountType,
+    'balanceActual': _balanceActual,
+    'balanceCleared': _balanceCleared,
+    'ledgerStatus': _ledgerStatus,
     'account': _account,
-    'receipt': _receipt,
-    'createdAt': _createdAt,
-    'updatedAt': _updatedAt
+    'transactionDetails': _transactionDetails,
+    'updatedAt': _updatedAt,
+    'createdAt': _createdAt
   };
 
   static final amplify_core.QueryModelIdentifier<TransactionModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<TransactionModelIdentifier>();
-  static final ID = amplify_core.QueryField(fieldName: "id");
-  static final ACCOUNTNUMBER = amplify_core.QueryField(fieldName: "accountNumber");
-  static final ACCOUNTTYPE = amplify_core.QueryField(fieldName: "accountType");
-  static final DETAILS = amplify_core.QueryField(fieldName: "details");
-  static final OWNER = amplify_core.QueryField(fieldName: "owner");
+  static final TRANSDATE = amplify_core.QueryField(fieldName: "transDate");
+  static final REFERENCEID = amplify_core.QueryField(fieldName: "referenceId");
+  static final TRANSCODE = amplify_core.QueryField(fieldName: "transCode");
+  static final TRANSAMOUNT = amplify_core.QueryField(fieldName: "transAmount");
+  static final AMOUNTTYPE = amplify_core.QueryField(fieldName: "amountType");
+  static final BALANCEACTUAL = amplify_core.QueryField(fieldName: "balanceActual");
+  static final BALANCECLEARED = amplify_core.QueryField(fieldName: "balanceCleared");
+  static final LEDGERSTATUS = amplify_core.QueryField(fieldName: "ledgerStatus");
   static final ACCOUNT = amplify_core.QueryField(
     fieldName: "account",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Account'));
-  static final RECEIPT = amplify_core.QueryField(
-    fieldName: "receipt",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Receipt'));
+  static final TRANSACTIONDETAILS = amplify_core.QueryField(
+    fieldName: "transactionDetails",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'TransactionTransactionDetail'));
+  static final UPDATEDAT = amplify_core.QueryField(fieldName: "updatedAt");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Transaction";
     modelSchemaDefinition.pluralName = "Transactions";
@@ -235,28 +333,55 @@ class Transaction extends amplify_core.Model {
         ])
     ];
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
+    modelSchemaDefinition.indexes = [
+      amplify_core.ModelIndex(fields: const ["transDate", "referenceId", "transCode", "accountNumber"], name: null),
+      amplify_core.ModelIndex(fields: const ["accountNumber", "updatedAt"], name: "transactionsByAccountNumberAndUpdatedAt")
+    ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Transaction.ACCOUNTNUMBER,
+      key: Transaction.TRANSDATE,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Transaction.REFERENCEID,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Transaction.TRANSCODE,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Transaction.TRANSAMOUNT,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Transaction.AMOUNTTYPE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Transaction.ACCOUNTTYPE,
+      key: Transaction.BALANCEACTUAL,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Transaction.DETAILS,
+      key: Transaction.BALANCECLEARED,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Transaction.OWNER,
+      key: Transaction.LEDGERSTATUS,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
@@ -264,26 +389,25 @@ class Transaction extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
       key: Transaction.ACCOUNT,
       isRequired: false,
-      targetNames: ['accountId'],
+      targetNames: ['accountNumber'],
       ofModelName: 'Account'
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
-      key: Transaction.RECEIPT,
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
+      key: Transaction.TRANSACTIONDETAILS,
       isRequired: false,
-      ofModelName: 'Receipt',
-      associatedKey: Receipt.TRANSACTION
+      ofModelName: 'TransactionTransactionDetail',
+      associatedKey: TransactionTransactionDetail.TRANSACTION
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'createdAt',
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Transaction.UPDATEDAT,
       isRequired: false,
-      isReadOnly: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'updatedAt',
+      fieldName: 'createdAt',
       isRequired: false,
       isReadOnly: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
@@ -310,15 +434,27 @@ class _TransactionModelType extends amplify_core.ModelType<Transaction> {
  * of [Transaction] in your schema.
  */
 class TransactionModelIdentifier implements amplify_core.ModelIdentifier<Transaction> {
-  final String id;
+  final amplify_core.TemporalDate transDate;
+  final String referenceId;
+  final String transCode;
+  final String accountNumber;
 
-  /** Create an instance of TransactionModelIdentifier using [id] the primary key. */
+  /**
+   * Create an instance of TransactionModelIdentifier using [transDate] the primary key.
+   * And [referenceId], [transCode], [accountNumber] the sort keys.
+   */
   const TransactionModelIdentifier({
-    required this.id});
+    required this.transDate,
+    required this.referenceId,
+    required this.transCode,
+    required this.accountNumber});
   
   @override
   Map<String, dynamic> serializeAsMap() => (<String, dynamic>{
-    'id': id
+    'transDate': transDate,
+    'referenceId': referenceId,
+    'transCode': transCode,
+    'accountNumber': accountNumber
   });
   
   @override
@@ -331,7 +467,7 @@ class TransactionModelIdentifier implements amplify_core.ModelIdentifier<Transac
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'TransactionModelIdentifier(id: $id)';
+  String toString() => 'TransactionModelIdentifier(transDate: $transDate, referenceId: $referenceId, transCode: $transCode, accountNumber: $accountNumber)';
   
   @override
   bool operator ==(Object other) {
@@ -340,10 +476,16 @@ class TransactionModelIdentifier implements amplify_core.ModelIdentifier<Transac
     }
     
     return other is TransactionModelIdentifier &&
-      id == other.id;
+      transDate == other.transDate &&
+      referenceId == other.referenceId &&
+      transCode == other.transCode &&
+      accountNumber == other.accountNumber;
   }
   
   @override
   int get hashCode =>
-    id.hashCode;
+    transDate.hashCode ^
+    referenceId.hashCode ^
+    transCode.hashCode ^
+    accountNumber.hashCode;
 }

@@ -29,7 +29,7 @@ class FaceLivenessStartButton extends StatelessWidget {
           onPressed: () => context.read<FaceLivenessBloc>().add(FaceLivenessSessionIdFetched()),
           child: Text(
             "Tap here to begin",
-            style: TextStyle(color: ColorString.mystic),
+            style: TextStyle(color: ColorString.mystic)
           )
         );
       }

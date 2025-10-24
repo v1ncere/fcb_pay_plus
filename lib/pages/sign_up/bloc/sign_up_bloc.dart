@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
@@ -9,7 +11,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:form_inputs/form_inputs.dart';
-import 'package:formz/formz.dart';
 import 'package:http/http.dart' as http;
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,92 +21,57 @@ part 'sign_up_event.dart';
 part 'sign_up_state.dart';
 
 class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
-  SignUpBloc()  : super(SignUpState(
-          emailController: TextEditingController(),
-          firstNameController: TextEditingController(),
-          lastNameController: TextEditingController(),
-          mobileController: TextEditingController(),
-          passwordController: TextEditingController(),
-          confirmPasswordController: TextEditingController(),
-          zipCodeController: TextEditingController(),
-        )) {
-    on<EmailChanged>(_onEmailChanged);
-    on<FirstNameChanged>(_onFirstNameChanged);
-    on<LastNameChanged>(_onLastNameChanged);
-    on<MobileNumberChanged>(_onMobileNumberChanged);
-    on<PasswordChanged>(_onPasswordChanged);
-    on<ConfirmPasswordChanged>(_onConfirmPasswordChanged);
-    on<UserImageChanged>(_onUserImageChanged);
-    on<ProvinceChanged>(_onProvinceChanged);
-    on<CityMunicipalityChanged>(_onCityMunicipalityChanged);
-    on<BarangayChanged>(_onBarangayChanged);
-    on<LostDataRetrieved>(_onLostDataRetrieved);
+  SignUpBloc() : super(SignUpState(
+    accountNumberController: TextEditingController(),
+    accountAliasController: TextEditingController(),
+    emailController: TextEditingController(),
+    mobileController: TextEditingController(),
+  )) {
+    on<AccountNumberErased>(_onAccountNumberErased);
+    on<AccountAliasErased>(_onAccountAliasErased);
     on<EmailTextErased>(_onEmailTextErased);
-    on<FirstNameTextErased>(_onFirstNameTextErased);
-    on<LastNameTextErased>(_onLastNameTextErased);
     on<MobileTextErased>(_onMobileTextErased);
-    on<PasswordTextErased>(_onPasswordTextErased);
-    on<ConfirmPasswordTextErased>(_onConfirmPasswordTextErased);
-    on<ZipCodeErased>(_onZipCodeErased);
-    on<PasswordObscured>(_onPasswordObscured);
-    on<ConfirmPasswordObscured>(_onConfirmPasswordObscured);
-    on<ProvinceFetched>(_onProvinceFetched);
-    on<MunicipalFetched>(_onMunicipalFetched);
-    on<BarangayFetched>(_onBarangayFetched);
-    on<ZipCodeFetched>(_onZipCodeFetched);
-    on<ZipCodeChanged>(_onZipCodeChanged);
+    on<PitakardChecked>(_onPitakardChecked);
+    on<AccountNumberChanged>(_onAccountNumberChanged);
+    on<AccountAliasChanged>(_onAccountAliasChanged);
+    on<EmailChanged>(_onEmailChanged);
+    on<MobileNumberChanged>(_onMobileNumberChanged);
+    on<UserImageChanged>(_onUserImageChanged);
+    on<LostDataRetrieved>(_onLostDataRetrieved);
     on<LivenessImageBytesChanged>(_onLivenessImageBytesChanged);
     on<ValidIDTitleChanged>(_onValidIDChanged);
-    on<StatusRefreshed>(_onStatusRefreshed);
     on<FaceComparisonFetched>(_onFaceComparisonFetched);
     on<UploadImageToS3>(_onUploadImageToS3);
     on<HandleSignUp>(_onHandleSignUp);
-    on<HandleSignUpResult>(_onHandleSignupResult);
     on<ImageUploadProgressed>(_onImageUploadProgressed);
-    on<PinCodeSubmitted>(_onPinCodeSubmitted);
-    on<AuthSignupStepConfirmed>(_onAuthSignupStepConfirmed);
-    on<AuthSignupStepDone>(_onAuthSignupStepDone);
     on<HydrateStateChanged>(_onHydrateStateChanged);
+    on<WebviewMessageReceived>(_onWebviewMessageReceived);
+    on<WebviewMessageSent>(_onWebviewMessageSent);
+    on<BridgeTokenGenerated>(_onBridgeTokenGenerated);
+    on<WebviewFetchLoadingStarted>(_onWebviewFetchLoadingStarted);
+    on<WebviewFetchLoadingSucceeded>(_onWebviewFetchLoadingSucceeded);
+    on<WebviewFetchFailed>(_onWebviewFetchFailed);
+    on<WebviewFetchReset>(_onWebviewFetchReset);
+  }
+
+  void _onPitakardChecked(PitakardChecked event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(isPitakardExist: event.pitakardCheck));
+  }
+
+  void _onAccountNumberChanged(AccountNumberChanged event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(accountNumber: AccountNumber.dirty(event.accountNumber)));
+  }
+
+  void _onAccountAliasChanged(AccountAliasChanged event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(accountAlias: Name.dirty(event.accountAlias)));
   }
 
   void _onEmailChanged(EmailChanged event, Emitter<SignUpState> emit) {
     emit(state.copyWith(email: Email.dirty(event.email)));
   }
 
-  void _onFirstNameChanged(FirstNameChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(firstName: Name.dirty(event.firstName)));
-  }
-
-  void _onLastNameChanged(LastNameChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(lastName: Name.dirty(event.lastName)));
-  }
-
   void _onMobileNumberChanged(MobileNumberChanged event, Emitter<SignUpState> emit) {
     emit(state.copyWith(mobile: MobileNumber.dirty(event.mobile)));
-  }
-
-  void _onPasswordChanged(PasswordChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(password: Password.dirty(event.password)));
-  }
-
-  void _onConfirmPasswordChanged(ConfirmPasswordChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(confirmPassword: ConfirmedPassword.dirty(password: event.password, value: event.confirmPassword)));
-  }
-
-  void _onProvinceChanged(ProvinceChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(province: Name.dirty(event.province)));
-  }
-
-  void _onCityMunicipalityChanged(CityMunicipalityChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(cityMunicipality: Name.dirty(event.cityMunicipality)));
-  }
-
-  void _onBarangayChanged(BarangayChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(barangay: Name.dirty(event.barangay)));
-  }
-
-  void _onZipCodeChanged(ZipCodeChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(zipCode: Integer.dirty(event.zipCode)));
   }
 
   void _onLivenessImageBytesChanged(LivenessImageBytesChanged event, Emitter<SignUpState> emit) {
@@ -136,7 +102,17 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
   }
 
   void _onValidIDChanged(ValidIDTitleChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(validIDTitle: event.validID));
+    emit(state.copyWith(validIDTitle: DropdownData.dirty(event.validID)));
+  }
+
+  void _onAccountNumberErased(AccountNumberErased event, Emitter<SignUpState> emit) {
+    state.accountNumberController.clear();
+    emit(state.copyWith(accountNumber: const AccountNumber.pure()));
+  }
+
+  void _onAccountAliasErased(AccountAliasErased event, Emitter<SignUpState> emit) {
+    state.accountAliasController.clear();
+    emit(state.copyWith(accountAlias: const Name.pure()));
   }
 
   void _onEmailTextErased(EmailTextErased event, Emitter<SignUpState> emit) {
@@ -144,137 +120,10 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(email: const Email.pure()));
   }
 
-  void _onFirstNameTextErased(FirstNameTextErased event, Emitter<SignUpState> emit) {
-    state.firstNameController.clear();
-    emit(state.copyWith(firstName: const Name.pure()));
-  }
-
-  void _onLastNameTextErased(LastNameTextErased event, Emitter<SignUpState> emit) {
-    state.lastNameController.clear();
-    emit(state.copyWith(lastName: const Name.pure()));
-  }
-
   void _onMobileTextErased(MobileTextErased event, Emitter<SignUpState> emit) {
     state.mobileController.clear();
     emit(state.copyWith(mobile: const MobileNumber.pure()));
   }
-
-  void _onPasswordTextErased(PasswordTextErased event, Emitter<SignUpState> emit) {
-    state.passwordController.clear();
-    emit(state.copyWith(password: const Password.pure()));
-  }
-
-  void _onConfirmPasswordTextErased(ConfirmPasswordTextErased event, Emitter<SignUpState> emit) {
-    state.confirmPasswordController.clear();
-    emit(state.copyWith(confirmPassword: const ConfirmedPassword.pure(password: '')));
-  }
-
-  void _onZipCodeErased(ZipCodeErased event, Emitter<SignUpState> emit) {
-    state.zipCodeController.clear();
-    emit(state.copyWith(zipCode: const Integer.pure()));
-  }
-
-  void _onPasswordObscured(PasswordObscured event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(obscurePassword: !state.obscurePassword));
-  }
-
-  void _onConfirmPasswordObscured(ConfirmPasswordObscured event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(obscureConfirmPassword: !state.obscureConfirmPassword));
-  }
-
-  void _onZipCodeFetched(ZipCodeFetched event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(zipCodeStatus: Status.success));
-  }
-
-  // *** FETCH PROVINCE FROM URL ***
-  Future<void> _onProvinceFetched(ProvinceFetched event, Emitter<SignUpState> emit) async {
-    emit(state.copyWith(provinceStatus: Status.loading));
-    
-    try {
-      final url = Uri.https(dotenv.get('ADDRESS_HOST'), '/api/provinces.json');
-      final response = await http.get(url);
-      
-      if (response.statusCode == 200) {
-        final List<dynamic> parsedData = json.decode(response.body);
-        final provincies = parsedData.map((e) => Province.fromJson(e)).toList();
-        provincies.sort((a, b) => a.name.compareTo(b.name));
-        final noneProvince = Province('', 'N/A', '', '');
-        emit(state.copyWith(provinceStatus: Status.success, provinceList: [noneProvince, ...provincies]));
-      } else {
-        emit(state.copyWith(provinceStatus: Status.failure, message: response.body));
-      }
-    } catch (_) {
-      emit(state.copyWith(provinceStatus: Status.failure, message: TextString.error));
-    }
-  }
-
-  // *** FETCH CITY/MUNICIPALITY FROM URL ***
-  Future<void> _onMunicipalFetched(MunicipalFetched event, Emitter<SignUpState> emit) async {
-    emit(state.copyWith(cityMunicipalStatus: Status.loading));
-    
-    try {
-      if (event.provinceCode.isEmpty) {
-        final url = Uri.https(dotenv.get('ADDRESS_HOST'), '/api/cities-municipalities.json');
-        final response = await http.get(url);
-        
-        if (response.statusCode == 200) {
-          final List<dynamic> parsed = json.decode(response.body);
-          final municipalities = parsed.map((e) => CityMunicipality.fromJson(e)).toList();
-          final newMunicipalities = municipalities.where((e) => e.provinceCode == false).toList()
-          ..sort((a, b) => a.name.compareTo(b.name));
-          emit(state.copyWith(cityMunicipalStatus: Status.success, cityMunicipalityList: newMunicipalities));
-        } else {
-          emit(state.copyWith(cityMunicipalStatus: Status.failure, message: response.body));
-        }
-      } else {
-        final url = Uri.https(dotenv.get('ADDRESS_HOST'), '/api/provinces/${event.provinceCode}/cities-municipalities.json');
-        final response = await http.get(url);
-        
-        if (response.statusCode == 200) {
-          final List<dynamic> parsed = json.decode(response.body);
-          final municipalities = parsed.map((e) => CityMunicipality.fromJson(e)).toList();
-          municipalities.sort((a, b) => a.name.compareTo(b.name));
-          emit(state.copyWith(cityMunicipalStatus: Status.success, cityMunicipalityList: municipalities));
-        } else {
-          emit(state.copyWith(cityMunicipalStatus: Status.failure, message: response.body));
-        }
-      }
-    } catch (_) {
-      emit(state.copyWith(cityMunicipalStatus: Status.failure, message: TextString.error));
-    }
-  }
-
-  // *** FETCH BARANGAY FROM URL ***
-  Future<void> _onBarangayFetched(BarangayFetched event, Emitter<SignUpState> emit) async {
-    emit(state.copyWith(barangayStatus: Status.loading));
-    
-    try {
-      if (event.municipalityCode.isEmpty) return;
-      final url = Uri.https(dotenv.get("ADDRESS_HOST"), '/api/cities-municipalities/${event.municipalityCode}/barangays.json');
-      final response = await http.get(url);
-      
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonResponse = json.decode(response.body);
-        final barangays = jsonResponse.map((e) => Barangay.fromJson(e)).toList();
-        barangays.sort((a, b) => a.name.compareTo(b.name));
-        emit(state.copyWith(barangayStatus: Status.success, barangayList: barangays));
-      } else {
-        emit(state.copyWith(barangayStatus: Status.failure, message: response.body));
-      }
-    } catch (_) {
-      emit(state.copyWith(barangayStatus: Status.failure, message: TextString.error));
-    }
-  }
-
-  void _onStatusRefreshed(StatusRefreshed event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(
-      barangayStatus: Status.initial, 
-      barangayList: [],
-      zipCodeStatus: Status.initial,
-      zipCode: Integer.pure(),
-    ));
-  }
-
 
   // *** FACE COMPARISON ***
   Future<void> _onFaceComparisonFetched(FaceComparisonFetched event, Emitter<SignUpState> emit) async {
@@ -378,73 +227,10 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(status: Status.loading));
     
     try {
-      final result = await Amplify.Auth.signUp(
-        username: state.email.value.trim(),
-        password: state.password.value.trim(),
-        options: SignUpOptions(
-          userAttributes: {
-            AuthUserAttributeKey.email: state.email.value.trim(),
-            AuthUserAttributeKey.phoneNumber: '+63${state.mobile.value.trim()}',
-            AuthUserAttributeKey.familyName: state.lastName.value.trim(),
-            AuthUserAttributeKey.givenName: state.firstName.value.trim(),
-            AuthUserAttributeKey.profile: 'picture-submission/${_fileName(image)}',
-            AuthUserAttributeKey.address: '${state.barangay.value.trim()}, ${state.cityMunicipality.value.trim()}, ${state.province.value.trim()} ${state.zipCode.value.trim()}'
-          }
-        ),
-      );
-      add(HandleSignUpResult(result));
-      add(const HydrateStateChanged(isHydrated: false));
-    } on AuthException catch (e) {
-      _emitErrorAndReset(emit, e.message);
+      // TODO: CREATE SUBMIT
     } catch (_) {
       _emitErrorAndReset(emit, TextString.error);
     }
-  }
-
-  // * PINCODE SUBMITTED * //
-  Future<void> _onPinCodeSubmitted(PinCodeSubmitted event, Emitter<SignUpState> emit) async {
-    emit(state.copyWith(confirmStatus: Status.loading));
-    try {
-      fetchCognitoAuthSession();
-      final result = await Amplify.Auth.confirmSignUp(
-        username: state.email.value.trim(),
-        confirmationCode: event.code.trim(),
-      );
-      add(HandleSignUpResult(result));
-    } on AuthException catch (e) {
-      emit(state.copyWith(confirmStatus: Status.failure, message: 'Error confirming user: ${e.message}'));
-    } catch (e) {
-      emit(state.copyWith(confirmStatus: Status.failure, message: 'Error confirming user: ${e.toString()}'));
-    }
-    emit(state.copyWith(confirmStatus: Status.initial));
-  }
-
-  // *** SIGN UP RESULT ***
-  Future<void> _onHandleSignupResult(HandleSignUpResult event, Emitter<SignUpState> emit) async {
-    final step = event.result.nextStep.signUpStep;
-    switch (step) {
-      case AuthSignUpStep.confirmSignUp:
-        add(AuthSignupStepConfirmed(event.result));
-        break;
-      case AuthSignUpStep.done:
-        add(AuthSignupStepDone(event.result));
-        break;
-    }
-  }
-
-  // *** CONFIRM SIGN UP ***
-  void _onAuthSignupStepConfirmed(AuthSignupStepConfirmed event, Emitter<SignUpState> emit) {
-    final details = event.result.nextStep.codeDeliveryDetails!;
-    emit(state.copyWith(
-      status: Status.canceled,
-      message: 'A confirmation code has been sent to ${details.destination}.' 'Please check your ${details.deliveryMedium.name} for the code.'
-    ));
-  }
-
-  // *** SIGN UP DONE ***
-  void _onAuthSignupStepDone(AuthSignupStepDone event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(status: Status.success, message: TextString.signUpComplete));
-    add(UploadImageToS3());
   }
 
   // *** HYDRATE STATE CHANGE ***
@@ -452,8 +238,61 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(isHydrated: event.isHydrated));
   }
 
-  // * ============================== UTILITY METHODS ============================== * //
+  Future<void> _onWebviewMessageReceived(WebviewMessageReceived event, Emitter<SignUpState> emit) async {
+    try {
+      final data = jsonDecode(event.message);
+      if (data is! Map<String, dynamic>) {
+        emit(state.copyWith(webBridgeStatus: Status.failure, message: 'Invalid message format'));
+        return;
+      }
 
+      final token = data['bridgeToken'] as String?;
+      final payload = data['data'] as Map<String, dynamic>?;
+      
+      // ✅ Validate bridge token
+      if (token == null || token != state.activeBridgeToken) {
+        emit(state.copyWith(
+          webBridgeStatus: Status.failure,
+          message: 'Unauthorized or invalid bridgeToken',
+        ));
+        return;
+      }
+
+      emit(state.copyWith(webBridgeStatus: Status.success, lastMessage: payload));
+    } catch (e) {
+      emit(state.copyWith(webBridgeStatus: Status.failure, message: 'Malformed bridge message: $e'));
+    }
+  }
+
+  void _onWebviewMessageSent(WebviewMessageSent event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(outgoingMessage: event.data));
+  }
+
+  void _onBridgeTokenGenerated(BridgeTokenGenerated event, Emitter<SignUpState> emit) {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rand = Random.secure();
+    final token = List.generate(32, (_) => chars[rand.nextInt(chars.length)]).join();
+    
+    emit(state.copyWith(activeBridgeToken: token));
+  }
+
+  void _onWebviewFetchLoadingStarted(WebviewFetchLoadingStarted event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(webviewStatus: Status.loading));
+  }
+
+  void _onWebviewFetchLoadingSucceeded(WebviewFetchLoadingSucceeded event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(webviewStatus: Status.success));
+  }
+
+  void _onWebviewFetchFailed(WebviewFetchFailed event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(webviewStatus: Status.failure, message: event.error));
+  }
+
+  void _onWebviewFetchReset(WebviewFetchReset event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(webviewStatus: Status.initial));
+  }
+
+  // * ============================== UTILITY METHODS ============================== * //
   Future<void> fetchCognitoAuthSession() async {
     try {
       final cognitoPlugin = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
@@ -467,7 +306,7 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
 
   // *** TEXT SCANNING ***
   Future<void> _isScannedTextExists(XFile? image, Emitter<SignUpState> emit) async {
-    if (state.validIDTitle.isEmpty) {
+    if (state.validIDTitle.isNotValid) {
       emit(state.copyWith(imageStatus: Status.failure, message: TextString.selectImage));
       return;
     }
@@ -510,11 +349,12 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
         
         if (map['TextDetections'].isNotEmpty) {
           List<dynamic> textDetectionList = map['TextDetections'];
-          final title = _isTextExists(textDetectionList, state.validIDTitle.trim().toLowerCase());
-          final first = _isTextExists(textDetectionList, state.firstName.value.trim().toLowerCase());
-          final last = _isTextExists(textDetectionList, state.lastName.value.trim().toLowerCase());
+          final title = _isTextExists(textDetectionList, state.validIDTitle.value!.trim().toLowerCase());
+          // final first = _isTextExists(textDetectionList, state.firstName.value.trim().toLowerCase());
+          // final last = _isTextExists(textDetectionList, state.lastName.value.trim().toLowerCase());
           
-          if (title && first && last) {
+          // if (title && first && last) {
+          if (title) {
             emit(state.copyWith(imageStatus: Status.success, userImage: image));
           } else {
             emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageNameMisMatch, userImage: null));
@@ -584,12 +424,10 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
 
   @override
   Future<void> close() async {
+    state.accountNumberController.dispose();
+    state.accountAliasController.dispose();
     state.emailController.dispose();
-    state.firstNameController.dispose();
-    state.lastNameController.dispose();
     state.mobileController.dispose();
-    state.passwordController.dispose();
-    state.confirmPasswordController.dispose();
     return super.close();
   }
 
@@ -598,28 +436,10 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     final isHydrated = json['hydrate'] as bool;
     return isHydrated
     ? state.copyWith(
-        emailController: TextEditingController()
-          ..text = json['email'] as String,
-        firstNameController: TextEditingController()
-          ..text = json['first_name'] as String,
-        lastNameController: TextEditingController()
-          ..text = json['last_name'] as String,
-        mobileController: TextEditingController()
-          ..text = json['mobile_number'] as String,
-        passwordController: TextEditingController()
-          ..text = json['password'] as String,
-        confirmPasswordController: TextEditingController()
-          ..text = json['confirm_password'] as String,
-        //
+        emailController: TextEditingController()..text = json['email'] as String,
+        mobileController: TextEditingController()..text = json['mobile_number'] as String,
         email: Email.dirty(json['email'] as String),
-        firstName: Name.dirty(json['first_name'] as String),
-        lastName: Name.dirty(json['last_name'] as String),
         mobile: MobileNumber.dirty(json['mobile_number'] as String),
-        password: Password.dirty(json['password'] as String),
-        confirmPassword: ConfirmedPassword.dirty(
-          password: json['password'] as String, 
-          value: json['confirm_password'] as String
-        ),
         isHydrated: isHydrated
       )
     : state.copyWith(isHydrated: false);
@@ -630,33 +450,9 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     return state.isHydrated
     ? {
         'email': state.email.value,
-        'first_name': state.firstName.value,
-        'last_name': state.lastName.value,
         'mobile_number': state.mobile.value,
-        'password': state.password.value,
-        'confirm_password': state.confirmPassword.value,
         'hydrate': state.isHydrated
       }
     : {'hydrate': false};
   }
 }
-
-// Future<bool> _isScannedTextExists(XFile image) async {
-//   final recognizedText = await textRecognizer.processImage(InputImage.fromFilePath(image.path));
-//   await textRecognizer.close();
-//   final fcb = _isTextExist(recognizedText, 'FIRST CONSOLIDATED BANK');
-//   final pitakard = _isTextExist(recognizedText, 'PITAKArd');
-//   final account = _isTextExist(recognizedText, '6064 29');
-//   return fcb && pitakard && account;
-// }
-
-// bool _isTextExist(RecognizedText recognized, String text) {
-//   for (TextBlock block in recognized.blocks) {
-//     for (TextLine line in block.lines) {
-//       if (line.text.contains(text)) {
-//         return true;
-//       }
-//     }
-//   }
-//   return false;
-// }

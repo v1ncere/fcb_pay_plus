@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,8 +8,10 @@ import '../../pages/account_add/account_add.dart';
 import '../../pages/account_viewer/account_viewer.dart';
 import '../../pages/bottom_navbar/bottom_navbar.dart';
 import '../../pages/dynamic_viewer/dynamic_viewer.dart';
+import '../../pages/forgot_password/forgot_password.dart';
 import '../../pages/local_authentication/local_authentication.dart';
 import '../../pages/login/login.dart';
+import '../../pages/merchant_add/merchant_add.dart';
 import '../../pages/notifications/notifications.dart';
 import '../../pages/notifications_viewer/notifications_viewer.dart';
 import '../../pages/receipt/views/receipt_page.dart';
@@ -16,7 +19,6 @@ import '../../pages/scanner/scanner.dart';
 import '../../pages/scanner_transaction/scanner_transaction.dart';
 import '../../pages/settings/settings.dart';
 import '../../pages/sign_up/sign_up.dart';
-import '../../pages/sign_up_confirm/sign_up_confirm.dart';
 import '../../pages/update_password/update_password.dart';
 import '../../pages/walk_through/walk_through.dart';
 import '../../splash/splash.dart';
@@ -48,20 +50,32 @@ class AppRouter {
           path: '/login',
           builder: (context, state) => const LoginPage(),
           routes: [
-            // GoRoute(
-            //   name: RouteName.signUpVerify,
-            //   path: 'signUpVerify',
-            //   builder: (context, state) => const SignUpVerifyPage(),
-            // ),
             GoRoute(
               name: RouteName.signUp,
               path: 'signUp',
               builder: (context, state) => SignupRoute(),
             ),
             GoRoute(
-              name: RouteName.signUpConfirm,
-              path: 'signUpConfirm/:username',
-              builder: (context, state) => SignUpConfirmPage(username: state.pathParameters['username']),
+              name: RouteName.signupPitakard,
+              path: 'signupPitakard',
+              builder: (context, state) => SignupRoute(),
+            ),
+          ]
+        ),
+        ShellRoute(
+          builder: (context, state, child) => ForgotPasswordPage(child: child),
+          routes: [
+            GoRoute(
+              path: '/reset/email',
+              builder: (context, state) => EmailStep(),
+            ),
+            GoRoute(
+              path: '/reset/code',
+              builder: (context, state) => CodeStep(),
+            ),
+            GoRoute(
+              path: '/reset/new_password',
+              builder: (context, state) => NewPasswordStep(),
             )
           ]
         ),
@@ -125,10 +139,15 @@ class AppRouter {
               ]
             ),
             // (lvl last) receipt page
-            GoRoute(
+            GoRoute( // TODO: change from receipt to Transactions
               name: RouteName.receipt,
               path: 'receipt/:receiptId',
-              builder: (context, state) => ReceiptPage(receiptId: state.pathParameters['receiptId']),
+              builder: (context, state) => ReceiptPage(
+                accountNumber: state.pathParameters['accountNumber'],
+                referenceId: state.pathParameters['referenceId'],
+                transCode: state.pathParameters['transCode'],
+                transDate: state.pathParameters['transDate'] as TemporalDate,
+              ),
             ),
             // (lvl2) dynamic page viewer
             GoRoute(
@@ -144,6 +163,11 @@ class AppRouter {
               name: RouteName.addAccount,
               path: 'addAccount',
               builder: (context, state) => const AccountAddPage()
+            ),
+            GoRoute(
+              name: RouteName.addMerchant,
+              path: 'addMerchant',
+              builder: (context, state) => const MerchantAddPage()
             ),
             // (lvl 1) settings page
             GoRoute(

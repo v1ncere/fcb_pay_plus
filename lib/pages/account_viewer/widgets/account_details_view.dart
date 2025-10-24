@@ -12,10 +12,10 @@ class AccountDetailsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CarouselCubit, CarouselState>(
       builder: (context, state) {
-        final type = state.account.type!.toLowerCase();
-        if (type == AccountType.wlt.name
-        || type ==  AccountType.psa.name
-        || type ==  AccountType.ppr.name) {
+        final type = state.account.accountType!.toLowerCase();
+        if (type == AccountType.wallet.name
+        || type ==  AccountType.sa.name
+        || type ==  AccountType.pitakard.name) {
           return ExtraDisplaySavings(account: state.account);
         }
         if (type ==  AccountType.plc.name) {

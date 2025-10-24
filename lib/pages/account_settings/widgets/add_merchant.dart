@@ -1,0 +1,30 @@
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../utils/utils.dart';
+
+import 'widgets.dart';
+
+class AddMerchantButton extends StatelessWidget {
+  const AddMerchantButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 45,
+          width: 110,
+          child: SettingsButtonCard(
+            colors:const Color(0xFF00BFA5),
+            icon: FontAwesomeIcons.store,
+            text: 'ADD MERCHANT',
+            function: () => context.pushNamed(RouteName.addMerchant)
+          )
+        )
+      ]
+    );
+  }
+}

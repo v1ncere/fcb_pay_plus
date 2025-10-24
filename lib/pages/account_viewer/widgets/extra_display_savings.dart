@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/ModelProvider.dart';
+import '../../../models/ModelProvider.dart' hide AccountType;
 import '../../../utils/utils.dart';
 import 'widgets.dart';
 
 class ExtraDisplaySavings extends StatelessWidget {
   const ExtraDisplaySavings({super.key, required this.account});
   final Account account;
+  final bal = 0.0;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        mainInfoBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(account.balance)),
+        mainInfoBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(bal)),
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.all(15.0),
@@ -23,8 +24,8 @@ class ExtraDisplaySavings extends StatelessWidget {
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: [
-              tableRow(label: 'ACCOUNT TYPE', value: accountTypeNameString(account.type!)),
-              tableRow(label: 'ACCOUNT NUMBER', value: account.type ==  AccountType.wlt.name
+              tableRow(label: 'ACCOUNT TYPE', value: accountTypeNameString(account.accountType!)),
+              tableRow(label: 'ACCOUNT NUMBER', value: account.accountType ==  AccountType.wallet.name
               ? maskedNum(account.accountNumber)
               : account.accountNumber)
             ]

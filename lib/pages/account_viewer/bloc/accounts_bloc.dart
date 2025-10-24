@@ -11,7 +11,7 @@ import '../../../utils/utils.dart';
 part 'accounts_event.dart';
 part 'accounts_state.dart';
 
-final emptyAccount = Account(accountNumber: '', owner: '', ledgerStatus: '');
+final emptyAccount = Account(accountNumber: '', owner: '');
 
 class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
   AccountsBloc() : super(const AccountsState()) {
@@ -33,7 +33,7 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
         final accounts = items.whereType<Account>().toList();
         
         if (accounts.isNotEmpty) {
-          final sameType = accounts.where((e) => e.type == event.account.type).toList();
+          final sameType = accounts.where((e) => e.accountType == event.account.accountType).toList();
           final first = sameType.firstWhere((e) => e.accountNumber == event.account.accountNumber); // account specified by user to display first
           final others = sameType.where((e) => e.accountNumber != event.account.accountNumber).toList(); // other remaining Accounts
           emit(state.copyWith(status: Status.success, accountList: [first, ...others]));

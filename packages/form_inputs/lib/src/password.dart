@@ -22,9 +22,9 @@ extension PasswordValidationErrorX on PasswordValidationError {
   String text() {
     switch (this) {
       case PasswordValidationError.required:
-        return 'Password is required';
+        return 'Please enter your password to continue.';
       case PasswordValidationError.invalid:
-        return 'Password is too weak. Strong password is a must.';
+        return 'Your password is too weak. Use a stronger one to secure your account.';
     }
   }
 }

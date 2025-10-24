@@ -11,7 +11,7 @@ class ExtraDisplayCredit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final limit = account.creditLimit!;
-    final bal = account.balance!;
+    final bal = 0.0; // TODO: remove from Account table
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(

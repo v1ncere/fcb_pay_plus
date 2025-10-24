@@ -6,13 +6,13 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_repository/hive_repository.dart';
 
-import '../../../models/ModelProvider.dart';
+import '../../../models/ModelProvider.dart' hide AccountType;
 import '../../../utils/utils.dart';
 
 part 'accounts_home_event.dart';
 part 'accounts_home_state.dart';
 
-final Account emptyAccount = Account(accountNumber: '', owner: '', ledgerStatus: '');
+final Account emptyAccount = Account(accountNumber: '', owner: '');
 
 class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   AccountsHomeBloc({
@@ -44,7 +44,7 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   // change account display
   Future<void> _onAccountDisplayChanged(AccountDisplayChanged event, Emitter<AccountsHomeState>  emit) async {
     // save by [account type]
-    await _hiveRepository.addAccountNumber(uid: '${event.account.type}', accountNumber: event.account.accountNumber);
+    await _hiveRepository.addAccountNumber(uid: '${event.account.accountType}', accountNumber: event.account.accountNumber);
     await _fetchDataAndRefreshState(emit);
   }
 
@@ -53,6 +53,7 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
     final authUser = await Amplify.Auth.getCurrentUser();
     final request = ModelSubscriptions.onCreate(Account.classType, where: Account.OWNER.eq(authUser.userId));
     final operation = Amplify.API.subscribe(request);
+    
     subscriptionOnCreate = operation.listen(
       (event) => add(AccountsHomeStreamUpdated(event.data, false)),
       onError: (error) => safePrint(error.toString()),
@@ -64,6 +65,7 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
     final authUser = await Amplify.Auth.getCurrentUser();
     final request = ModelSubscriptions.onUpdate(Account.classType, where: Account.OWNER.eq(authUser.userId));
     final operation = Amplify.API.subscribe(request);
+    
     subscriptionOnUpdate = operation.listen(
       (event) => add(AccountsHomeStreamUpdated(event.data, false)),
       onError: (error) => safePrint(error.toString()),
@@ -75,6 +77,7 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
     final authUser = await Amplify.Auth.getCurrentUser();
     final request = ModelSubscriptions.onDelete(Account.classType, where: Account.OWNER.eq(authUser.userId));
     final operation = Amplify.API.subscribe(request);
+    
     subscriptionOnDelete = operation.listen(
       (event) => add(AccountsHomeStreamUpdated(event.data, true)),
       onError: (error) => safePrint(error.toString()),
@@ -141,11 +144,11 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   }
 
   Future<void> _accountHomeCardDisplay(List<Account> accounts, Emitter<AccountsHomeState> emit) async {
-    final wlt = _getAccountOfType(accounts, AccountType.wlt.name); // locate wallet account
-    final psa = await _getAccount(accounts, AccountType.psa.name); // locate savings account
-    final ppr = await _getAccount(accounts, AccountType.ppr.name); // locate payroll account
+    final wallet = _getAccountOfType(accounts, AccountType.wallet.name); // locate wallet account
+    final sa = await _getAccount(accounts, AccountType.sa.name); // locate savings account
+    final pitakard = await _getAccount(accounts, AccountType.pitakard.name); // locate payroll account
     final plc = await _getAccount(accounts, AccountType.plc.name); // locate credit account
-    emit(state.copyWith(status: Status.success, accountList: accounts, wallet: wlt, savings: psa, payroll: ppr, credit: plc));
+    emit(state.copyWith(status: Status.success, accountList: accounts, wallet: wallet, savings: sa, payroll: pitakard, credit: plc));
   }
 
   Future<void> _fetchUserDetails(Emitter<AccountsHomeState> emit) async {
@@ -164,18 +167,18 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
 
   // get Account by type
   Account _getAccountOfType(List<Account> accountList, String type) {
-    return accountList.firstWhere((e) => e.type!.toLowerCase() == type, orElse: () => emptyAccount);
+    return accountList.firstWhere((e) => e.accountType!.toLowerCase() == type, orElse: () => emptyAccount);
   }
 
   // sort the list of Accounts and return the  latest
   Account _getLatestAccount(List<Account> accountList, String type) {
     accountList.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
-    return accountList.firstWhere((e) => e.type!.toLowerCase() == type, orElse: () => emptyAccount);
+    return accountList.firstWhere((e) => e.accountType!.toLowerCase() == type, orElse: () => emptyAccount);
   }
 
   // get account by specific type 
   Future<Account> _getAccount(List<Account> accountList, String type) async {
-    final account = accountList.where((e) => e.type!.toLowerCase() == type);
+    final account = accountList.where((e) => e.accountType!.toLowerCase() == type);
     if (account.isNotEmpty) {
       final accountNumber = await _hiveRepository.getAccountNumber(type); // get accountNumber saved from local storage [hive]
       return accountNumber.isNotEmpty

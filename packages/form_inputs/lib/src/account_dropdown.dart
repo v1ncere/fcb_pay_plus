@@ -18,9 +18,9 @@ extension AccountDropdownValidationErrorX on AccountDropdownValidationError {
   String text() {
     switch(this) {
       case AccountDropdownValidationError.empty:
-        return 'Please select an option.';
+        return 'Please make a selection.';
       case AccountDropdownValidationError.invalid:
-        return 'Something went wrong. Please try again later.';
+        return 'We couldn\'t load the options. Please try again later.';
     }
   }
 }

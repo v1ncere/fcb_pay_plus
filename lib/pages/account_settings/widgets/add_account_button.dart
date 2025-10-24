@@ -11,23 +11,20 @@ class AddAccountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 45,
-            width: 110,
-            child: AddAccountCard(
-              colors:const Color(0xFF00BFA5),
-              icon: FontAwesomeIcons.piggyBank,
-              text: 'ADD ACCOUNT',
-              function: () => context.pushNamed(RouteName.addAccount)
-            )
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 45,
+          width: 110,
+          child: SettingsButtonCard(
+            colors:const Color(0xFF00BFA5),
+            icon: FontAwesomeIcons.piggyBank,
+            text: 'ADD ACCOUNT',
+            function: () => context.pushNamed(RouteName.addAccount)
           )
-        ]
-      )
+        )
+      ]
     );
   }
 }

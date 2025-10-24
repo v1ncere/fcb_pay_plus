@@ -57,9 +57,18 @@ class AccountSettingsView extends StatelessWidget {
               ),
               ContainerBody(
                 children: [
-                  AddAccountButton(),
+                  Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Row(
+                      children: [
+                        AddAccountButton(),
+                        SizedBox(width: 10),
+                        AddMerchantButton(),
+                      ]
+                    )
+                  ),
                   SizedBox(height: 10),
-                  AccountListViewDisplay()
+                  AccountListViewDisplay(),
                 ]
               )
             ]

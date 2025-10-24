@@ -29,6 +29,7 @@ class DynamicRoute extends amplify_core.Model {
   static const classType = const _DynamicRouteModelType();
   final String id;
   final String? _title;
+  final String? _category;
   final List<Button>? _buttons;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -50,6 +51,10 @@ class DynamicRoute extends amplify_core.Model {
     return _title;
   }
   
+  String? get category {
+    return _category;
+  }
+  
   List<Button>? get buttons {
     return _buttons;
   }
@@ -62,12 +67,13 @@ class DynamicRoute extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const DynamicRoute._internal({required this.id, title, buttons, createdAt, updatedAt}): _title = title, _buttons = buttons, _createdAt = createdAt, _updatedAt = updatedAt;
+  const DynamicRoute._internal({required this.id, title, category, buttons, createdAt, updatedAt}): _title = title, _category = category, _buttons = buttons, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory DynamicRoute({String? id, String? title, List<Button>? buttons}) {
+  factory DynamicRoute({String? id, String? title, String? category, List<Button>? buttons}) {
     return DynamicRoute._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       title: title,
+      category: category,
       buttons: buttons != null ? List<Button>.unmodifiable(buttons) : buttons);
   }
   
@@ -81,6 +87,7 @@ class DynamicRoute extends amplify_core.Model {
     return other is DynamicRoute &&
       id == other.id &&
       _title == other._title &&
+      _category == other._category &&
       DeepCollectionEquality().equals(_buttons, other._buttons);
   }
   
@@ -94,6 +101,7 @@ class DynamicRoute extends amplify_core.Model {
     buffer.write("DynamicRoute {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("title=" + "$_title" + ", ");
+    buffer.write("category=" + "$_category" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -101,20 +109,23 @@ class DynamicRoute extends amplify_core.Model {
     return buffer.toString();
   }
   
-  DynamicRoute copyWith({String? title, List<Button>? buttons}) {
+  DynamicRoute copyWith({String? title, String? category, List<Button>? buttons}) {
     return DynamicRoute._internal(
       id: id,
       title: title ?? this.title,
+      category: category ?? this.category,
       buttons: buttons ?? this.buttons);
   }
   
   DynamicRoute copyWithModelFieldValues({
     ModelFieldValue<String?>? title,
+    ModelFieldValue<String?>? category,
     ModelFieldValue<List<Button>?>? buttons
   }) {
     return DynamicRoute._internal(
       id: id,
       title: title == null ? this.title : title.value,
+      category: category == null ? this.category : category.value,
       buttons: buttons == null ? this.buttons : buttons.value
     );
   }
@@ -122,6 +133,7 @@ class DynamicRoute extends amplify_core.Model {
   DynamicRoute.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _title = json['title'],
+      _category = json['category'],
       _buttons = json['buttons']  is Map
         ? (json['buttons']['items'] is List
           ? (json['buttons']['items'] as List)
@@ -139,12 +151,13 @@ class DynamicRoute extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'buttons': _buttons?.map((Button? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'title': _title, 'category': _category, 'buttons': _buttons?.map((Button? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'title': _title,
+    'category': _category,
     'buttons': _buttons,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
@@ -153,6 +166,7 @@ class DynamicRoute extends amplify_core.Model {
   static final amplify_core.QueryModelIdentifier<DynamicRouteModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<DynamicRouteModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final TITLE = amplify_core.QueryField(fieldName: "title");
+  static final CATEGORY = amplify_core.QueryField(fieldName: "category");
   static final BUTTONS = amplify_core.QueryField(
     fieldName: "buttons",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Button'));
@@ -186,6 +200,12 @@ class DynamicRoute extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: DynamicRoute.TITLE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: DynamicRoute.CATEGORY,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));

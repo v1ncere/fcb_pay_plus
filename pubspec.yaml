@@ -68,6 +68,9 @@ dependencies:
   amplify_storage_s3: ^2.6.4
   aws_common: ^0.7.9
   aws_signature_v4: ^0.6.7
+  flutter_slidable: ^4.0.0
+  webview_flutter: ^4.13.0
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:
@@ -105,6 +108,14 @@ flutter:
     - assets/svg/profile_data.svg
     - assets/svg/transfer_money.svg
     - assets/svg/face_scanner.svg
+    - assets/svg/forgot_password.svg
+    - assets/svg/login_illustration.svg
+    - assets/svg/sending_emails.svg
+    - assets/svg/inbox_empty.svg
+    - assets/svg/message_sent.svg
+    - assets/svg/mailbox.svg
+    - assets/svg/mail_sent.svg
+    - assets/svg/reset_password.svg
     - .env
   
   fonts:

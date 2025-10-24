@@ -14,7 +14,7 @@ Card creditCard({
   required Account account
 }) {
   final limit = account.creditLimit ?? 0.0;
-  final bal = account.balance ?? 0.0;
+  final bal = 0.0; // TODO: get this from Transaction model running balance
   return Card(
     elevation: 2.0,
     color: ColorString.eucalyptus,
@@ -52,7 +52,7 @@ Card creditCard({
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      accountTypeNameString(account.type ?? ''), // return  name of the account type,
+                      accountTypeNameString(account.accountType ?? ''), // return  name of the account type,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: ColorString.white
@@ -60,7 +60,7 @@ Card creditCard({
                     ),
                     settingsPopUp(
                       accountList: accountList,
-                      type: account.type ?? '',
+                      type: account.accountType ?? '',
                       onSelected: (value) => context.read<AccountsHomeBloc>().add(AccountDisplayChanged(value))
                     )
                   ]
@@ -76,7 +76,7 @@ Card creditCard({
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      buildAccountNumber(value: account.accountNumber, type: account.type ?? ''),
+                      buildAccountNumber(value: account.accountNumber, type: account.accountType ?? ''),
                       Icon(FontAwesomeIcons.chevronRight, size: 18, color: ColorString.white)
                     ]
                   ),

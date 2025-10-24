@@ -14,7 +14,7 @@ import '../../../utils/utils.dart';
 part 'scanner_transaction_event.dart';
 part 'scanner_transaction_state.dart';
 
-final emptyAccount = Account(accountNumber: '', owner: '', ledgerStatus: '');
+final emptyAccount = Account(accountNumber: '', owner: '');
 
 class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransactionState> {
   ScannerTransactionBloc({

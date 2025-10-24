@@ -17,7 +17,7 @@ class AccountViewerPage extends StatelessWidget {
         BlocProvider(create: (context) => FilterBloc()
         ..add(FilterFetched())),
         BlocProvider(create: (context) => AccountButtonBloc()
-        ..add(ButtonsFetched(account.type!))),
+        ..add(ButtonsFetched(account.accountType!))),
         BlocProvider(create: (context) => AccountsBloc()
         ..add(AccountsFetched(account))
         ..add(AccountsStreamed(account.owner))),

@@ -28,6 +28,7 @@
     "@aws-sdk/client-appsync": "^3.799.0",
     "@smithy/signature-v4": "^5.1.0",
     "aws-amplify": "^6.13.1",
-    "aws4": "^1.13.2"
+    "aws4": "^1.13.2",
+    "uuid": "^8.1.0"
   }
 }

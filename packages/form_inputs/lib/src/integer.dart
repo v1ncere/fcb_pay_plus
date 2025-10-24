@@ -22,9 +22,9 @@ extension IntegerValidationErrorX on IntegerValidationError {
   String text() {
     switch (this) {
       case IntegerValidationError.required:
-        return 'Input is required.';
+        return 'Please enter a number.';
       case IntegerValidationError.invalid:
-        return 'Input is invalid. Please try again.';
+        return 'Please enter a valid number.';
     }
   }
 }

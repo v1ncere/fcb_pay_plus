@@ -18,7 +18,7 @@ class AccountViewerView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            accountTypeNameString(account.type!).toUpperCase(),
+            accountTypeNameString(account.accountType!).toUpperCase(),
             style: TextStyle(
               color: ColorString.jewel,
               fontWeight: FontWeight.w700

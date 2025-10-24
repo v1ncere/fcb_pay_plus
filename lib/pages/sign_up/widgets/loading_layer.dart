@@ -8,13 +8,13 @@ class LoadingLayer extends StatelessWidget {
     super.key, 
     required this.child,
     required this.isLoading, 
-    required this.isProgress,
-    required this.progress,
+    this.isProgress,
+    this.progress,
   });
   final Widget child;
   final bool isLoading;
-  final bool isProgress;
-  final double progress;
+  final bool? isProgress;
+  final double? progress;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class LoadingLayer extends StatelessWidget {
     return Stack(
       children: [
         child,
-        if(isProgress || isLoading)
+        if ((isProgress ?? false) || isLoading)
           Positioned.fill(
             child: Container(
               color: Colors.black54,
@@ -64,7 +64,7 @@ class LoadingLayer extends StatelessWidget {
           valueColor: const AlwaysStoppedAnimation(Colors.white),
         ),
         Text(
-          '${(progress * 100).toStringAsFixed(0)}%',
+          '${((progress ?? 0) * 100).toStringAsFixed(0)}%',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: ColorString.white,

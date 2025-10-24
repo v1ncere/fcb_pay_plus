@@ -21,9 +21,9 @@ extension ConfirmedPasswordValidationErrorX on ConfirmedPasswordValidationError 
   String text() {
     switch (this) {
       case ConfirmedPasswordValidationError.required:
-        return 'Confirm password is required';
+        return 'Please confirm your password.';
       case ConfirmedPasswordValidationError.invalid:
-        return 'Confirm password not match. Please try again.';
+        return 'Passwords do not match.';
     }
   }
 }

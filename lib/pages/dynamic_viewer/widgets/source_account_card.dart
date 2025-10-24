@@ -14,6 +14,7 @@ class SourceAccountCard extends StatelessWidget {
       builder: (context, state) {
         final f = NumberFormat('#,##0.00', 'en_US');
         final account = state.account;
+        final bal = 0.0;
         return account != emptyAccount
         ? Card(
           elevation: 2.0,
@@ -35,9 +36,9 @@ class SourceAccountCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  account.type!.isNotEmpty
+                  account.accountType!.isNotEmpty
                   ? CustomRowText(
-                    title: accountTypeNameString(account.type!.toLowerCase()),
+                    title: accountTypeNameString(account.accountType!.toLowerCase()),
                     titleColor: Colors.white,
                     titleFlex: 1,
                     content: 'Balance',
@@ -51,7 +52,7 @@ class SourceAccountCard extends StatelessWidget {
                     titleColor: Colors.white,
                     titleFlex: 1,
                     contentColor: Colors.white,
-                    content: f.format(account.balance),
+                    content: f.format(bal),
                     contentFlex: 1,
                   )
                 ]

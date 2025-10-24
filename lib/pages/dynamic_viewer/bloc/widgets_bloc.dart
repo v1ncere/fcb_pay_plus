@@ -12,7 +12,7 @@ import '../../../utils/utils.dart';
 part 'widgets_event.dart';
 part 'widgets_state.dart';
 
-final Account emptyAccount = Account(accountNumber: '', owner: '', ledgerStatus: '');
+final Account emptyAccount = Account(accountNumber: '', owner: '');
 final DynamicWidget emptyWidget = DynamicWidget();
 
 class WidgetsBloc extends Bloc<WidgetsEvent, WidgetsState> {

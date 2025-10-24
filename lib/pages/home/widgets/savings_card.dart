@@ -13,6 +13,7 @@ Card savingsCard({
   required List<Account> accountList,
   required Account account
 }) {
+  final bal = 0.0; // TODO: get this from Transaction model running balance
   return Card(
     elevation: 2.0,
     color: ColorString.eucalyptus,
@@ -50,7 +51,7 @@ Card savingsCard({
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      accountTypeNameString(account.type ?? ''), // return  name of the account type
+                      accountTypeNameString(account.accountType ?? ''), // return  name of the account type
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: ColorString.white
@@ -58,7 +59,7 @@ Card savingsCard({
                     ),
                     settingsPopUp(
                       accountList: accountList,
-                      type: account.type ?? '',
+                      type: account.accountType ?? '',
                       onSelected: (value) => context.read<AccountsHomeBloc>().add(AccountDisplayChanged(value))
                     )
                   ]
@@ -75,14 +76,14 @@ Card savingsCard({
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      buildAccountNumber(value: account.accountNumber, type: account.type ?? ''),
+                      buildAccountNumber(value: account.accountNumber, type: account.accountType ?? ''),
                       Icon(FontAwesomeIcons.chevronRight, size: 18, color: ColorString.white)
                     ]
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      buildDetailsBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(account.balance))
+                      buildDetailsBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(bal))
                     ]
                   )
                 ]
