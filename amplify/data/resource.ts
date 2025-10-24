@@ -18,7 +18,7 @@ const schema = a.schema({
     status: a.string(),                   // options: NA(new)(default)|AC(active)|LC(locked)|CL(closed)|BL(blocked)
     owner: a.string().required(),         // owner id of the account
     // relationships
-    transactions: a.hasMany('Transaction', 'accountNumber'), // one to many
+    transactions: a.hasMany('Transaction', 'accountId'), // one to many
     transferableUser: a.hasOne('TransferableUser', 'accountId')
   }).identifier(['accountNumber']) // [accountNumber]
   .authorization((allow) => [
@@ -180,7 +180,8 @@ const schema = a.schema({
     balanceCleared: a.float(),
     ledgerStatus: a.string(),
     // relationships
-    account: a.belongsTo('Account', 'accountNumber'), // relationship to Account
+    accountId: a.id(),
+    account: a.belongsTo('Account', 'accountId'), // relationship to Account
     transactionDetails: a.hasMany('TransactionTransactionDetail', ['transDate', 'referenceId', 'transCode', 'accountNumber']), // has many transactionDetail
     // only for the TS linter to accept the updatedAt
     updatedAt: a.datetime(),

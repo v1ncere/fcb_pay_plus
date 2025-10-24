@@ -66,7 +66,7 @@ class TransactionHistoryBloc extends Bloc<TransactionHistoryEvent, TransactionHi
 
     if (search.isNotEmpty) {
       // TODO: from details(removed from table) to accountNumber
-      newList = newList.where((e) => e.account!.accountNumber.toLowerCase().contains(searchQuery)).toList();
+      newList = newList.where((e) => e.accountNumber.toLowerCase().contains(searchQuery)).toList();
     }
     // return filtered list
     return newList;

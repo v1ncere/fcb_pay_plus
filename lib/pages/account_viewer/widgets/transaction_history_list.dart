@@ -39,7 +39,7 @@ class TransactionHistoryList extends StatelessWidget {
                   return ListTile(
                     key: ValueKey(transaction),
                     leading: Text('account type removed'),
-                    title: Text(transaction.account!.accountNumber),
+                    title: Text(transaction.accountNumber),
                     subtitle: Text('details removed', overflow: TextOverflow.ellipsis,),
                     trailing: CustomText(
                       text: getDynamicDateString(state.transactionList[index].createdAt!.getDateTimeInUtc().toLocal()),
@@ -92,7 +92,7 @@ class TransactionHistoryList extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(transaction.account!.accountNumber, style: Theme.of(context).textTheme.labelLarge),
+              Text(transaction.accountNumber, style: Theme.of(context).textTheme.labelLarge),
               Text('type removed', style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: 10),
               Text('details removed', style: Theme.of(context).textTheme.bodyMedium),

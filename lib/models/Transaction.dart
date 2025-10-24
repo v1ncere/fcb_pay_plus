@@ -27,6 +27,7 @@ import 'package:collection/collection.dart';
 /** This is an auto generated class representing the Transaction type in your schema. */
 class Transaction extends amplify_core.Model {
   static const classType = const _TransactionModelType();
+  final String? _accountNumber;
   final amplify_core.TemporalDate? _transDate;
   final String? _referenceId;
   final String? _transCode;
@@ -55,6 +56,19 @@ class Transaction extends amplify_core.Model {
         transCode: _transCode!,
         accountNumber: _accountNumber!
       );
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
+  String get accountNumber {
+    try {
+      return _accountNumber!;
     } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
           amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -140,10 +154,11 @@ class Transaction extends amplify_core.Model {
     return _createdAt;
   }
   
-  const Transaction._internal({required transDate, required referenceId, required transCode, transAmount, amountType, balanceActual, balanceCleared, ledgerStatus, account, transactionDetails, updatedAt, createdAt}): _transDate = transDate, _referenceId = referenceId, _transCode = transCode, _transAmount = transAmount, _amountType = amountType, _balanceActual = balanceActual, _balanceCleared = balanceCleared, _ledgerStatus = ledgerStatus, _account = account, _transactionDetails = transactionDetails, _updatedAt = updatedAt, _createdAt = createdAt;
+  const Transaction._internal({required accountNumber, required transDate, required referenceId, required transCode, transAmount, amountType, balanceActual, balanceCleared, ledgerStatus, account, transactionDetails, updatedAt, createdAt}): _accountNumber = accountNumber, _transDate = transDate, _referenceId = referenceId, _transCode = transCode, _transAmount = transAmount, _amountType = amountType, _balanceActual = balanceActual, _balanceCleared = balanceCleared, _ledgerStatus = ledgerStatus, _account = account, _transactionDetails = transactionDetails, _updatedAt = updatedAt, _createdAt = createdAt;
   
-  factory Transaction({required amplify_core.TemporalDate transDate, required String referenceId, required String transCode, double? transAmount, String? amountType, double? balanceActual, double? balanceCleared, String? ledgerStatus, Account? account, List<TransactionTransactionDetail>? transactionDetails, amplify_core.TemporalDateTime? updatedAt}) {
+  factory Transaction({required String accountNumber, required amplify_core.TemporalDate transDate, required String referenceId, required String transCode, double? transAmount, String? amountType, double? balanceActual, double? balanceCleared, String? ledgerStatus, Account? account, List<TransactionTransactionDetail>? transactionDetails, amplify_core.TemporalDateTime? updatedAt}) {
     return Transaction._internal(
+      accountNumber: accountNumber,
       transDate: transDate,
       referenceId: referenceId,
       transCode: transCode,
@@ -165,6 +180,7 @@ class Transaction extends amplify_core.Model {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Transaction &&
+      _accountNumber == other._accountNumber &&
       _transDate == other._transDate &&
       _referenceId == other._referenceId &&
       _transCode == other._transCode &&
@@ -186,6 +202,7 @@ class Transaction extends amplify_core.Model {
     var buffer = new StringBuffer();
     
     buffer.write("Transaction {");
+    buffer.write("accountNumber=" + "$_accountNumber" + ", ");
     buffer.write("transDate=" + (_transDate != null ? _transDate!.format() : "null") + ", ");
     buffer.write("referenceId=" + "$_referenceId" + ", ");
     buffer.write("transCode=" + "$_transCode" + ", ");
@@ -204,6 +221,7 @@ class Transaction extends amplify_core.Model {
   
   Transaction copyWith({double? transAmount, String? amountType, double? balanceActual, double? balanceCleared, String? ledgerStatus, Account? account, List<TransactionTransactionDetail>? transactionDetails, amplify_core.TemporalDateTime? updatedAt}) {
     return Transaction._internal(
+      accountNumber: accountNumber,
       transDate: transDate,
       referenceId: referenceId,
       transCode: transCode,
@@ -228,6 +246,7 @@ class Transaction extends amplify_core.Model {
     ModelFieldValue<amplify_core.TemporalDateTime?>? updatedAt
   }) {
     return Transaction._internal(
+      accountNumber: accountNumber,
       transDate: transDate,
       referenceId: referenceId,
       transCode: transCode,
@@ -243,7 +262,8 @@ class Transaction extends amplify_core.Model {
   }
   
   Transaction.fromJson(Map<String, dynamic> json)  
-    : _transDate = json['transDate'] != null ? amplify_core.TemporalDate.fromString(json['transDate']) : null,
+    : _accountNumber = json['accountNumber'],
+      _transDate = json['transDate'] != null ? amplify_core.TemporalDate.fromString(json['transDate']) : null,
       _referenceId = json['referenceId'],
       _transCode = json['transCode'],
       _transAmount = (json['transAmount'] as num?)?.toDouble(),
@@ -273,10 +293,11 @@ class Transaction extends amplify_core.Model {
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'transDate': _transDate?.format(), 'referenceId': _referenceId, 'transCode': _transCode, 'transAmount': _transAmount, 'amountType': _amountType, 'balanceActual': _balanceActual, 'balanceCleared': _balanceCleared, 'ledgerStatus': _ledgerStatus, 'account': _account?.toJson(), 'transactionDetails': _transactionDetails?.map((TransactionTransactionDetail? e) => e?.toJson()).toList(), 'updatedAt': _updatedAt?.format(), 'createdAt': _createdAt?.format()
+    'accountNumber': _accountNumber, 'transDate': _transDate?.format(), 'referenceId': _referenceId, 'transCode': _transCode, 'transAmount': _transAmount, 'amountType': _amountType, 'balanceActual': _balanceActual, 'balanceCleared': _balanceCleared, 'ledgerStatus': _ledgerStatus, 'account': _account?.toJson(), 'transactionDetails': _transactionDetails?.map((TransactionTransactionDetail? e) => e?.toJson()).toList(), 'updatedAt': _updatedAt?.format(), 'createdAt': _createdAt?.format()
   };
   
   Map<String, Object?> toMap() => {
+    'accountNumber': _accountNumber,
     'transDate': _transDate,
     'referenceId': _referenceId,
     'transCode': _transCode,
@@ -292,6 +313,7 @@ class Transaction extends amplify_core.Model {
   };
 
   static final amplify_core.QueryModelIdentifier<TransactionModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<TransactionModelIdentifier>();
+  static final ACCOUNTNUMBER = amplify_core.QueryField(fieldName: "accountNumber");
   static final TRANSDATE = amplify_core.QueryField(fieldName: "transDate");
   static final REFERENCEID = amplify_core.QueryField(fieldName: "referenceId");
   static final TRANSCODE = amplify_core.QueryField(fieldName: "transCode");
@@ -337,6 +359,12 @@ class Transaction extends amplify_core.Model {
       amplify_core.ModelIndex(fields: const ["transDate", "referenceId", "transCode", "accountNumber"], name: null),
       amplify_core.ModelIndex(fields: const ["accountNumber", "updatedAt"], name: "transactionsByAccountNumberAndUpdatedAt")
     ];
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Transaction.ACCOUNTNUMBER,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Transaction.TRANSDATE,
@@ -389,7 +417,7 @@ class Transaction extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
       key: Transaction.ACCOUNT,
       isRequired: false,
-      targetNames: ['accountNumber'],
+      targetNames: ['accountId'],
       ofModelName: 'Account'
     ));
     

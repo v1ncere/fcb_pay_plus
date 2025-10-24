@@ -55,7 +55,7 @@ export 'VerifyAccount.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "cbbe1914ea41de91b353c8769200781d";
+  String version = "97cb88d87cba32a504e1e20f92f91495";
   @override
   List<amplify_core.ModelSchema> modelSchemas = [Account.schema, AccountButton.schema, Button.schema, DynamicRoute.schema, DynamicWidget.schema, Merchant.schema, Notification.schema, OtpRequest.schema, SignupRequest.schema, Transaction.schema, TransactionDetail.schema, TransactionTransactionDetail.schema, TransferableUser.schema, VerifyAccount.schema];
   @override
