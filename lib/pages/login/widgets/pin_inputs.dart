@@ -1,3 +1,4 @@
+import 'package:fcb_pay_plus/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
@@ -17,7 +18,10 @@ class PinInputs extends StatelessWidget {
         height: 60,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.green.shade200),
+          border: Border.all(
+            width: 2,
+            color: ColorString.eucalyptus,
+          ),
         ),
         textStyle: const TextStyle(
           fontSize: 20,

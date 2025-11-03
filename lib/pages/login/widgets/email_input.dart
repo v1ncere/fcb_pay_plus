@@ -20,15 +20,19 @@ class EmailInput extends StatelessWidget {
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color.fromARGB(255, 211, 243, 224),
+            isDense: true,
+            fillColor: const Color.fromARGB(30, 37, 193, 102),
             floatingLabelBehavior: FloatingLabelBehavior.never,
             prefixIcon: Icon(FontAwesomeIcons.solidCircleUser, color: ColorString.eucalyptus),
-            labelText: 'Email',
+            labelText: 'Email add',
             errorText: state.email.displayError?.text(),
-            border: SelectedInputBorderWithShadow(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide.none,
-            )
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15.0)
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: ColorString.deepSea, width: 2.0),
+              borderRadius: BorderRadius.circular(15.0),
+            ),
           )
         );
       }

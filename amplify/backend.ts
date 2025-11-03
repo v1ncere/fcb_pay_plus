@@ -3,6 +3,7 @@ import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { storage } from './storage/resource';
 import { processTransaction } from './functions/processTransaction/resource';
+import { otpHandler } from './functions/otpHandler/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -12,4 +13,5 @@ defineBackend({
   data,
   storage,
   processTransaction,
+  otpHandler,
 });

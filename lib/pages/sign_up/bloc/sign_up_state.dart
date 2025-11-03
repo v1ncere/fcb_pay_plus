@@ -12,6 +12,7 @@ class SignUpState extends Equatable {
   final Name accountAlias;
   final Email email;
   final MobileNumber mobile;
+  final Integer otpCode;
   //
   final XFile? userImage;
   final double similarity;
@@ -44,6 +45,7 @@ class SignUpState extends Equatable {
     this.accountAlias = const Name.pure(),
     this.email = const Email.pure(),
     this.mobile = const MobileNumber.pure(),
+    this.otpCode = const Integer.pure(),
     this.userImage,
     this.similarity = 0.0,
     this.livenessImageBytes = const [],
@@ -73,6 +75,7 @@ class SignUpState extends Equatable {
     Name? accountAlias,
     Email? email,
     MobileNumber? mobile,
+    Integer? otpCode,
     XFile? userImage,
     double? similarity,
     List<int>? livenessImageBytes,
@@ -101,6 +104,7 @@ class SignUpState extends Equatable {
       accountAlias: accountAlias ?? this.accountAlias,
       email: email ?? this.email,
       mobile: mobile ?? this.mobile,
+      otpCode: otpCode ?? this.otpCode,
       userImage: userImage ?? this.userImage,
       similarity: similarity ?? this.similarity,
       livenessImageBytes: livenessImageBytes ?? this.livenessImageBytes,
@@ -133,6 +137,7 @@ class SignUpState extends Equatable {
       accountAlias,
       email,
       mobile,
+      otpCode,
       userImage,
       similarity,
       livenessImageBytes,

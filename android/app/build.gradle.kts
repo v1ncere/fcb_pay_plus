@@ -1,8 +1,9 @@
 plugins {
-    id "com.android.application"
-    id "kotlin-android"
+    id("com.android.application")
+    id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id "dev.flutter.flutter-gradle-plugin"
+    id("dev.flutter.flutter-gradle-plugin")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.0" // this version matches your Kotlin version
 }
 
 android {
@@ -12,21 +13,21 @@ android {
 
     compileOptions {
         // Support for Java 8 features
-        coreLibraryDesugaringEnabled true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     buildFeatures {
-        compose true
+        compose = true
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.8'
+        kotlinCompilerExtensionVersion = "1.4.8"
     }
 
     defaultConfig {
@@ -44,22 +45,22 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
 
 dependencies {
     // FaceLivenessDetector dependency
-    implementation 'com.amplifyframework.ui:liveness:1.3.0'
+    implementation("com.amplifyframework.ui:liveness:1.3.0")
     // Amplify Auth dependency (unnecessary if using your own credentials provider)
-    implementation 'com.amplifyframework:aws-auth-cognito:2.26.0'
+    implementation("com.amplifyframework:aws-auth-cognito:2.26.0")
     // Material3 dependency for theming FaceLivenessDetector
-    implementation 'androidx.compose.material3:material3:1.1.2'
+    implementation("androidx.compose.material3:material3:1.1.2")
     // Kotlin compose
-    implementation 'androidx.activity:activity-compose:1.10.0'
+    implementation("androidx.activity:activity-compose:1.10.0")
     // Support for Java 8 features
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 }
 
 flutter {

@@ -16,11 +16,11 @@ class LoginView extends StatelessWidget {
     return BlocConsumer<LoginBloc, LoginState> (
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
-        if(state.status.isSuccess) {
+        if (state.status.isSuccess) {
           context.goNamed(RouteName.authPin);
           // context.read<AppBloc>().add(LoginChecked());
         }
-        if(state.status.isCanceled) {
+        if (state.status.isCanceled) {
           ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(customSnackBar(
@@ -59,7 +59,8 @@ class LoginView extends StatelessWidget {
       case SignInSteps.initial:
       case SignInSteps.confirmSignInWithCustomChallenge:
       case SignInSteps.done:
-        return const LoginScreen();
+        return const ConfirmScreen();
+        // return const LoginScreen();
       case SignInSteps.confirmSignInWithSmsMfaCode:
       case SignInSteps.confirmSignInWithTotpMfaCode:
       case SignInSteps.confirmSignInWithOtpCode:

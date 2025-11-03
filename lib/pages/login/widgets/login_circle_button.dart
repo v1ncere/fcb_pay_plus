@@ -4,8 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../login.dart';
 
-class LoginButton extends StatelessWidget {
-  const LoginButton({super.key});
+class LoginCircleButton extends StatelessWidget {
+  const LoginCircleButton({super.key});
 
   @override
   Widget build(BuildContext context) {

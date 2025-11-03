@@ -1,25 +1,10 @@
 name: fcb_pay_plus
 description: "An upgrade from FCBPay App"
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.7.0 <4.0.0"
+  sdk: ^3.9.2
 
 dependencies:
   flutter:
@@ -45,11 +30,11 @@ dependencies:
   intl: ^0.20.2
   font_awesome_flutter: ^10.8.0
   hive_generator: ^2.0.1
-  local_auth: ^2.3.0
+  local_auth: ^3.0.0
   flex_color_scheme: ^8.2.0
   pinput: ^5.0.1
   flutter_svg: ^2.2.0
-  introduction_screen: ^3.1.17
+  introduction_screen: ^4.0.0
   flutter_spinkit: ^5.2.1
   image_picker: ^1.1.2
   google_mlkit_text_recognition: ^0.15.0
@@ -60,7 +45,7 @@ dependencies:
   qr_flutter: ^4.1.0
   image_gallery_saver_plus: ^4.0.1
   http: ^1.4.0
-  flutter_dotenv: ^5.2.1
+  flutter_dotenv: ^6.0.0
   flutter_image_compress: ^2.4.0
   amplify_flutter: ^2.6.4
   amplify_auth_cognito: ^2.6.4
@@ -71,12 +56,14 @@ dependencies:
   flutter_slidable: ^4.0.0
   webview_flutter: ^4.13.0
   uuid: ^4.5.1
+  google_fonts: ^6.3.2
+  device_info_plus: ^12.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  build_runner: ^2.5.4
+  build_runner: 2.4.13
   flutter_launcher_icons: ^0.14.4
   plugin_platform_interface: ^2.1.8
 
@@ -96,6 +83,7 @@ flutter:
     - assets/image/bg.png
     - assets/image/profile-bg.png
     - assets/image/fcbpay-plus.png
+    - assets/image/fcbpay-plus-logo.png
     - assets/svg/login.svg
     - assets/svg/otp.svg
     - assets/svg/credit_card_payment.svg
@@ -116,6 +104,9 @@ flutter:
     - assets/svg/mailbox.svg
     - assets/svg/mail_sent.svg
     - assets/svg/reset_password.svg
+    - assets/svg/mobile-privacy-policy.svg
+    - assets/svg/mobile-verified.svg
+    - assets/svg/mobile-encryption.svg
     - .env
   
   fonts:
@@ -139,34 +130,3 @@ flutter:
           weight: 800
         - asset: assets/fonts/montserrat/Montserrat-Black.ttf
           weight: 900
-
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
-
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package

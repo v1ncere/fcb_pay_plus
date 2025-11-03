@@ -157,3 +157,5 @@ final class ConfirmSignInWithOtpCode extends LoginEvent {
 }
 
 final class AuthSignInStepDone extends LoginEvent {}
+
+final class MobilePhoneDataSaved extends LoginEvent {}

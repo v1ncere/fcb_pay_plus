@@ -1,6 +1,7 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { processTransaction } from '../functions/processTransaction/resource';
 import { postConfirmation } from '../auth/post-confirmation/resource';
+import { otpHandler } from '../functions/otpHandler/resource';
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -212,6 +213,16 @@ const schema = a.schema({
     allow.owner(),
   ])),
 
+  OtpSmsEmail: a.model({
+    target: a.string().required(), // email | phone
+    otp: a.string(),
+    channel: a.string(), // sms | email
+    expiresAt: a.string(),
+    verified: a.boolean(),
+  }).authorization((allow => [
+    allow.guest()
+  ])),
+
   // AccountType
   AccountType: a.enum([
     'wallet',   //
@@ -240,14 +251,24 @@ const schema = a.schema({
 
   // API's for process the transaction
   processTransaction: a
-    .query()
-    .arguments({
-      data: a.json().required(),
-    })
-    .returns(a.json())
-    .authorization(allow => [allow.authenticated()])
-    .handler(a.handler.function(processTransaction)),
-})
+  .query()
+  .arguments({
+    data: a.json().required(),
+  })
+  .returns(a.json())
+  .authorization(allow => [allow.authenticated()])
+  .handler(a.handler.function(processTransaction)),
+
+  otpHandler: a
+  .query()
+  .arguments({
+    data: a.json().required(),
+  })
+  .returns(a.json())
+  .authorization(allow => [allow.guest()])
+  .handler(a.handler.function(otpHandler)),
+
+}) // end
 .authorization((allow) => [allow.resource(postConfirmation)]);
 
 export type Schema = ClientSchema<typeof schema>;

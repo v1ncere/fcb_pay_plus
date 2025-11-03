@@ -3,6 +3,7 @@ class AssetString {
   static const String fcbLogo  = 'assets/image/fcb-logo.png';
   static const String profileBG  = 'assets/image/profile-bg.png';
   static const String splashLogo  = 'assets/image/splash.png';
+  static const String fcbPayPlusLogo = 'assets/image/fcbpay-plus-logo.png';
 
   static const String otpSVG  = 'assets/svg/otp.svg';
   static const String loginLogo  = 'assets/svg/login.svg';
@@ -16,6 +17,9 @@ class AssetString {
   static const String payments  = 'assets/svg/payments.svg';
   static const String profileData  = 'assets/svg/profile_data.svg';
   static const String transferMoney  = 'assets/svg/transfer_money.svg';
+  static const String privacyPolicy = 'assets/svg/mobile-privacy-policy.svg';
+  static const String mobileVerified = 'assets/svg/mobile-verified.svg';
+  static const String mobileEncryption = 'assets/svg/mobile-encryption.svg';
 
   static const String forgotPassword  = 'assets/svg/forgot_password.svg';
   static const String loginIllustration  = 'assets/svg/login_illustration.svg';

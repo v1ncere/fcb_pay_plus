@@ -82,6 +82,10 @@ final class ValidIDTitleChanged extends SignUpEvent {
   List<Object> get props => [validID];
 }
 
+final class OtpCodeSent extends SignUpEvent {}
+
+final class OtpCodeReceived extends SignUpEvent {}
+
 final class FaceComparisonFetched extends SignUpEvent {}
 
 final class UploadImageToS3 extends SignUpEvent {}

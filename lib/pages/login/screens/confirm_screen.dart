@@ -16,8 +16,8 @@ class ConfirmScreen extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                width: 200,
-                height: 200,
+                width: 150,
+                height: 150,
                 padding: const EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -26,26 +26,37 @@ class ConfirmScreen extends StatelessWidget {
                 child: SvgPicture.asset(AssetString.otpSVG)
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Verification',
+              Text(
+                'OTP Verification',
                 style: TextStyle(
                   fontSize: 22,
+                  color: ColorString.deepSea,
                   fontWeight: FontWeight.bold
                 )
               ),
               const SizedBox(height: 10),
-              const Text(
-                'Enter the OTP send to your email',
+              Text(
+                'Please enter the OTP sent to your registered email address.',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.black38,
+                  color: ColorString.eucalyptus,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
               const PinInputs(),
-              const SizedBox(height: 25)
+              const SizedBox(height: 30),
+              Text(
+                'Didn\'t receive the code?',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: ColorString.eucalyptus,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              ResendCodeButton(),
             ]
           )
         )

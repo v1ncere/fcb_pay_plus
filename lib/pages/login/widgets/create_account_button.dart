@@ -12,12 +12,12 @@ class CreateAccountButton extends StatelessWidget {
       // if verification is needed push to signup verify
       onPressed: () => context.pushNamed(RouteName.signUp),
       child: Text(
-        'Create Account',
+        'Sign up',
         style: TextStyle(
-          color: const Color(0xFF25C166),
+          color: ColorString.blazeOrange,
           shadows: [
             Shadow(
-              blurRadius: 2,
+              blurRadius: 1,
               color: Colors.black.withValues(alpha: 0.1),
               offset: const Offset(0.2, 1.0)
             )

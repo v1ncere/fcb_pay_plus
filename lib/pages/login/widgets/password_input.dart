@@ -19,14 +19,18 @@ class PasswordInput extends StatelessWidget {
           obscureText: state.isObscure,
           decoration: InputDecoration(
             filled: true,
+            isDense: true,
             fillColor: const Color.fromARGB(30, 37, 193, 102),
             floatingLabelBehavior: FloatingLabelBehavior.never,
             prefixIcon: Icon(FontAwesomeIcons.unlockKeyhole, color: ColorString.eucalyptus),
             labelText: 'Password',
             errorText: state.password.displayError?.text(),
-            border: SelectedInputBorderWithShadow(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide.none
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: ColorString.deepSea, width: 2.0),
+              borderRadius: BorderRadius.circular(15.0),
             ),
             suffixIcon: IconButton(
               onPressed: () => context.read<LoginBloc>().add(LoginPasswordObscured()), 

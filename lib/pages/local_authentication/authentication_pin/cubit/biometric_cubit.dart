@@ -38,12 +38,9 @@ class BiometricCubit extends Cubit<BiometricState> {
         try {
           bool isAuthenticated = await _localAuth.authenticate(
             localizedReason: TextString.localizedReason,
-            options: const AuthenticationOptions(
-              biometricOnly: true,
-              stickyAuth: true,
-              useErrorDialogs: false,
-              sensitiveTransaction: true,
-            )
+            biometricOnly: true,
+            sensitiveTransaction: true,
+            persistAcrossBackgrounding: true,
           );
           if (isAuthenticated) {
             emit(state.copyWith(status: BiometricStatus.authenticated, message: TextString.authSuccess));
