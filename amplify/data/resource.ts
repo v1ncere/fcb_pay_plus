@@ -223,6 +223,14 @@ const schema = a.schema({
     allow.guest()
   ])),
 
+  DeviceId: a.model({
+    deviceId: a.string().required(),
+    owner: a.string().required(),
+    deviceModel: a.string().required(),
+  }).authorization((allow => [
+    allow.guest(),
+  ])),
+
   // AccountType
   AccountType: a.enum([
     'wallet',   //

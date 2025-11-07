@@ -18,3 +18,4 @@ export 'route_name.dart';
 export 'suffix_string.dart';
 export 'text_string.dart';
 export 'thousands_formatter.dart';
+export 'device_id_helper.dart';

@@ -1,6 +1,20 @@
 part of 'login_bloc.dart';
 
 class LoginState extends Equatable with FormzMixin {
+  final Email email;
+  final Password password;
+  final ConfirmedPassword confirmedPassword;
+  final Name pinCode;
+  final bool isObscure;
+  final bool isConfirmObscure;
+  final SignInSteps signInSteps;
+  final FormzSubmissionStatus status;
+  final Status deviceStatus;
+  final Set<MfaType> mfaTypes;
+  final MfaType mfa;
+  final TotpSetupDetails? totpDetails;
+  final String message;
+  
   const LoginState({
     this.email = const Email.pure(),
     this.password = const Password.pure(),
@@ -10,73 +24,66 @@ class LoginState extends Equatable with FormzMixin {
     this.isObscure = true,
     this.isConfirmObscure = true,
     this.signInSteps = SignInSteps.initial,
+    this.deviceStatus = Status.initial,
     this.mfaTypes = const <MfaType>{},
     this.mfa = MfaType.sms,
     this.totpDetails,
     this.message = '',
   });
-  final Email email;
-  final Password password;
-  final ConfirmedPassword confirmedPassword;
-  final Name pinCode;
-  final bool isObscure;
-  final bool isConfirmObscure;
-  final SignInSteps signInSteps;
-  final FormzSubmissionStatus status;
-  final Set<MfaType> mfaTypes;
-  final MfaType mfa;
-  final TotpSetupDetails? totpDetails;
-  final String message;
   
+  @override
+  List<FormzInput> get inputs => [email, password];
+
   LoginState copyWith({
     Email? email,
     Password? password,
     ConfirmedPassword? confirmedPassword,
     Name? pinCode,
-    FormzSubmissionStatus? status,
     bool? isObscure,
     bool? isConfirmObscure,
     SignInSteps? signInSteps,
+    FormzSubmissionStatus? status,
+    Status? deviceStatus,
     Set<MfaType>? mfaTypes,
     MfaType? mfa,
     TotpSetupDetails? totpDetails,
-    String? message
+    String? message,
   }) {
     return LoginState(
       email: email ?? this.email,
       password: password ?? this.password,
       confirmedPassword: confirmedPassword ?? this.confirmedPassword,
       pinCode: pinCode ?? this.pinCode,
-      status: status ?? this.status,
       isObscure: isObscure ?? this.isObscure,
       isConfirmObscure: isConfirmObscure ?? this.isConfirmObscure,
       signInSteps: signInSteps ?? this.signInSteps,
+      status: status ?? this.status,
+      deviceStatus: deviceStatus ?? this.deviceStatus,
       mfaTypes: mfaTypes ?? this.mfaTypes,
       mfa: mfa ?? this.mfa,
       totpDetails: totpDetails ?? this.totpDetails,
-      message: message ?? this.message
+      message: message ?? this.message,
     );
   }
 
   @override
-  List<Object?> get props => [
-    email,
-    password,
-    confirmedPassword,
-    pinCode,
-    status,
-    isObscure,
-    isConfirmObscure,
-    signInSteps,
-    message,
-    mfaTypes,
-    mfa,
-    totpDetails,
-    isValid
-  ];
-  
-  @override
-  List<FormzInput> get inputs => [email, password];
+  List<Object?> get props {
+    return [
+      email,
+      password,
+      confirmedPassword,
+      pinCode,
+      isObscure,
+      isConfirmObscure,
+      signInSteps,
+      status,
+      deviceStatus,
+      mfaTypes,
+      mfa,
+      totpDetails,
+      message,
+    ];
+  }
 }
 
 enum LoginOption { email, phone, google }

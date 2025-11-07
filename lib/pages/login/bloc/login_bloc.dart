@@ -1,14 +1,13 @@
 import 'dart:async';
 
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
+import 'package:fcb_pay_plus/models/ModelProvider.dart';
 import '../../../utils/utils.dart';
 
 part 'login_event.dart';
@@ -47,7 +46,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<MobilePhoneDataSaved>(_onMobilePhoneDataSaved);
   }
   Timer? _timer;
-  final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
   void _onLoginEmailChanged(LoginEmailChanged event, Emitter<LoginState> emit) {
     emit(state.copyWith(email: Email.dirty(event.email)));
@@ -366,83 +364,28 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void _onMobilePhoneDataSaved(MobilePhoneDataSaved event, Emitter<LoginState> emit) async {
-    var deviceData = <String, dynamic>{};
-
+    emit(state.copyWith(deviceStatus: Status.loading));
     try {
-      deviceData = switch (defaultTargetPlatform) {
-        TargetPlatform.android => _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
-        TargetPlatform.iOS => _readIosDeviceInfo(await deviceInfoPlugin.iosInfo),
-        TargetPlatform.linux => {},
-        TargetPlatform.windows => {},
-        TargetPlatform.macOS => {},
-        TargetPlatform.fuchsia => {},
-      };
-      print('\n\n\n$deviceData\n\n\n');
-    } on PlatformException {
-      deviceData = <String, dynamic>{
-        'Error:': 'Failed to get platform version.',
-      };
+      final device = await DeviceIdHelper.getDeviceUniqueId();
+      final deviceInfo = await DeviceIdHelper.getDeviceInfo();
+
+      final deviceId = DeviceId(
+        deviceId: device,
+        owner: state.email.value,
+        deviceModel: deviceInfo['model'] as String
+      );
+      final request = ModelMutations.create(deviceId);
+      final response = await Amplify.API.mutate(request: request).response;
+      final createdDeviceId = response.data;
+
+      if (createdDeviceId == null) {
+        emit(state.copyWith(deviceStatus: Status.failure));
+      }
+
+      emit(state.copyWith(deviceStatus: Status.success));
+    } catch (e) {
+      emit(state.copyWith(deviceStatus: Status.failure));
     }
-  }
-
-    Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
-    return <String, dynamic>{
-      'version.securityPatch': build.version.securityPatch,
-      'version.sdkInt': build.version.sdkInt,
-      'version.release': build.version.release,
-      'version.previewSdkInt': build.version.previewSdkInt,
-      'version.incremental': build.version.incremental,
-      'version.codename': build.version.codename,
-      'version.baseOS': build.version.baseOS,
-      'board': build.board,
-      'bootloader': build.bootloader,
-      'brand': build.brand,
-      'device': build.device,
-      'display': build.display,
-      'fingerprint': build.fingerprint,
-      'hardware': build.hardware,
-      'host': build.host,
-      'id': build.id,
-      'manufacturer': build.manufacturer,
-      'model': build.model,
-      'product': build.product,
-      'name': build.name,
-      'supported32BitAbis': build.supported32BitAbis,
-      'supported64BitAbis': build.supported64BitAbis,
-      'supportedAbis': build.supportedAbis,
-      'tags': build.tags,
-      'type': build.type,
-      'isPhysicalDevice': build.isPhysicalDevice,
-      'freeDiskSize': build.freeDiskSize,
-      'totalDiskSize': build.totalDiskSize,
-      'systemFeatures': build.systemFeatures,
-      'isLowRamDevice': build.isLowRamDevice,
-      'physicalRamSize': build.physicalRamSize,
-      'availableRamSize': build.availableRamSize,
-    };
-  }
-
-  Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
-    return <String, dynamic>{
-      'name': data.name,
-      'systemName': data.systemName,
-      'systemVersion': data.systemVersion,
-      'model': data.model,
-      'modelName': data.modelName,
-      'localizedModel': data.localizedModel,
-      'identifierForVendor': data.identifierForVendor,
-      'isPhysicalDevice': data.isPhysicalDevice,
-      'isiOSAppOnMac': data.isiOSAppOnMac,
-      'freeDiskSize': data.freeDiskSize,
-      'totalDiskSize': data.totalDiskSize,
-      'physicalRamSize': data.physicalRamSize,
-      'availableRamSize': data.availableRamSize,
-      'utsname.sysname:': data.utsname.sysname,
-      'utsname.nodename:': data.utsname.nodename,
-      'utsname.release:': data.utsname.release,
-      'utsname.version:': data.utsname.version,
-      'utsname.machine:': data.utsname.machine,
-    };
   }
 
   @override

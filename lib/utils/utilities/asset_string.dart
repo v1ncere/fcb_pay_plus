@@ -4,6 +4,7 @@ class AssetString {
   static const String profileBG  = 'assets/image/profile-bg.png';
   static const String splashLogo  = 'assets/image/splash.png';
   static const String fcbPayPlusLogo = 'assets/image/fcbpay-plus-logo.png';
+  static const String problem = 'assets/image/problem.png';
 
   static const String otpSVG  = 'assets/svg/otp.svg';
   static const String loginLogo  = 'assets/svg/login.svg';

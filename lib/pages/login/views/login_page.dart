@@ -9,7 +9,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginBloc()..add(MobilePhoneDataSaved()),
+      create: (context) => LoginBloc(),
       child: const LoginView(),
     );
   }

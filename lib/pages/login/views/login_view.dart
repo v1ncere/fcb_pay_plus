@@ -59,7 +59,7 @@ class LoginView extends StatelessWidget {
       case SignInSteps.initial:
       case SignInSteps.confirmSignInWithCustomChallenge:
       case SignInSteps.done:
-        return const ConfirmScreen();
+        return const SaveDevice();
         // return const LoginScreen();
       case SignInSteps.confirmSignInWithSmsMfaCode:
       case SignInSteps.confirmSignInWithTotpMfaCode:

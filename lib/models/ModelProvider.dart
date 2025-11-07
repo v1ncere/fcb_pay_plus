@@ -23,11 +23,13 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'Account.dart';
 import 'AccountButton.dart';
 import 'Button.dart';
+import 'DeviceId.dart';
 import 'DynamicRoute.dart';
 import 'DynamicWidget.dart';
 import 'Merchant.dart';
 import 'Notification.dart';
 import 'OtpRequest.dart';
+import 'OtpSmsEmail.dart';
 import 'SignupRequest.dart';
 import 'Transaction.dart';
 import 'TransactionDetail.dart';
@@ -40,12 +42,14 @@ export 'AccountButton.dart';
 export 'AccountStatus.dart';
 export 'AccountType.dart';
 export 'Button.dart';
+export 'DeviceId.dart';
 export 'DynamicRoute.dart';
 export 'DynamicWidget.dart';
 export 'LedgerStatus.dart';
 export 'Merchant.dart';
 export 'Notification.dart';
 export 'OtpRequest.dart';
+export 'OtpSmsEmail.dart';
 export 'SignupRequest.dart';
 export 'Transaction.dart';
 export 'TransactionDetail.dart';
@@ -55,9 +59,9 @@ export 'VerifyAccount.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "97cb88d87cba32a504e1e20f92f91495";
+  String version = "20ed9bbf295f23223d07a7a47eb5cb81";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [Account.schema, AccountButton.schema, Button.schema, DynamicRoute.schema, DynamicWidget.schema, Merchant.schema, Notification.schema, OtpRequest.schema, SignupRequest.schema, Transaction.schema, TransactionDetail.schema, TransactionTransactionDetail.schema, TransferableUser.schema, VerifyAccount.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [Account.schema, AccountButton.schema, Button.schema, DeviceId.schema, DynamicRoute.schema, DynamicWidget.schema, Merchant.schema, Notification.schema, OtpRequest.schema, OtpSmsEmail.schema, SignupRequest.schema, Transaction.schema, TransactionDetail.schema, TransactionTransactionDetail.schema, TransferableUser.schema, VerifyAccount.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -72,6 +76,8 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return AccountButton.classType;
       case "Button":
         return Button.classType;
+      case "DeviceId":
+        return DeviceId.classType;
       case "DynamicRoute":
         return DynamicRoute.classType;
       case "DynamicWidget":
@@ -82,6 +88,8 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return Notification.classType;
       case "OtpRequest":
         return OtpRequest.classType;
+      case "OtpSmsEmail":
+        return OtpSmsEmail.classType;
       case "SignupRequest":
         return SignupRequest.classType;
       case "Transaction":
