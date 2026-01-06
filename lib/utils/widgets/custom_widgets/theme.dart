@@ -11,7 +11,7 @@ class CustomTheme {
       colorSchemeSeed: ColorString.eucalyptus,
       appBarTheme: AppBarTheme(
         elevation: 0,
-        color: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       scaffoldBackgroundColor: const Color(0xFFFAFAFA),
       snackBarTheme: const SnackBarThemeData(behavior: SnackBarBehavior.floating),
@@ -28,7 +28,7 @@ class CustomTheme {
         elevation: 0,
         centerTitle: true,
         titleTextStyle: const TextStyle(color: Color(0xFF25C166)),
-        color: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         iconTheme: const IconThemeData(color: Color(0xFF25C166))
       ),
       scaffoldBackgroundColor: const Color(0xFFFAFAFA),

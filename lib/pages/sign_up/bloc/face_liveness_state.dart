@@ -1,6 +1,15 @@
 part of 'face_liveness_bloc.dart';
 
 class FaceLivenessState extends Equatable {
+  final String sessionId;
+  final Status sessionStatus;
+  final Status invokeStatus;
+  final Status resultStatus;
+  final Map<dynamic, dynamic> invokeResult;
+  final double confidence;
+  final List<int> rawBytes;
+  final String message;
+
   const FaceLivenessState({
     this.sessionId = '',
     this.sessionStatus = Status.initial,
@@ -11,15 +20,6 @@ class FaceLivenessState extends Equatable {
     this.rawBytes = const [],
     this.message = '',
   });
-
-  final String sessionId;
-  final Status sessionStatus;
-  final Status invokeStatus;
-  final Status resultStatus;
-  final Map<dynamic, dynamic> invokeResult;
-  final double confidence;
-  final List<int> rawBytes;
-  final String message;
 
   FaceLivenessState copyWith({
     String? sessionId,
@@ -44,14 +44,16 @@ class FaceLivenessState extends Equatable {
   }
 
   @override
-  List<Object> get props => [
-    invokeStatus,
-    sessionStatus,
-    resultStatus,
-    sessionId,
-    invokeResult,
-    confidence,
-    rawBytes,
-    message,
-  ];
+  List<Object> get props {
+    return [
+      sessionId,
+      sessionStatus,
+      invokeStatus,
+      resultStatus,
+      invokeResult,
+      confidence,
+      rawBytes,
+      message,
+    ];
+  }
 }

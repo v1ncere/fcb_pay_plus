@@ -1,9 +1,0 @@
-export 'barangay.dart';
-export 'city.dart';
-export 'city_municipality.dart';
-export 'country.dart';
-export 'municipality.dart';
-export 'process_transaction.dart';
-export 'province.dart';
-export 'sub_municipality.dart';
-export 'gender.dart';

@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
-import 'package:hive_repository/hive_repository.dart';
+
+import '../../data/data.dart';
 
 String crc16CCITT(String data) {
   // Convert the input data into a list of 8-bit unsigned integers (bytes)
@@ -30,9 +31,9 @@ String crc16CCITT(String data) {
   return (crc &= 0xffff).toRadixString(16).toUpperCase().padLeft(4, '0');
 }
 
-// Scanned QRC into List<QRModel>
-List<QRModel> qrDataParser(String qr) {
-  List<QRModel> list = [];
+// Scanned QRC into List<QrData>
+List<QrData> qrDataParser(String qr) {
+  List<QrData> list = [];
 
   for(int x = 0; x < qr.length; ) {
     String id = qr.substring(x, x + 2); // Extract the ID from the QR code
@@ -48,7 +49,7 @@ List<QRModel> qrDataParser(String qr) {
         String iData = data.substring(i + 4, i + 4 + int.parse(iLength)); // extract data based on the specified length
         
         // add data with the sub id to List<QRModel>
-        list.add(QRModel(
+        list.add(QrData(
           id: 'subs$id$iId',
           data: iData,
           title: qrDataTitleWidget('subs$id$iId', 'title'),
@@ -58,7 +59,7 @@ List<QRModel> qrDataParser(String qr) {
       }
     } else {
       // add data with the main id to List<QRModel>
-      list.add(QRModel(
+      list.add(QrData(
         id: 'main$id',
         data: data,
         title: qrDataTitleWidget('main$id$data', 'title'),

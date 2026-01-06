@@ -1,16 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_repository/hive_repository.dart';
 
+import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 
 part 'scanner_state.dart';
 
 class ScannerCubit extends Cubit<ScannerState> {
-  final HiveRepository _hiveRepository;
+  final SecureStorageRepository _secureStorage;
   ScannerCubit({
-    required HiveRepository hiveRepository
-  }) : _hiveRepository = hiveRepository, super(const ScannerState());
+    required SecureStorageRepository secureStorage
+  }) : _secureStorage = secureStorage, super(const ScannerState());
 
   void saveQRCode(String data) async {
     emit(state.copyWith(status: Status.loading));
@@ -22,8 +22,8 @@ class ScannerCubit extends Cubit<ScannerState> {
         final qrObjectList = qrDataParser(data); // parse qr data into List<QRModel>
         
         if (_validateQRObjects(qrObjectList)) {
-          _hiveRepository.addQRDataList(qrObjectList); // add the parsed qr data
-          _hiveRepository.addRawQR(data); // add raw qr data
+          _secureStorage.saveScannedQr(qrObjectList);
+          _secureStorage.saveRawQr(data);
           emit(state.copyWith(status: Status.success));
         }
       } else {
@@ -45,7 +45,7 @@ class ScannerCubit extends Cubit<ScannerState> {
   }
 
   // validate qr objects
-  bool _validateQRObjects(List<QRModel> qrObjectList) {
+  bool _validateQRObjects(List<QrData> qrObjectList) {
     bool id27 = false;
     bool id28 = false;
     bool id2803 = false;

@@ -1,23 +1,23 @@
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
-import 'package:fcb_pay_plus/models/ModelProvider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_repository/hive_repository.dart';
 
+import '../../../data/data.dart';
+import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
 
 part 'account_settings_event.dart';
 part 'account_settings_state.dart';
 
 class AccountSettingsBloc extends Bloc<AccountSettingsEvent, AccountSettingsState> {
+  final SqfliteRepositories _sqfliteRepositories;
   AccountSettingsBloc({
-    required HiveRepository hiveRepository
-  }) :  _hiveRepository = hiveRepository,
+    required SqfliteRepositories sqfliteRepositories
+  }) : _sqfliteRepositories = sqfliteRepositories,
         super(const AccountSettingsState()) {
           on<AccountEventPressed>(_onAccountEventPressed);
         }
-  final HiveRepository _hiveRepository;
 
   Future<void> _onAccountEventPressed(AccountEventPressed event, Emitter<AccountSettingsState> emit) async {
     emit(state.copyWith(status: Status.loading));
@@ -28,7 +28,7 @@ class AccountSettingsBloc extends Bloc<AccountSettingsEvent, AccountSettingsStat
           final response = await Amplify.API.mutate(request: request).response;
           
           if (!response.hasErrors) {
-            await _hiveRepository.deleteAccountNumber('${event.account.accountType}');
+            await _sqfliteRepositories.deleteAccount('${event.account.accountType}');
             emit(state.copyWith(status: Status.success));
           } else {
             emit(state.copyWith(status: Status.failure, message: response.errors.first.message));

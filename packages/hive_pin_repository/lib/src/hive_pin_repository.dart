@@ -45,7 +45,7 @@ class HivePinRepository {
   }
 
   // ========================== BIOMETRICS ==============
-    static const String _biometricBox = 'BIOMETRIC_BOX';
+    static const String _biometricBox = 'BIOMETRIC_BOX'; // for flutter secure storage
     static const String _biometricStaticKey = '4249';
   // ====================================================
 

@@ -6,8 +6,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
-import 'package:hive_repository/hive_repository.dart';
 
+import '../../../data/data.dart';
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
 
@@ -17,9 +17,10 @@ part 'scanner_transaction_state.dart';
 final emptyAccount = Account(accountNumber: '', owner: '');
 
 class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransactionState> {
+  final SecureStorageRepository _secureStorage;
   ScannerTransactionBloc({
-    required HiveRepository hiveRepository
-  }) : _hiveRepository = hiveRepository,
+    required SecureStorageRepository secureStorage,
+  }) : _secureStorage = secureStorage,
   super(ScannerTransactionState(account: emptyAccount)) {
     on<ScannerSourceAccountFetched>(_onScannerSourceAccountFetched);
     on<ScannerTransactionDisplayLoaded>(_onScannerTransactionDisplayLoaded);
@@ -28,7 +29,6 @@ class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransa
     on<ScannerTransactionSubmitted>(_onScannerTransactionSubmitted);
     on<ScannerTipValueChanged>(_onScannerTipValueChanged);
   }
-  final HiveRepository _hiveRepository;
 
   Future<void> _onScannerSourceAccountFetched(ScannerSourceAccountFetched event, Emitter<ScannerTransactionState> emit) async {
     emit(state.copyWith(accountStatus: Status.loading));
@@ -55,26 +55,26 @@ class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransa
   Future<void> _onScannerTransactionDisplayLoaded(ScannerTransactionDisplayLoaded event, Emitter<ScannerTransactionState> emit) async {
     emit(state.copyWith(status: Status.loading));
     try {
-      final dataList = List<QRModel>.from(await _hiveRepository.getQRDataList());
+      final dataList = List<QrData>.from(await _secureStorage.getScannedQr() ?? []);
       
       if (dataList.isNotEmpty) {
         emit(state.copyWith(status: Status.success, qrDataList: dataList));
 
         final index2805 = dataList.indexWhere((e) => e.id == 'subs2805'); // Proxy-Notify Flags
         if (index2805 != -1) {
-          final newList = List<QRModel>.from(dataList);
+          final newList = List<QrData>.from(dataList);
           emit(state.copyWith(notifyFlag: newList[index2805].data));
         }
 
         final index54 = dataList.indexWhere((e) => e.id == 'main54'); // transaction amount
         if (index54 != -1) {
-          final newList = List<QRModel>.from(dataList);
+          final newList = List<QrData>.from(dataList);
           add(ScannerAmountValueChanged(newList[index54].data));
         }
 
         final index55 = dataList.indexWhere((e) => e.id == 'main55'); // tip
         if (index55 != -1) {
-          final newList = List<QRModel>.from(dataList);
+          final newList = List<QrData>.from(dataList);
           
           switch(newList[index55].data) {
             case '01':
@@ -83,14 +83,14 @@ class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransa
             case '02':
               final index56 = dataList.indexWhere((e) => e.id == 'main56');
               if(index56 != -1) {
-                final newList = List<QRModel>.from(dataList);
+                final newList = List<QrData>.from(dataList);
                 emit(state.copyWith(tip: newList[index56].data));
               }
               break;
             case '03':
               final index57 = dataList.indexWhere((e) => e.id == 'main57');
               if(index57 != -1) {
-                final newList = List<QRModel>.from(dataList);
+                final newList = List<QrData>.from(dataList);
                 emit(state.copyWith(tip: newList[index57].data));
               }
               break;
@@ -116,13 +116,13 @@ class ScannerTransactionBloc extends Bloc<ScannerTransactionEvent, ScannerTransa
     final index = state.qrDataList.indexWhere((e) => e.id == event.id);
 
     if (index != -1) {
-      final newList = List<QRModel>.from(state.qrDataList);
+      final newList = List<QrData>.from(state.qrDataList);
       newList[index] = newList[index].copyWith(data: event.data); // update list data base on new [event.data]
       emit(state.copyWith(qrDataList: newList));
     } else {
       if (event.id == 'subs6209A' || event.id == 'subs6209M' || event.id == 'subs6209E') {
-        final newList = List<QRModel>.from(state.qrDataList);
-        newList.add(QRModel(
+        final newList = List<QrData>.from(state.qrDataList);
+        newList.add(QrData(
           id: event.id,
           title: event.title,
           data: event.data,

@@ -82,7 +82,7 @@ Card walletCard({
             )
           ]
         )
-      ),
+      )
     )
   );
 }

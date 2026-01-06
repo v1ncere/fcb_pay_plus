@@ -6,6 +6,7 @@ import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/data.dart';
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
 

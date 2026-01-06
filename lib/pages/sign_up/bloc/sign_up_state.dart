@@ -14,9 +14,9 @@ class SignUpState extends Equatable {
   final MobileNumber mobile;
   final Integer otpCode;
   //
-  final XFile? userImage;
+  final XFile? userImage; // valid id image XFile
   final double similarity;
-  final List<int> livenessImageBytes;
+  final List<int> livenessImageBytes; // liveness image bytes
   final DropdownData validIDTitle;
   // Informational
   final double progress;
@@ -30,7 +30,9 @@ class SignUpState extends Equatable {
   final Status imageStatus;
   final Status faceComparisonStatus;
   final Status uploadStatus;
-  final Status confirmStatus;
+  final Status otpSendStatus;
+  final Status otpVerifyStatus;
+  final Status otpResendStatus;
   final Status webBridgeStatus;
   final Status webviewStatus;
   final Status status;
@@ -60,7 +62,9 @@ class SignUpState extends Equatable {
     this.faceComparisonStatus = Status.initial,
     this.status = Status.initial,
     this.uploadStatus = Status.initial,
-    this.confirmStatus = Status.initial,
+    this.otpSendStatus = Status.initial,
+    this.otpVerifyStatus = Status.initial,
+    this.otpResendStatus = Status.initial,
     this.webBridgeStatus = Status.initial,
     this.webviewStatus = Status.initial,
   });
@@ -89,7 +93,9 @@ class SignUpState extends Equatable {
     Status? imageStatus,
     Status? faceComparisonStatus,
     Status? uploadStatus,
-    Status? confirmStatus,
+    Status? otpSendStatus,
+    Status? otpVerifyStatus,
+    Status? otpResendStatus,
     Status? webBridgeStatus,
     Status? webviewStatus,
     Status? status,
@@ -118,7 +124,9 @@ class SignUpState extends Equatable {
       imageStatus: imageStatus ?? this.imageStatus,
       faceComparisonStatus: faceComparisonStatus ?? this.faceComparisonStatus,
       uploadStatus: uploadStatus ?? this.uploadStatus,
-      confirmStatus: confirmStatus ?? this.confirmStatus,
+      otpSendStatus: otpSendStatus ?? this.otpSendStatus,
+      otpVerifyStatus: otpVerifyStatus ?? this.otpVerifyStatus,
+      otpResendStatus: otpResendStatus ?? this.otpResendStatus,
       webBridgeStatus: webBridgeStatus ?? this.webBridgeStatus,
       webviewStatus: webviewStatus ?? this.webviewStatus,
       status: status ?? this.status,
@@ -151,7 +159,9 @@ class SignUpState extends Equatable {
       imageStatus,
       faceComparisonStatus,
       uploadStatus,
-      confirmStatus,
+      otpSendStatus,
+      otpVerifyStatus,
+      otpResendStatus,
       webBridgeStatus,
       webviewStatus,
       status,

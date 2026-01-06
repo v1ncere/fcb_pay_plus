@@ -1,6 +1,5 @@
 export 'account_alias_textfield.dart';
 export 'account_card_textfield.dart';
-export 'bottom_button.dart';
 export 'bottom_progress.dart';
 export 'current_page_builder.dart';
 export 'custom_textformfield.dart';
@@ -11,6 +10,7 @@ export 'mobile_number.dart';
 export 'password_checker.dart';
 export 'pin_inputs.dart';
 export 'pitakard_checkbox.dart';
+export 'resend_otp_code_button.dart';
 export 'segment_progress_indicator.dart';
 export 'submission_loader.dart';
 export 'switch_next_button.dart';

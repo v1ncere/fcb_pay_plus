@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive_repository/hive_repository.dart';
 
 import '../app/app.dart';
+import '../data/data.dart';
 import '../utils/utils.dart';
 
 class Splash extends StatefulWidget {
@@ -18,7 +18,9 @@ class Splash extends StatefulWidget {
 class SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation<double> animation;
-  final _hiveRepository = HiveRepository();
+  final _secureStorage = SecureStorageRepository(
+    storageService: SecureStorageService()
+  );
   bool _visible = true;
 
   @override
@@ -30,12 +32,6 @@ class SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     animationController.forward();
     setState(() { _visible = !_visible; });
     startTime();
-  }
-
-  @override
-  void dispose() {
-    _hiveRepository.closeOnboardingBox();
-    super.dispose();
   }
 
   @override
@@ -79,15 +75,13 @@ class SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
   Future<void> startTime() async {
     Future.delayed(const Duration(seconds: 3), () async {
-      final isBoarded = await _hiveRepository.isOnboarded();
-      //
+      final isBoarded = await _secureStorage.getOnboardingStatus();
       if (!mounted) return; // Prevents actions if the widget is disposed
-      //
-      if (!isBoarded) {
-        _hiveRepository.updateOnboarding(true);
-        context.goNamed(RouteName.walkThrough);
-      } else {
+      if (isBoarded != null && isBoarded == 1) {
         context.read<AppBloc>().add(LoginChecked());
+      } else {
+        _secureStorage.saveOnboardingStatus(1);
+        context.goNamed(RouteName.walkThrough);
       }
     });
   }

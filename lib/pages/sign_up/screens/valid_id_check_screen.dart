@@ -14,6 +14,8 @@ class ValidIdCheckScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState> (
+      buildWhen: (previous, current) => previous.faceComparisonStatus != current.faceComparisonStatus
+      || previous.validIDTitle != current.validIDTitle,
       builder: (context, state) {
         if (state.faceComparisonStatus.isLoading) {
           return SizedBox(

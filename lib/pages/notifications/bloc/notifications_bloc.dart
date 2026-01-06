@@ -5,6 +5,7 @@ import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/data.dart';
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
 
@@ -14,7 +15,10 @@ part 'notifications_state.dart';
 final emptyNotification = Notification();
 
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
-  NotificationsBloc() : super(const NotificationsState(status: Status.loading)) {
+  NotificationsBloc({
+    required SecureStorageRepository secureStorageRepository,
+  }) :  _secureStorageRepository = secureStorageRepository,
+  super(const NotificationsState(status: Status.loading)) {
     on<NotificationsFetched>(_onNotificationsFetched);
     on<NotificationsOnCreateStreamed>(_onNotificationsOnCreateStreamed);
     on<NotificationsOnUpdateStreamed>(_onNotificationsOnUpdateStreamed);
@@ -22,6 +26,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     on<NotificationsStreamUpdated>(_onNotificationsStreamUpdated);
     on<NotificationsUpdateIsRead>(_onNotificationsUpdateIsRead);
   }
+  final SecureStorageRepository _secureStorageRepository;
   StreamSubscription<GraphQLResponse<Notification>>? onCreateSubscription;
   StreamSubscription<GraphQLResponse<Notification>>? onUpdateSubscription;
   StreamSubscription<GraphQLResponse<Notification>>? onDeleteSubscription;
@@ -29,8 +34,8 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   Future<void> _onNotificationsFetched(NotificationsFetched event, Emitter<NotificationsState> emit) async {
     emit(state.copyWith(status: Status.loading));
     try {
-      final authUser = await Amplify.Auth.getCurrentUser();
-      final request = ModelQueries.list(Notification.classType, where: Notification.OWNER.eq(authUser.userId));
+      final user = await _secureStorageRepository.getUsername() ?? '';
+      final request = ModelQueries.list(Notification.classType, where: Notification.OWNER.eq(user));
       final response = await Amplify.API.query(request: request).response;
       final items = response.data?.items;
 
@@ -55,8 +60,8 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   }
 
   FutureOr<void> _onNotificationsOnCreateStreamed(NotificationsOnCreateStreamed event, Emitter<NotificationsState> emit) async {
-    final authUser = await Amplify.Auth.getCurrentUser();
-    final subscriptionRequest = ModelSubscriptions.onCreate(Notification.classType, where: Notification.OWNER.eq(authUser.userId));
+    final user = await _secureStorageRepository.getUsername() ?? '';
+    final subscriptionRequest = ModelSubscriptions.onCreate(Notification.classType, where: Notification.OWNER.eq(user));
     final operation = Amplify.API.subscribe(subscriptionRequest, onEstablished: () => safePrint('Subscription Established!'));
     onCreateSubscription = operation.listen(
       (event) => add(NotificationsStreamUpdated(event.data, false)),
@@ -65,8 +70,8 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   }
 
   FutureOr<void> _onNotificationsOnUpdateStreamed(NotificationsOnUpdateStreamed event, Emitter<NotificationsState> emit) async {
-    final authUser = await Amplify.Auth.getCurrentUser();
-    final subscriptionRequest = ModelSubscriptions.onUpdate(Notification.classType, where: Notification.OWNER.eq(authUser.userId));
+    final user = await _secureStorageRepository.getUsername() ?? '';
+    final subscriptionRequest = ModelSubscriptions.onUpdate(Notification.classType, where: Notification.OWNER.eq(user));
     final operation = Amplify.API.subscribe(subscriptionRequest, onEstablished: () => safePrint('Subscription Established!'));
     onUpdateSubscription = operation.listen(
       (event) => add(NotificationsStreamUpdated(event.data, false)),
@@ -75,8 +80,8 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   }
 
   FutureOr<void> _onNotificationsOnDeleteStreamed(NotificationsOnDeleteStreamed event, Emitter<NotificationsState> emit) async {
-    final authUser = await Amplify.Auth.getCurrentUser();
-    final subscriptionRequest = ModelSubscriptions.onDelete(Notification.classType, where: Notification.OWNER.eq(authUser.userId));
+    final user = await _secureStorageRepository.getUsername() ?? '';
+    final subscriptionRequest = ModelSubscriptions.onDelete(Notification.classType, where: Notification.OWNER.eq(user));
     final operation = Amplify.API.subscribe(subscriptionRequest, onEstablished: () => safePrint('Subscription Established!'));
     onDeleteSubscription = operation.listen(
       (event) => add(NotificationsStreamUpdated(event.data, true)),

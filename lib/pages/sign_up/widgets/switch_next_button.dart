@@ -15,34 +15,30 @@ class SwitchNextButton extends StatelessWidget {
     return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         switch(stepState.step) {
-          case 1:
-            return Column(
+          case 1: return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 PitakardCheckbox(),
                 NextButton(isValid: (state.accountNumber.isValid && state.accountAlias.isValid) || !state.isPitakardExist),
               ]
             );
-          case 2:
-            return Column(
+          case 2: return !stepState.isOtp
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  NextButton(isValid: state.email.isValid && state.mobile.isValid),
+                ],
+              ) 
+            : SizedBox.shrink();
+          case 3: return SizedBox.shrink();
+          case 4: return SizedBox.shrink();
+          case 5: return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                NextButton(isValid: state.email.isValid && state.mobile.isValid),
+                NextButton(isValid: state.email.isValid && state.mobile.isValid && state.webBridgeStatus.isSuccess),
               ],
             );
-          case 3:
-            return SizedBox.shrink();
-          case 4:
-            return SizedBox.shrink();
-          case 5:
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                NextButton(isValid: state.email.isValid && state.mobile.isValid),
-              ],
-            );
-          default:
-            return Text('default');
+          default: return SizedBox.shrink();
         }
       }
     );
@@ -76,9 +72,17 @@ class NextButton extends StatelessWidget {
                 onPressed: isValid
                 ? () {
                     if (isNext) {
-                      context.read<SignUpBloc>().add(UploadImageToS3());
+                      context.read<SignUpBloc>().add(FaceComparisonFetched());
                     } else {
-                      context.read<TopStepperCubit>().goNext();
+                      if (state.step == 1) {
+                        context.read<TopStepperCubit>().goNext();
+                      }
+                      if (state.step == 2) {
+                        if (!state.isOtp) {
+                          context.read<TopStepperCubit>().isOtpChange();
+                          context.read<SignUpBloc>().add(OtpCodeSent());
+                        }
+                      }
                     }
                   }
                 : null,

@@ -1,14 +1,12 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { processTransaction } from '../functions/processTransaction/resource';
 import { postConfirmation } from '../auth/post-confirmation/resource';
-import { otpHandler } from '../functions/otpHandler/resource';
+import { otpApi } from '../functions/otp-api/resource';
+import { textInImage } from '../functions/text-in-image/resource';
+import { faceComparison } from '../functions/face-comparison/resource';
+import { livenessSessionId } from '../functions/liveness-session-id/resource';
+import { livenessResult } from '../functions/liveness-result/resource';
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any unauthenticated user can "create", "read", "update", 
-and "delete" any "Todo" records.
-=========================================================================*/
 const schema = a.schema({
   // Account
   Account: a.model({
@@ -23,8 +21,7 @@ const schema = a.schema({
     transferableUser: a.hasOne('TransferableUser', 'accountId')
   }).identifier(['accountNumber']) // [accountNumber]
   .authorization((allow) => [
-    allow.authenticated(),
-    allow.ownerDefinedIn("owner") // experiment
+    allow.guest()
   ]),
 
   // Fund Transfer Accounts
@@ -36,8 +33,7 @@ const schema = a.schema({
     accountId: a.id(),
     account: a.belongsTo('Account', 'accountId')
   }).authorization((allow) => [
-    allow.authenticated(),
-    allow.owner()
+    allow.guest()
   ]),
   
   // Account Action Button
@@ -48,8 +44,7 @@ const schema = a.schema({
     buttons: a.hasMany('Button', 'accountButtonId'), // one to many
   }).identifier(['type'])
   .authorization((allow) => [
-    allow.authenticated(),
-    allow.owner()
+    allow.guest()
   ]),
 
   // Button
@@ -68,8 +63,7 @@ const schema = a.schema({
     dynamicRoute: a.belongsTo('DynamicRoute', 'dynamicRouteId'), // relationship to DynamicWidget Viewer
     widgets: a.hasMany('DynamicWidget', 'buttonId'), // one to many
   }).authorization((allow) => [
-    allow.authenticated(),
-    allow.owner(),
+    allow.guest()
   ]),
 
   // Dynamic Viewer
@@ -78,8 +72,7 @@ const schema = a.schema({
     category: a.string(),
     buttons: a.hasMany('Button', 'dynamicRouteId'), // one to many
   }).authorization((allow) => [
-    allow.authenticated(),
-    allow.owner()
+    allow.guest()
   ]),
   
   // Dynamic Widget 
@@ -99,8 +92,7 @@ const schema = a.schema({
     merchantExtraId: a.id(), // foreign key to link with Merchant
     merchantExtraWidget: a.belongsTo('Merchant', 'merchantExtraId'),
   }).authorization((allow) => [
-    allow.authenticated(),
-    allow.owner()
+    allow.guest()
   ]),
   
   // Merchant(latest)
@@ -112,8 +104,7 @@ const schema = a.schema({
     widget: a.hasMany('DynamicWidget', 'merchantWidgetId'),
     extraWidget: a.hasMany('DynamicWidget', 'merchantExtraId'),
   }).authorization((allow) => [
-    allow.authenticated(),
-    allow.owner(),
+    allow.guest()
   ]),
 
   //* ACCOUNT VERIFICATION **/
@@ -123,15 +114,7 @@ const schema = a.schema({
   }).authorization((allow) => [
     allow.guest(),
   ]),
-
-  //* OTP REQUEST **/
-  OtpRequest: a.model({
-    email: a.string(),
-    mobileNumber: a.string(),
-  }).authorization((allow) => [
-    allow.guest(),
-  ]),
-
+  
   //* SIGNUP **/
   SignupRequest: a.model({
     accountNumber: a.string(),
@@ -152,8 +135,7 @@ const schema = a.schema({
     sender: a.string(),
     owner: a.string(),
   }).authorization((allow) => [
-    allow.authenticated(),
-    allow.owner()
+    allow.guest(),
   ]),
 
   TransactionTransactionDetail: a.model({
@@ -165,8 +147,7 @@ const schema = a.schema({
     transaction: a.belongsTo('Transaction', ['transDate', 'referenceId', 'transCode', 'accountNumber']),
     transactionDetail: a.belongsTo('TransactionDetail', ['transDate', 'referenceId', 'transCode']),
   }).authorization((allow) => [
-    allow.authenticated(),
-    allow.owner(),
+    allow.guest()
   ]),
 
   // Transaction History
@@ -193,8 +174,7 @@ const schema = a.schema({
     .queryField('transactionsByAccountUpdatedAt'),
   ])
   .authorization((allow) => [
-    allow.authenticated(),
-    allow.owner(),
+    allow.guest()
   ]),
 
   TransactionDetail: a.model({
@@ -209,18 +189,19 @@ const schema = a.schema({
     transactions: a.hasMany('TransactionTransactionDetail', ['transDate', 'referenceId', 'transCode']), // has many transaction
   }).identifier(['transDate', 'referenceId', 'transCode']) //
   .authorization((allow => [
-    allow.authenticated(),
-    allow.owner(),
+    allow.guest()
   ])),
 
   OtpSmsEmail: a.model({
     target: a.string().required(), // email | phone
-    otp: a.string(),
+    otpHash: a.string(),
     channel: a.string(), // sms | email
-    expiresAt: a.string(),
+    expiresAt: a.datetime(),
     verified: a.boolean(),
-  }).authorization((allow => [
-    allow.guest()
+    attempts: a.integer(),
+  }).identifier(['target'])
+  .authorization((allow => [
+    allow.guest(),
   ])),
 
   DeviceId: a.model({
@@ -261,61 +242,66 @@ const schema = a.schema({
   processTransaction: a
   .query()
   .arguments({
-    data: a.json().required(),
-  })
-  .returns(a.json())
-  .authorization(allow => [allow.authenticated()])
-  .handler(a.handler.function(processTransaction)),
-
-  otpHandler: a
-  .query()
-  .arguments({
-    data: a.json().required(),
+    data: a.json().required()
   })
   .returns(a.json())
   .authorization(allow => [allow.guest()])
-  .handler(a.handler.function(otpHandler)),
+  .handler(a.handler.function(processTransaction)),
 
-}) // end
-.authorization((allow) => [allow.resource(postConfirmation)]);
+  otpApi: a
+  .query()
+  .arguments({
+    data: a.json().required()
+  })
+  .returns(a.json())
+  .authorization(allow => [allow.guest()])
+  .handler(a.handler.function(otpApi)),
+
+  textInImage: a
+  .query()
+  .arguments({
+    data: a.json().required()
+  })
+  .returns(a.json())
+  .authorization(allow => [allow.guest()])
+  .handler(a.handler.function(textInImage)),
+
+  faceComparison: a
+  .query()
+  .arguments({
+    data: a.json().required()
+  })
+  .returns(a.json())
+  .authorization(allow => [allow.guest()])
+  .handler(a.handler.function(faceComparison)),
+
+  livenessSessionId: a
+  .query()
+  .returns(a.json())
+  .authorization(allow => [allow.guest()])
+  .handler(a.handler.function(livenessSessionId)),
+
+  livenessResult: a
+  .query()
+  .arguments({
+    data: a.json().required()
+  })
+  .returns(a.json())
+  .authorization(allow => [allow.guest()])
+  .handler(a.handler.function(livenessResult)),
+
+  // end schema
+}).authorization((allow) => [
+  allow.resource(otpApi).to(['query', 'mutate', 'listen']),
+  allow.resource(postConfirmation),
+]);
 
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'userPool',
-    apiKeyAuthorizationMode: {
-      expiresInDays: 30,
-    },
+    defaultAuthorizationMode: 'identityPool',
+    apiKeyAuthorizationMode: { expiresInDays: 30 },
   },
 });
-
-/*== STEP 2 ===============================================================
-Go to your frontend source code. From your client-side code, generate a
-Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
-WORK IN THE FRONTEND CODE FILE.)
-
-Using JavaScript or Next.js React Server Components, Middleware, Server 
-Actions or Pages Router? Review how to generate Data clients for those use
-cases: https://docs.amplify.aws/gen2/build-a-backend/data/connect-to-API/
-=========================================================================*/
-
-/*
-"use client"
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-
-const client = generateClient<Schema>() // use this Data client for CRUDL requests
-*/
-
-/*== STEP 3 ===============================================================
-Fetch records from the database and use them in your frontend component.
-(THIS SNIPPET WILL ONLY WORK IN THE FRONTEND CODE FILE.)
-=========================================================================*/
-
-/* For example, in a React component, you can use this snippet in your
-  function's RETURN statement */
-// const { data: todos } = await client.models.Todo.list()
-
-// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>

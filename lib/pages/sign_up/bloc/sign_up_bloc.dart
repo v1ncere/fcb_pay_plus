@@ -2,26 +2,28 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
-import 'package:aws_signature_v4/aws_signature_v4.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:form_inputs/form_inputs.dart';
-import 'package:http/http.dart' as http;
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 
+import '../../../data/data.dart';
+import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
 
 part 'sign_up_event.dart';
 part 'sign_up_state.dart';
 
 class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
-  SignUpBloc() : super(SignUpState(
+  final SecureStorageRepository repository;
+  SignUpBloc(this.repository) : super(SignUpState(
     accountNumberController: TextEditingController(),
     accountAliasController: TextEditingController(),
     emailController: TextEditingController(),
@@ -35,7 +37,11 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     on<AccountNumberChanged>(_onAccountNumberChanged);
     on<AccountAliasChanged>(_onAccountAliasChanged);
     on<EmailChanged>(_onEmailChanged);
+    on<OtpCodeChanged>(_onOtpCodeChanged);
     on<MobileNumberChanged>(_onMobileNumberChanged);
+    on<OtpCodeSent>(_onOtpCodeSent);
+    on<OtpCodeVerified>(_onOtpCodeVerified);
+    on<OtpCodeResent>(_onOtpCodeResent);
     on<UserImageChanged>(_onUserImageChanged);
     on<LostDataRetrieved>(_onLostDataRetrieved);
     on<LivenessImageBytesChanged>(_onLivenessImageBytesChanged);
@@ -72,6 +78,10 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
 
   void _onMobileNumberChanged(MobileNumberChanged event, Emitter<SignUpState> emit) {
     emit(state.copyWith(mobile: MobileNumber.dirty(event.mobile)));
+  }
+
+  void _onOtpCodeChanged(OtpCodeChanged event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(otpCode: Integer.dirty(event.otpCode)));
   }
 
   void _onLivenessImageBytesChanged(LivenessImageBytesChanged event, Emitter<SignUpState> emit) {
@@ -125,85 +135,171 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(mobile: const MobileNumber.pure()));
   }
 
-  // *** FACE COMPARISON ***
+  // -------------------------- OTP ------------------------------- */
+  Future<void> _onOtpCodeSent(OtpCodeSent event, Emitter<SignUpState> emit) async {
+    emit(state.copyWith(otpSendStatus: Status.loading));
+    try {
+      final response = await _fetchOtpHandler({
+        "FunctionType": "send-otp",
+        "Target": state.mobile.value,
+        "Channel": "sms"
+      });
+
+      final Map<String, dynamic> jsonMap = jsonDecode(response.data!);
+      final OtpApiResponse otpData = OtpApiResponse.fromJson(jsonMap);
+      
+      emit(
+        otpData.otpApi.isSuccess
+        ? state.copyWith(otpSendStatus: Status.success, message: otpData.otpApi.data!.message)
+        : state.copyWith(otpSendStatus: Status.failure, message: otpData.otpApi.error)
+      );
+    } catch (e) {
+      emit(state.copyWith(otpSendStatus: Status.failure, message: e.toString()));
+    }
+    emit(state.copyWith(otpSendStatus: Status.initial));
+  }
+
+  Future<void> _onOtpCodeVerified(OtpCodeVerified event, Emitter<SignUpState> emit) async {
+    emit(state.copyWith(otpVerifyStatus: Status.loading));
+    try {
+      final response = await _fetchOtpHandler({
+        "FunctionType": "verify-otp",
+        "Target": state.mobile.value,
+        "Otp": event.otp,
+      });
+
+      final Map<String, dynamic> jsonMap = jsonDecode(response.data!);
+      final OtpApiResponse otpData = OtpApiResponse.fromJson(jsonMap);
+      emit(
+        otpData.otpApi.isSuccess
+        ? state.copyWith(otpVerifyStatus: Status.success, message: otpData.otpApi.data!.message)
+        : state.copyWith(otpVerifyStatus: Status.failure, message: otpData.otpApi.error)
+      );
+    } catch (e) {
+      emit(state.copyWith(otpVerifyStatus: Status.failure, message: e.toString()));
+    }
+    emit(state.copyWith(otpVerifyStatus: Status.initial));
+  }
+
+  Future<void> _onOtpCodeResent(OtpCodeResent event, Emitter<SignUpState> emit) async {
+    emit(state.copyWith(otpResendStatus: Status.loading));
+    try {
+      final response = await _fetchOtpHandler({
+        "FunctionType": "resend-otp",
+        "Target": state.mobile.value,
+        "Channel": "sms"
+      });
+
+      final Map<String, dynamic> jsonMap = jsonDecode(response.data!);
+      final OtpApiResponse otpData = OtpApiResponse.fromJson(jsonMap);
+      emit(
+        otpData.otpApi.isSuccess
+        ? state.copyWith(otpResendStatus: Status.success, message: otpData.otpApi.data!.message)
+        : state.copyWith(otpResendStatus: Status.failure, message: otpData.otpApi.error)
+      );
+    } catch (e) {
+      emit(state.copyWith(otpResendStatus: Status.failure, message: e.toString()));  
+    }
+    emit(state.copyWith(otpResendStatus: Status.initial));
+  }
+
+  //** FACE COMPARISON */
   Future<void> _onFaceComparisonFetched(FaceComparisonFetched event, Emitter<SignUpState> emit) async {
     emit(state.copyWith(faceComparisonStatus: Status.loading));
     
     try {
-      final scope = AWSCredentialScope(region: dotenv.get('COGNITO_REGION'), service: AWSService(dotenv.get('SERVICE')));
-      final endpoint = Uri.https(dotenv.get('FACE_COMPARISON_HOST'), dotenv.get('FACE_COMPARISON_PATH'));
       final sourceImage = Uint8List.fromList(state.livenessImageBytes);
       final targetImage = await state.userImage!.readAsBytes();
 
-      final request = AWSHttpRequest(
-        method: AWSHttpMethod.post,
-        uri: endpoint,
-        headers: {
-          AWSHeaders.host: endpoint.host,
-          AWSHeaders.contentType: 'application/json',
-        },
-        body: utf8.encode(json.encode({
-          'sourceImageBytes': base64Encode(await compressList(sourceImage)),
-          'targetImageBytes': base64Encode(await compressList(targetImage)),
-        })),
+      final req = {
+        'SourceImageBytes': base64Encode(await compressList(sourceImage)),
+        'TargetImageBytes': base64Encode(await compressList(targetImage)),
+      };
+
+      const graphQLDocument = '''
+        query FaceComparison(\$data: AWSJSON!) {
+          faceComparison(data: \$data)
+        }
+      ''';
+
+      final echoRequest = GraphQLRequest<String>(
+        document: graphQLDocument,
+        variables: <String, dynamic> {
+          "data": jsonEncode(req) 
+        }
       );
+
+      final response = await Amplify.API.query(request: echoRequest).response;
+      final Map<String, dynamic> jsonMap = jsonDecode(response.data!);
+      final res = FaceComparisonResponse.fromJson(jsonMap);
       
-      final signer = await _awsSigV4Signer();
-      final signedRequest = await signer.sign(request, credentialScope: scope);
-      final httpRequest = http.Request(signedRequest.method.value, signedRequest.uri)
-      ..headers.addAll(signedRequest.headers)
-      ..bodyBytes = await signedRequest.bodyBytes;
+      if (res.faceComparison.ok) {
+        if(res.faceComparison.isFirstMatchAbove(90)) {
+          add(UploadImageToS3());
+          // add(HandleSignUp());
 
-      final streamResponse = await httpRequest.send();
-      final response = await http.Response.fromStream(streamResponse);
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> map = jsonDecode(response.body);
-        
-        if (map.containsKey('FaceMatches') && (map['FaceMatches'] as List).isNotEmpty) {
-          final List<dynamic> faceMatches = map['FaceMatches'];
-          final double similarity = faceMatches.first['Similarity'] as double;
-
-          if(similarity >= 90) {
-            // add(UploadImageToS3()); // proceed to upload
-            add(HandleSignUp());
-            emit(state.copyWith(faceComparisonStatus: Status.success, similarity: similarity));
-          } else {
-            emit(state.copyWith(faceComparisonStatus: Status.failure, message: TextString.imageNotMatch));
-          }
+          emit(state.copyWith(faceComparisonStatus: Status.success, similarity: res.faceComparison.firstSimilarity));
         } else {
           emit(state.copyWith(faceComparisonStatus: Status.failure, message: TextString.imageNotMatch));
         }
       } else {
-        final Map<String, dynamic> map = jsonDecode(response.body);
-        String message = map['message'] ?? TextString.error;
-        emit(state.copyWith(faceComparisonStatus: Status.failure, message: message));
+        emit(state.copyWith(faceComparisonStatus: Status.failure, message: TextString.imageNotMatch));
       }
     } catch (e) {
-      emit(state.copyWith(faceComparisonStatus: Status.failure, message: TextString.error));
+      emit(state.copyWith(faceComparisonStatus: Status.failure, message: e.toString()));
     }
   }
 
   // *** UPLOAD IMAGE TO S3 ***
   Future<void> _onUploadImageToS3(UploadImageToS3 event, Emitter<SignUpState> emit) async {
-    final image = state.userImage;
-    
-    if (image == null) {
+    final userImage = state.userImage;
+    final livenessImage = state.livenessImageBytes;
+    emit(state.copyWith(uploadStatus: Status.loading));
+
+    if (userImage == null || livenessImage.isEmpty) {
       emit(state.copyWith(uploadStatus: Status.failure, message: TextString.imageNotSelected));
       return;
     }
-    emit(state.copyWith(uploadStatus: Status.loading));
 
     try {
-      await Amplify.Storage.uploadFile(
-        localFile: AWSFile.fromPath(image.path),
-        path: StoragePath.fromString('picture-submission/${_fileName(image)}'), // path must be edited in resource
+      int? totalA;
+      int? totalB;
+      int transferredA = 0;
+      int transferredB = 0;
+      
+      // helper function for updating combined progress
+      void updateProgress() {
+        if (totalA != null && totalB != null) {
+          final total = (totalA ?? 0) + (totalB ?? 0);
+          final transferred = transferredA + transferredB;
+          final double progress = total == 0 ? 0 : transferred / total;
+          emit(state.copyWith(uploadStatus: Status.progress, progress: progress));
+        }
+      }
+
+      final uploadA = Amplify.Storage.uploadFile(
+        localFile: AWSFile.fromData(livenessImage),
+        path: StoragePath.fromString('picture-submission/${_rawBytesName(livenessImage, state.email.value)}'), // path must be edited in resource (amplify) folder
         onProgress: (progress) {
-          emit(state.copyWith(uploadStatus: Status.progress));
-          add(ImageUploadProgressed(progress.transferredBytes / progress.totalBytes));
+          totalA ??= progress.totalBytes;
+          transferredA = progress.transferredBytes;
+          updateProgress();
         },
       ).result;
 
+      final uploadB = Amplify.Storage.uploadFile(
+        localFile: AWSFile.fromPath(userImage.path),
+        path: StoragePath.fromString('picture-submission/${_fileName(userImage, state.email.value)}'), // path must be edited in resource (amplify) folder
+        onProgress: (progress) {
+          totalB ??= progress.totalBytes;
+          transferredB = progress.transferredBytes;
+          updateProgress();
+        },
+      ).result;
+
+      // Wait for both uploads
+      final results = await Future.wait([uploadA, uploadB]);
+      add(HandleSignUp(results));
       emit(state.copyWith(uploadStatus: Status.success, message: TextString.signUpComplete));
     } on StorageException catch (e) {
       emit(state.copyWith(uploadStatus: Status.failure, message: e.message));
@@ -213,7 +309,7 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
   }
 
   void _onImageUploadProgressed(ImageUploadProgressed event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(progress: event.progress));
+    emit(state.copyWith(uploadStatus: Status.progress, progress: event.progress));
   }
 
   // *** SIGN UP METHOD ***
@@ -224,10 +320,29 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
       _emitErrorAndReset(emit, TextString.imageNotSelected);
       return;
     }
+
     emit(state.copyWith(status: Status.loading));
     
     try {
-      // TODO: CREATE SUBMIT
+      final signup = SignupRequest(
+        accountNumber: state.accountNumber.value,
+        accountAlias: state.accountAlias.value,
+        email: state.email.value,
+        mobileNumber: state.mobile.value,
+        details: jsonEncode(state.lastMessage),
+        profileRef: event.results[0].uploadedItem.path,
+        validIdRef: event.results[1].uploadedItem.path,
+      );
+      final request = ModelMutations.create(signup);
+      final response = await Amplify.API.mutate(request: request).response;
+
+      final createdSignupRequest = response.data;
+      if (createdSignupRequest == null) {
+        _emitErrorAndReset(emit, response.errors.first.message);
+        return;
+      }
+      
+      emit(state.copyWith(status: Status.success));
     } catch (_) {
       _emitErrorAndReset(emit, TextString.error);
     }
@@ -269,7 +384,7 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
   }
 
   void _onBridgeTokenGenerated(BridgeTokenGenerated event, Emitter<SignUpState> emit) {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final chars = dotenv.get('BRIDGE_TOKEN');
     final rand = Random.secure();
     final token = List.generate(32, (_) => chars[rand.nextInt(chars.length)]).join();
     
@@ -293,16 +408,22 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
   }
 
   // * ============================== UTILITY METHODS ============================== * //
-  Future<void> fetchCognitoAuthSession() async {
-    try {
-      final cognitoPlugin = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
-      final result = await cognitoPlugin.fetchAuthSession();
-      final identityId = result.identityIdResult.value;
-      safePrint("Current user's identity ID: $identityId");
-    } on AuthException catch (e) {
-      safePrint('Error retrieving auth session: ${e.message}');
-    }
-  } 
+  Future<GraphQLResponse<String>> _fetchOtpHandler(Map<String, String> req) async {
+    const graphQLDocument = '''
+      query OtpApi(\$data: AWSJSON!) {
+        otpApi(data: \$data)
+      }
+    ''';
+
+    final echoRequest = GraphQLRequest<String>(
+      document: graphQLDocument,
+      variables: <String, dynamic> {
+        "data": jsonEncode(req)
+      }
+    );
+
+    return await Amplify.API.query(request: echoRequest).response;
+  }
 
   // *** TEXT SCANNING ***
   Future<void> _isScannedTextExists(XFile? image, Emitter<SignUpState> emit) async {
@@ -319,69 +440,49 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(imageStatus: Status.loading));
     
     try {
-      final scope = AWSCredentialScope(region: dotenv.get('COGNITO_REGION'), service: AWSService(dotenv.get('SERVICE')));
-      final endpoint = Uri.https(dotenv.get('TEXT_IN_IMAGE_HOST'), dotenv.get('TEXT_IN_IMAGE_PATH'));
       final imageBytes = await image.readAsBytes();
-
-      final request = AWSHttpRequest(
-        method: AWSHttpMethod.post,
-        uri: endpoint,
-        headers: {
-          AWSHeaders.host: endpoint.host,
-          AWSHeaders.contentType: 'application/json',
-        },
-        body: utf8.encode(json.encode({
-          "imageBytes": base64Encode(await compressList(imageBytes))
-        })),
-      );
       
-      final signer = await _awsSigV4Signer();
-      final signedRequest = await signer.sign(request, credentialScope: scope);
-      final httpRequest = http.Request(signedRequest.method.value, signedRequest.uri)
-      ..headers.addAll(signedRequest.headers)
-      ..bodyBytes = await signedRequest.bodyBytes;
+      final req =  {
+        "ImageBytes": base64Encode(await compressList(imageBytes)) 
+      };
 
-      final streamResponse = await httpRequest.send();
-      final response = await http.Response.fromStream(streamResponse);
+      const graphQLDocument = '''
+        query TextInImage(\$data: AWSJSON!) {
+          textInImage(data: \$data)
+        }
+      ''';
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> map = jsonDecode(response.body);
-        
-        if (map['TextDetections'].isNotEmpty) {
-          List<dynamic> textDetectionList = map['TextDetections'];
-          final title = _isTextExists(textDetectionList, state.validIDTitle.value!.trim().toLowerCase());
-          // final first = _isTextExists(textDetectionList, state.firstName.value.trim().toLowerCase());
-          // final last = _isTextExists(textDetectionList, state.lastName.value.trim().toLowerCase());
-          
-          // if (title && first && last) {
-          if (title) {
-            emit(state.copyWith(imageStatus: Status.success, userImage: image));
-          } else {
-            emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageNameMisMatch, userImage: null));
-          }
+      final echoRequest = GraphQLRequest<String>(
+        document: graphQLDocument,
+        variables: <String, dynamic> {
+          "data": jsonEncode(req) 
+        }
+      );
+
+      final response = await Amplify.API.query(request: echoRequest).response;
+      final Map<String, dynamic> jsonMap = jsonDecode(response.data!);
+      final result = TextInImageResponse.fromJson(jsonMap);
+      final text = result.textInImage;
+
+      if (text.isSuccess && text.data != null) {
+        final idTitle = state.validIDTitle.value!.trim().toLowerCase();
+        final isMatch = text.containsText(idTitle);
+        // final first = _isTextExists(textDetectionList, state.firstName.value.trim().toLowerCase());
+        // final last = _isTextExists(textDetectionList, state.lastName.value.trim().toLowerCase());
+
+        // if (title && first && last) {
+        if (isMatch) {
+          emit(state.copyWith(imageStatus: Status.success, userImage: image));
         } else {
-          emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageEmpty, userImage: null));
+          emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageNameMisMatch, userImage: null));
         }
       } else {
-        final Map<String, dynamic> map = jsonDecode(response.body);
-        final message = map['message'] ?? TextString.error;
-        emit(state.copyWith(imageStatus: Status.failure, message: message, userImage: null));
+        emit(state.copyWith(imageStatus: Status.failure, message: TextString.imageEmpty, userImage: null));
       }
-    } catch (_) {
-      emit(state.copyWith(imageStatus: Status.failure, message: TextString.error, userImage: null));
+    } catch (e) {
+      emit(state.copyWith(imageStatus: Status.failure, message: e.toString(), userImage: null));
     }
-  }
-
-  bool _isTextExists(List<dynamic> list, String text) {
-    for (var item in list) {
-      final detectedText = item['DetectedText'].toString().replaceAll(',', '');
-      final newText = detectedText.toLowerCase().trim();
-      if (newText.contains(text)) {
-        return true;
-      }
-    }
-    return false;
-  }
+  } 
 
   Future<Uint8List> compressList(Uint8List list) async {
     final result = await FlutterImageCompress.compressWithList(
@@ -399,27 +500,18 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(status: Status.initial));
   }
 
-  String _fileName(XFile image) {
-    final email = state.email.value.split('@').first;
-    final newEmail = email.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
+  String _fileName(XFile image, String email) {
+    final sanitizedEmail = email.split('@').first.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
     final type = image.path.split('.').last;
-    return '$newEmail.$type';
+    return 'id_$sanitizedEmail.$type';
   }
 
-  Future<AWSSigV4Signer> _awsSigV4Signer() async {
-    final cognito = Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey);
-    final result = await cognito.fetchAuthSession();
-    final credential = result.credentialsResult.value;
-
-    return  AWSSigV4Signer(
-      credentialsProvider: AWSCredentialsProvider(
-        AWSCredentials(
-          credential.accessKeyId,
-          credential.secretAccessKey,
-          credential.sessionToken,
-        )
-      )
-    );
+  String _rawBytesName(List<int> raw, String email) {
+    final uint8 = Uint8List.fromList(raw);
+    final mime = lookupMimeType('', headerBytes: uint8) ?? 'bin';
+    final ext = extensionFromMime(mime);
+    final sanitizedEmail = email.split('@').first.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
+    return 'liveness_$sanitizedEmail.$ext';
   }
 
   @override

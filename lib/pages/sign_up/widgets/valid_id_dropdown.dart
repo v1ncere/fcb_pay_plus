@@ -14,7 +14,7 @@ class ValidIdDropdown extends StatelessWidget {
       buildWhen: (previous, current) => previous.validIDTitle != current.validIDTitle,
       builder: (context, state) {
         return DropdownButtonFormField(
-          value: state.validIDTitle.value,
+          initialValue: state.validIDTitle.value,
           decoration: InputDecoration(
             labelText: 'Valid ID',
             labelStyle: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w700),

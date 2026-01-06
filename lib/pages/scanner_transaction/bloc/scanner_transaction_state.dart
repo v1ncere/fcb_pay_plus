@@ -2,7 +2,7 @@ part of 'scanner_transaction_bloc.dart';
 
 class ScannerTransactionState extends Equatable with FormzMixin {
   const ScannerTransactionState({
-    this.qrDataList = const <QRModel>[],
+    this.qrDataList = const <QrData>[],
     required this.account,
     this.inputAmount = const Amount.pure(),
     this.notifyFlag = '',
@@ -13,7 +13,7 @@ class ScannerTransactionState extends Equatable with FormzMixin {
     this.formStatus = FormzSubmissionStatus.initial,
     this.message = ''
   });
-  final List<QRModel> qrDataList;
+  final List<QrData> qrDataList;
   final Account account;
   final String notifyFlag;
   final String tip;
@@ -25,7 +25,7 @@ class ScannerTransactionState extends Equatable with FormzMixin {
   final String message;
 
   ScannerTransactionState copyWith({
-    List<QRModel>? qrDataList,
+    List<QrData>? qrDataList,
     Account? account,
     String? notifyFlag,
     String? tip,

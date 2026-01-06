@@ -62,38 +62,6 @@ final class SignInResults extends LoginEvent {
   List<Object> get props => [result];
 }
 
-final class ConfirmSignInWithSmsMfaCode extends LoginEvent {
-  const ConfirmSignInWithSmsMfaCode(this.result);
-  final SignInResult result;
-
-  @override
-  List<Object> get props => [result];
-}
-
-final class ConfirmSignInWithNewPassword extends LoginEvent {}
-
-final class ConfirmSignInWithCustomChallenge extends LoginEvent {
-  const ConfirmSignInWithCustomChallenge(this.result);
-  final SignInResult result;
-
-  @override
-  List<Object> get props => [result];
-}
-
-final class ResetPassword extends LoginEvent {}
-
-final class HandlePasswordResetCodeDelivery extends LoginEvent {
-  const HandlePasswordResetCodeDelivery(this.result);
-  final ResetPasswordResult result;
-
-  @override
-  List<Object> get props => [result];
-}
-
-final class ResetPasswordWithCodeConfirmed extends LoginEvent {}
-
-final class ResetPasswordDone extends LoginEvent {}
-
 final class ConfirmSignUp extends LoginEvent {}
 
 final class SignUpConfirmed extends LoginEvent {
@@ -104,56 +72,12 @@ final class SignUpConfirmed extends LoginEvent {
   List<Object> get props => [code];
 }
 
-final class ContinueSignInWithMfaSelection extends LoginEvent {
-  const ContinueSignInWithMfaSelection(this.result);
-  final SignInResult  result;
-
-  @override
-  List<Object> get props => [result];
-}
-
-final class LoginMfaChanged extends LoginEvent {
-  const LoginMfaChanged(this.mfa);
-  final MfaType mfa;
-
-  @override
-  List<Object> get props => [mfa];
-}
-
-final class ContinueSignInWithTotpSetup extends LoginEvent {
-  const ContinueSignInWithTotpSetup(this.result);
-  final SignInResult result;
-
-  @override
-  List<Object> get props => [result];
-}
-
-final class ConfirmSignInWithTotpMfaCode extends LoginEvent {}
-
 final class SignInConfirmed extends LoginEvent {
   const SignInConfirmed(this.code);
   final String code;
 
   @override
   List<Object> get props => [code]; 
-}
-
-final class ContinueSignInWithMfaSetupSelection extends LoginEvent {
-  const ContinueSignInWithMfaSetupSelection(this.result);
-  final SignInResult  result;
-
-  @override
-  List<Object> get props => [result];
-}
-
-final class ContinueSignInWithEmailMfaSetup extends LoginEvent {}
-
-final class ConfirmSignInWithOtpCode extends LoginEvent {
-  const ConfirmSignInWithOtpCode(this.result);
-  final SignInResult  result;
-
-  @override
-  List<Object> get props => [result];
 }
 
 final class AuthSignInStepDone extends LoginEvent {}

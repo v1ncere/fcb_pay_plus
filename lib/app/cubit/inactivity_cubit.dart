@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'inactivity_state.dart';
 
+const minuteCount = 300; // 5 minutes
+const longMinuteCount = 20000; // 10 minutes
+
 class InactivityCubit extends Cubit<InactivityState> {
   InactivityCubit() : super(const InactivityState());
   Timer? _timer;
@@ -12,8 +15,8 @@ class InactivityCubit extends Cubit<InactivityState> {
     _timer?.cancel(); // cancel the timer
     emit(state.copyWith(status: InactivityStatus.active));
     // timer is NOT paused
-    if (!state.isTimerPaused) {
-      _timer = Timer(const Duration(seconds: 300), () => emit(state.copyWith(status: InactivityStatus.inactive)));
+    if (!state.isTimerPaused) { // TODO: change into muniteCount and remove longMinuteCount for production
+      _timer = Timer(const Duration(seconds: longMinuteCount), () => emit(state.copyWith(status: InactivityStatus.inactive)));
     }
   }
 

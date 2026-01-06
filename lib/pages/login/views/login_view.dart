@@ -55,28 +55,9 @@ class LoginView extends StatelessWidget {
   }
   
   Widget _getSignInScreen(SignInSteps step) {
-    switch (step) {
-      case SignInSteps.initial:
-      case SignInSteps.confirmSignInWithCustomChallenge:
-      case SignInSteps.done:
-        return const SaveDevice();
-        // return const LoginScreen();
-      case SignInSteps.confirmSignInWithSmsMfaCode:
-      case SignInSteps.confirmSignInWithTotpMfaCode:
-      case SignInSteps.confirmSignInWithOtpCode:
-      case SignInSteps.confirmSignUp:
-        return const ConfirmScreen();
-      case SignInSteps.confirmSignInWithNewPassword:
-        return const NewPasswordScreen();
-      case SignInSteps.continueSignInWithMfaSelection:
-      case SignInSteps.continueSignInWithMfaSetupSelection:
-        return const MfaSelectionScreen();
-      case SignInSteps.continueSignInWithEmailMfaSetup:
-        return const EmailConfirmScreen();
-      case SignInSteps.continueSignInWithTotpSetup:
-        return const TotpSetupScreen();
-      case SignInSteps.resetPassword:
-        return const ResetPasswordScreen();
+    if (step.isConfirmSignUp) {
+      return const ConfirmScreen();
     }
+    return LoginScreen();
   }
 }

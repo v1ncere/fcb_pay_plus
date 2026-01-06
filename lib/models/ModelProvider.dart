@@ -28,7 +28,6 @@ import 'DynamicRoute.dart';
 import 'DynamicWidget.dart';
 import 'Merchant.dart';
 import 'Notification.dart';
-import 'OtpRequest.dart';
 import 'OtpSmsEmail.dart';
 import 'SignupRequest.dart';
 import 'Transaction.dart';
@@ -48,7 +47,6 @@ export 'DynamicWidget.dart';
 export 'LedgerStatus.dart';
 export 'Merchant.dart';
 export 'Notification.dart';
-export 'OtpRequest.dart';
 export 'OtpSmsEmail.dart';
 export 'SignupRequest.dart';
 export 'Transaction.dart';
@@ -59,9 +57,9 @@ export 'VerifyAccount.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "20ed9bbf295f23223d07a7a47eb5cb81";
+  String version = "4cdd9f3fc41c2398776ac4f31025ebdb";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [Account.schema, AccountButton.schema, Button.schema, DeviceId.schema, DynamicRoute.schema, DynamicWidget.schema, Merchant.schema, Notification.schema, OtpRequest.schema, OtpSmsEmail.schema, SignupRequest.schema, Transaction.schema, TransactionDetail.schema, TransactionTransactionDetail.schema, TransferableUser.schema, VerifyAccount.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [Account.schema, AccountButton.schema, Button.schema, DeviceId.schema, DynamicRoute.schema, DynamicWidget.schema, Merchant.schema, Notification.schema, OtpSmsEmail.schema, SignupRequest.schema, Transaction.schema, TransactionDetail.schema, TransactionTransactionDetail.schema, TransferableUser.schema, VerifyAccount.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -86,8 +84,6 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return Merchant.classType;
       case "Notification":
         return Notification.classType;
-      case "OtpRequest":
-        return OtpRequest.classType;
       case "OtpSmsEmail":
         return OtpSmsEmail.classType;
       case "SignupRequest":

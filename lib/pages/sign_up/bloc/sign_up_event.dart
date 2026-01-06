@@ -58,6 +58,14 @@ final class MobileNumberChanged extends SignUpEvent {
   List<Object> get props => [mobile];
 }
 
+final class OtpCodeChanged extends SignUpEvent {
+  const OtpCodeChanged(this.otpCode);
+  final String otpCode;
+
+  @override
+  List<Object> get props => [otpCode];
+}
+
 final class UserImageChanged extends SignUpEvent {
   const UserImageChanged(this.image);
   final XFile? image;
@@ -84,7 +92,15 @@ final class ValidIDTitleChanged extends SignUpEvent {
 
 final class OtpCodeSent extends SignUpEvent {}
 
-final class OtpCodeReceived extends SignUpEvent {}
+final class OtpCodeVerified extends SignUpEvent {
+  const OtpCodeVerified(this.otp);
+  final String otp;
+
+  @override
+  List<Object> get props => [otp];
+}
+
+final class OtpCodeResent extends SignUpEvent {}
 
 final class FaceComparisonFetched extends SignUpEvent {}
 
@@ -98,7 +114,13 @@ final class ImageUploadProgressed extends SignUpEvent {
   List<Object> get props => [progress];
 }
 
-final class HandleSignUp extends SignUpEvent {}
+final class HandleSignUp extends SignUpEvent {
+  const HandleSignUp(this.results);
+  final List<StorageUploadFileResult<StorageItem>> results;
+
+  @override
+  List<Object> get props => [results];
+}
 
 final class HydrateStateChanged extends SignUpEvent {
   const HydrateStateChanged({required this.isHydrated});

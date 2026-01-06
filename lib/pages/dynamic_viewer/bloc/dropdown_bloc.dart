@@ -2,8 +2,8 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_repository/hive_repository.dart';
 
+import '../../../data/data.dart' hide Merchant;
 import '../../../models/ModelProvider.dart';
 import '../../../utils/utils.dart';
 
@@ -11,13 +11,13 @@ part 'dropdown_event.dart';
 part 'dropdown_state.dart';
 
 class DropdownBloc extends Bloc<DropdownEvent, DropdownState> {
+  final SqfliteRepositories _sqfliteRepositories;
   DropdownBloc({
-    required HiveRepository hiveRepository
-  }) : _hiveRepository = hiveRepository,
+    required SqfliteRepositories sqfliteRepositories,
+  }) : _sqfliteRepositories = sqfliteRepositories,
   super(DropdownState(status: Status.loading)) {
     on<DropdownFetched>(_onDropdownFetched);
   }
-  final HiveRepository _hiveRepository;
 
   Future<void> _onDropdownFetched(DropdownFetched event, Emitter<DropdownState> emit) async {
     try {
@@ -39,7 +39,7 @@ class DropdownBloc extends Bloc<DropdownEvent, DropdownState> {
         
         if (modelType == Merchant.classType) {
           final authUser = await Amplify.Auth.getCurrentUser();
-          final merchants = await _hiveRepository.getMerchants();
+          final merchants = await _sqfliteRepositories.getAllMerchants();
           final myMerchant = merchants.where((e) => e.owner == authUser.userId);
           model.addAll(myMerchant.map((e) => Merchant(
             id: e.id,

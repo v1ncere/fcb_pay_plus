@@ -10,9 +10,6 @@ class LoginState extends Equatable with FormzMixin {
   final SignInSteps signInSteps;
   final FormzSubmissionStatus status;
   final Status deviceStatus;
-  final Set<MfaType> mfaTypes;
-  final MfaType mfa;
-  final TotpSetupDetails? totpDetails;
   final String message;
   
   const LoginState({
@@ -25,9 +22,6 @@ class LoginState extends Equatable with FormzMixin {
     this.isConfirmObscure = true,
     this.signInSteps = SignInSteps.initial,
     this.deviceStatus = Status.initial,
-    this.mfaTypes = const <MfaType>{},
-    this.mfa = MfaType.sms,
-    this.totpDetails,
     this.message = '',
   });
   
@@ -44,9 +38,6 @@ class LoginState extends Equatable with FormzMixin {
     SignInSteps? signInSteps,
     FormzSubmissionStatus? status,
     Status? deviceStatus,
-    Set<MfaType>? mfaTypes,
-    MfaType? mfa,
-    TotpSetupDetails? totpDetails,
     String? message,
   }) {
     return LoginState(
@@ -59,15 +50,12 @@ class LoginState extends Equatable with FormzMixin {
       signInSteps: signInSteps ?? this.signInSteps,
       status: status ?? this.status,
       deviceStatus: deviceStatus ?? this.deviceStatus,
-      mfaTypes: mfaTypes ?? this.mfaTypes,
-      mfa: mfa ?? this.mfa,
-      totpDetails: totpDetails ?? this.totpDetails,
       message: message ?? this.message,
     );
   }
 
   @override
-  List<Object?> get props {
+  List<Object> get props {
     return [
       email,
       password,
@@ -78,50 +66,7 @@ class LoginState extends Equatable with FormzMixin {
       signInSteps,
       status,
       deviceStatus,
-      mfaTypes,
-      mfa,
-      totpDetails,
       message,
     ];
   }
-}
-
-enum LoginOption { email, phone, google }
-
-extension LoginOptionX on LoginOption {
-  bool get isEmail => this == LoginOption.email;
-  bool get isPhone => this == LoginOption.phone;
-  bool get isGoogle => this == LoginOption.google;
-}
-
-enum SignInSteps {
-  initial,
-  confirmSignInWithSmsMfaCode,
-  confirmSignInWithTotpMfaCode,
-  confirmSignInWithNewPassword,
-  confirmSignInWithCustomChallenge,
-  continueSignInWithMfaSelection,
-  continueSignInWithMfaSetupSelection,
-  continueSignInWithEmailMfaSetup,
-  continueSignInWithTotpSetup,
-  confirmSignInWithOtpCode,
-  resetPassword,
-  confirmSignUp,
-  done,
-}
-
-extension SignInStepsX on SignInSteps {
-  bool get isInitial => this == SignInSteps.initial;
-  bool get isConfirmSignInWithSmsMfaCode => this == SignInSteps.confirmSignInWithSmsMfaCode;
-  bool get isConfirmSignInWithTotpMfaCode => this == SignInSteps.confirmSignInWithTotpMfaCode;
-  bool get isConfirmSignInWithNewPassword => this == SignInSteps.confirmSignInWithNewPassword;
-  bool get isConfirmSignInWithCustomChallenge => this == SignInSteps.confirmSignInWithCustomChallenge;
-  bool get isContinueSignInWithMfaSelection => this == SignInSteps.continueSignInWithMfaSelection;
-  bool get isContinueSignInWithMfaSetupSelection => this == SignInSteps.continueSignInWithMfaSetupSelection;
-  bool get isContinueSignInWithEmailMfaSetup => this == SignInSteps.continueSignInWithEmailMfaSetup;
-  bool get isContinueSignInWithTotpSetup => this == SignInSteps.continueSignInWithTotpSetup;
-  bool get isConfirmSignInWithOtpCode => this == SignInSteps.confirmSignInWithOtpCode;
-  bool get isResetPassword => this == SignInSteps.resetPassword;
-  bool get isConfirmSignUp => this == SignInSteps.confirmSignUp;
-  bool get isDone => this == SignInSteps.done;
 }

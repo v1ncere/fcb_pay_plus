@@ -8,6 +8,7 @@ part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   AppBloc() : super(const AppState()) {
+    // TODO: change this into a local signin
     // login checked
     on<LoginChecked>((event, emit) async {
       try {

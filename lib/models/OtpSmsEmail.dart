@@ -26,12 +26,12 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 /** This is an auto generated class representing the OtpSmsEmail type in your schema. */
 class OtpSmsEmail extends amplify_core.Model {
   static const classType = const _OtpSmsEmailModelType();
-  final String id;
   final String? _target;
-  final String? _otp;
+  final String? _otpHash;
   final String? _channel;
-  final String? _expiresAt;
+  final amplify_core.TemporalDateTime? _expiresAt;
   final bool? _verified;
+  final int? _attempts;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -40,12 +40,21 @@ class OtpSmsEmail extends amplify_core.Model {
   
   @Deprecated('[getId] is being deprecated in favor of custom primary key feature. Use getter [modelIdentifier] to get model identifier.')
   @override
-  String getId() => id;
+  String getId() => modelIdentifier.serializeAsString();
   
   OtpSmsEmailModelIdentifier get modelIdentifier {
+    try {
       return OtpSmsEmailModelIdentifier(
-        id: id
+        target: _target!
       );
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
   String get target {
@@ -61,20 +70,24 @@ class OtpSmsEmail extends amplify_core.Model {
     }
   }
   
-  String? get otp {
-    return _otp;
+  String? get otpHash {
+    return _otpHash;
   }
   
   String? get channel {
     return _channel;
   }
   
-  String? get expiresAt {
+  amplify_core.TemporalDateTime? get expiresAt {
     return _expiresAt;
   }
   
   bool? get verified {
     return _verified;
+  }
+  
+  int? get attempts {
+    return _attempts;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -85,16 +98,16 @@ class OtpSmsEmail extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const OtpSmsEmail._internal({required this.id, required target, otp, channel, expiresAt, verified, createdAt, updatedAt}): _target = target, _otp = otp, _channel = channel, _expiresAt = expiresAt, _verified = verified, _createdAt = createdAt, _updatedAt = updatedAt;
+  const OtpSmsEmail._internal({required target, otpHash, channel, expiresAt, verified, attempts, createdAt, updatedAt}): _target = target, _otpHash = otpHash, _channel = channel, _expiresAt = expiresAt, _verified = verified, _attempts = attempts, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory OtpSmsEmail({String? id, required String target, String? otp, String? channel, String? expiresAt, bool? verified}) {
+  factory OtpSmsEmail({required String target, String? otpHash, String? channel, amplify_core.TemporalDateTime? expiresAt, bool? verified, int? attempts}) {
     return OtpSmsEmail._internal(
-      id: id == null ? amplify_core.UUID.getUUID() : id,
       target: target,
-      otp: otp,
+      otpHash: otpHash,
       channel: channel,
       expiresAt: expiresAt,
-      verified: verified);
+      verified: verified,
+      attempts: attempts);
   }
   
   bool equals(Object other) {
@@ -105,12 +118,12 @@ class OtpSmsEmail extends amplify_core.Model {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is OtpSmsEmail &&
-      id == other.id &&
       _target == other._target &&
-      _otp == other._otp &&
+      _otpHash == other._otpHash &&
       _channel == other._channel &&
       _expiresAt == other._expiresAt &&
-      _verified == other._verified;
+      _verified == other._verified &&
+      _attempts == other._attempts;
   }
   
   @override
@@ -121,12 +134,12 @@ class OtpSmsEmail extends amplify_core.Model {
     var buffer = new StringBuffer();
     
     buffer.write("OtpSmsEmail {");
-    buffer.write("id=" + "$id" + ", ");
     buffer.write("target=" + "$_target" + ", ");
-    buffer.write("otp=" + "$_otp" + ", ");
+    buffer.write("otpHash=" + "$_otpHash" + ", ");
     buffer.write("channel=" + "$_channel" + ", ");
-    buffer.write("expiresAt=" + "$_expiresAt" + ", ");
+    buffer.write("expiresAt=" + (_expiresAt != null ? _expiresAt!.format() : "null") + ", ");
     buffer.write("verified=" + (_verified != null ? _verified!.toString() : "null") + ", ");
+    buffer.write("attempts=" + (_attempts != null ? _attempts!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -134,65 +147,65 @@ class OtpSmsEmail extends amplify_core.Model {
     return buffer.toString();
   }
   
-  OtpSmsEmail copyWith({String? target, String? otp, String? channel, String? expiresAt, bool? verified}) {
+  OtpSmsEmail copyWith({String? otpHash, String? channel, amplify_core.TemporalDateTime? expiresAt, bool? verified, int? attempts}) {
     return OtpSmsEmail._internal(
-      id: id,
-      target: target ?? this.target,
-      otp: otp ?? this.otp,
+      target: target,
+      otpHash: otpHash ?? this.otpHash,
       channel: channel ?? this.channel,
       expiresAt: expiresAt ?? this.expiresAt,
-      verified: verified ?? this.verified);
+      verified: verified ?? this.verified,
+      attempts: attempts ?? this.attempts);
   }
   
   OtpSmsEmail copyWithModelFieldValues({
-    ModelFieldValue<String>? target,
-    ModelFieldValue<String?>? otp,
+    ModelFieldValue<String?>? otpHash,
     ModelFieldValue<String?>? channel,
-    ModelFieldValue<String?>? expiresAt,
-    ModelFieldValue<bool?>? verified
+    ModelFieldValue<amplify_core.TemporalDateTime?>? expiresAt,
+    ModelFieldValue<bool?>? verified,
+    ModelFieldValue<int?>? attempts
   }) {
     return OtpSmsEmail._internal(
-      id: id,
-      target: target == null ? this.target : target.value,
-      otp: otp == null ? this.otp : otp.value,
+      target: target,
+      otpHash: otpHash == null ? this.otpHash : otpHash.value,
       channel: channel == null ? this.channel : channel.value,
       expiresAt: expiresAt == null ? this.expiresAt : expiresAt.value,
-      verified: verified == null ? this.verified : verified.value
+      verified: verified == null ? this.verified : verified.value,
+      attempts: attempts == null ? this.attempts : attempts.value
     );
   }
   
   OtpSmsEmail.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      _target = json['target'],
-      _otp = json['otp'],
+    : _target = json['target'],
+      _otpHash = json['otpHash'],
       _channel = json['channel'],
-      _expiresAt = json['expiresAt'],
+      _expiresAt = json['expiresAt'] != null ? amplify_core.TemporalDateTime.fromString(json['expiresAt']) : null,
       _verified = json['verified'],
+      _attempts = (json['attempts'] as num?)?.toInt(),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'target': _target, 'otp': _otp, 'channel': _channel, 'expiresAt': _expiresAt, 'verified': _verified, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'target': _target, 'otpHash': _otpHash, 'channel': _channel, 'expiresAt': _expiresAt?.format(), 'verified': _verified, 'attempts': _attempts, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id,
     'target': _target,
-    'otp': _otp,
+    'otpHash': _otpHash,
     'channel': _channel,
     'expiresAt': _expiresAt,
     'verified': _verified,
+    'attempts': _attempts,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
   static final amplify_core.QueryModelIdentifier<OtpSmsEmailModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<OtpSmsEmailModelIdentifier>();
-  static final ID = amplify_core.QueryField(fieldName: "id");
   static final TARGET = amplify_core.QueryField(fieldName: "target");
-  static final OTP = amplify_core.QueryField(fieldName: "otp");
+  static final OTPHASH = amplify_core.QueryField(fieldName: "otpHash");
   static final CHANNEL = amplify_core.QueryField(fieldName: "channel");
   static final EXPIRESAT = amplify_core.QueryField(fieldName: "expiresAt");
   static final VERIFIED = amplify_core.QueryField(fieldName: "verified");
+  static final ATTEMPTS = amplify_core.QueryField(fieldName: "attempts");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "OtpSmsEmail";
     modelSchemaDefinition.pluralName = "OtpSmsEmails";
@@ -209,7 +222,9 @@ class OtpSmsEmail extends amplify_core.Model {
         ])
     ];
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
+    modelSchemaDefinition.indexes = [
+      amplify_core.ModelIndex(fields: const ["target"], name: null)
+    ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: OtpSmsEmail.TARGET,
@@ -218,7 +233,7 @@ class OtpSmsEmail extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: OtpSmsEmail.OTP,
+      key: OtpSmsEmail.OTPHASH,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
@@ -232,13 +247,19 @@ class OtpSmsEmail extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: OtpSmsEmail.EXPIRESAT,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: OtpSmsEmail.VERIFIED,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: OtpSmsEmail.ATTEMPTS,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -276,15 +297,15 @@ class _OtpSmsEmailModelType extends amplify_core.ModelType<OtpSmsEmail> {
  * of [OtpSmsEmail] in your schema.
  */
 class OtpSmsEmailModelIdentifier implements amplify_core.ModelIdentifier<OtpSmsEmail> {
-  final String id;
+  final String target;
 
-  /** Create an instance of OtpSmsEmailModelIdentifier using [id] the primary key. */
+  /** Create an instance of OtpSmsEmailModelIdentifier using [target] the primary key. */
   const OtpSmsEmailModelIdentifier({
-    required this.id});
+    required this.target});
   
   @override
   Map<String, dynamic> serializeAsMap() => (<String, dynamic>{
-    'id': id
+    'target': target
   });
   
   @override
@@ -297,7 +318,7 @@ class OtpSmsEmailModelIdentifier implements amplify_core.ModelIdentifier<OtpSmsE
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'OtpSmsEmailModelIdentifier(id: $id)';
+  String toString() => 'OtpSmsEmailModelIdentifier(target: $target)';
   
   @override
   bool operator ==(Object other) {
@@ -306,10 +327,10 @@ class OtpSmsEmailModelIdentifier implements amplify_core.ModelIdentifier<OtpSmsE
     }
     
     return other is OtpSmsEmailModelIdentifier &&
-      id == other.id;
+      target == other.target;
   }
   
   @override
   int get hashCode =>
-    id.hashCode;
+    target.hashCode;
 }

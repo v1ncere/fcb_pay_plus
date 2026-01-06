@@ -202,7 +202,9 @@ class AppRouter {
 
         // unauthenticated
         if (authBloc.isUnauthenticated && onSplashPage) {
-          return '/login';
+          return '/bottomNavbar';
+          // TODO: temporary disabled login
+          // return '/login';
         }
         // authenticated
         if (authBloc.isAuthenticated && onSplashPage) {

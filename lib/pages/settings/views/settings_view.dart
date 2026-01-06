@@ -52,7 +52,7 @@ class SettingsView extends StatelessWidget {
                           )
                         ),
                         Switch.adaptive(
-                          activeColor: Colors.cyan,
+                          activeThumbColor: Colors.cyan,
                           activeTrackColor: Colors.cyanAccent,
                           inactiveThumbColor: Colors.blueGrey.shade600,
                           inactiveTrackColor: Colors.grey.shade400,
@@ -77,7 +77,7 @@ class SettingsView extends StatelessWidget {
                           )
                         ),
                         Switch.adaptive(
-                          activeColor: Colors.cyan,
+                          activeThumbColor: Colors.cyan,
                           activeTrackColor: Colors.cyanAccent,
                           inactiveThumbColor: Colors.blueGrey.shade600,
                           inactiveTrackColor: Colors.grey.shade400,
@@ -108,7 +108,7 @@ class SettingsView extends StatelessWidget {
                                 )
                               ),
                               Switch.adaptive(
-                                activeColor: Colors.cyan,
+                                activeThumbColor: Colors.cyan,
                                 activeTrackColor: Colors.cyanAccent,
                                 inactiveThumbColor: Colors.blueGrey.shade600,
                                 inactiveTrackColor: Colors.grey.shade400,

@@ -11,39 +11,34 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-      child: Align(
-        alignment: const Alignment(0, -1/3),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(AssetString.fcbPayPlusLogo),
+          Text(
+            'Where Quality Service is a Commitment',
+            style: GoogleFonts.greatVibes(
+              fontSize: 18,
+              color: ColorString.jewel,
+              fontWeight: FontWeight.w600
+            ),
+          ),
+          const SizedBox(height: 60),
+          const EmailInput(),
+          const SizedBox(height: 12),
+          const PasswordInput(),
+          const SizedBox(height: 20),
+          const LoginElevatedButton(),
+          const ForgotPassword(),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(AssetString.fcbPayPlusLogo),
-              Text(
-                'Where Quality Service is a Commitment',
-                style: GoogleFonts.greatVibes(
-                  fontSize: 18,
-                  color: ColorString.jewel,
-                  fontWeight: FontWeight.w600
-                ),
-              ),
-              const SizedBox(height: 60),
-              const EmailInput(),
-              const SizedBox(height: 12),
-              const PasswordInput(),
-              const SizedBox(height: 20),
-              const LoginElevatedButton(),
-              const ForgotPassword(),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SignupText(),
-                  const CreateAccountButton(),
-                ]
-              )
+              const SignupText(),
+              const CreateAccountButton(),
             ]
           )
-        )
+        ]
       )
     );
   }

@@ -20,7 +20,7 @@ BottomAppBar bottomNavAppBar({
           value: BottomNavbarTab.home,
           controller: controller,
           icon: Icon(
-            FontAwesomeIcons.creditCard, 
+            FontAwesomeIcons.house, 
             shadows: tab.isHome
             ? [Shadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 4.0)]
             : null

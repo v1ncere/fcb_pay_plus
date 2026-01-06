@@ -4,8 +4,8 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_repository/hive_repository.dart';
 
+import '../../../data/data.dart';
 import '../../../models/ModelProvider.dart' hide AccountType;
 import '../../../utils/utils.dart';
 
@@ -15,23 +15,27 @@ part 'accounts_home_state.dart';
 final Account emptyAccount = Account(accountNumber: '', owner: '');
 
 class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
-  AccountsHomeBloc({
-    required HiveRepository hiveRepository,
-  })  : _hiveRepository = hiveRepository,
-        super(AccountsHomeState(credit: emptyAccount, payroll: emptyAccount, savings: emptyAccount, wallet: emptyAccount)) {
-          on<UserAttributesFetched>(_onUserAttributesFetched);
-          on<AccountsHomeOnCreatedStream>(_onAccountsHomeOnCreatedStream);
-          on<AccountsHomeOnDeletedStream>(_onAccountsHomeOnDeletedStream);
-          on<AccountsHomeOnUpdatedStream>(_onAccountsHomeOnUpdatedStream);
-          on<AccountsHomeStreamUpdated>(_onAccountsHomeStreamUpdated);
-          on<AccountsHomeFetched>(_onAccountsHomeLoaded);
-          on<AccountDisplayChanged>(_onAccountDisplayChanged);
-          on<AccountsHomeRefreshed>(_onAccountsHomeRefreshed);
-        }
-  final HiveRepository _hiveRepository;
+  final SecureStorageRepository _secureStorageRepository;
+  final SqfliteRepositories _sqfliteRepositories;
   StreamSubscription<GraphQLResponse<Account>>? subscriptionOnCreate;
   StreamSubscription<GraphQLResponse<Account>>? subscriptionOnUpdate;
   StreamSubscription<GraphQLResponse<Account>>? subscriptionOnDelete;
+  
+  AccountsHomeBloc({
+    required SqfliteRepositories sqfliteRepositories,
+    required SecureStorageRepository secureStorageRepository,
+  }) : _sqfliteRepositories = sqfliteRepositories, 
+  _secureStorageRepository = secureStorageRepository,
+  super(AccountsHomeState(credit: emptyAccount, payroll: emptyAccount, savings: emptyAccount, wallet: emptyAccount)) {
+    on<UserAttributesFetched>(_onUserAttributesFetched);
+    on<AccountsHomeOnCreatedStream>(_onAccountsHomeOnCreatedStream);
+    on<AccountsHomeOnDeletedStream>(_onAccountsHomeOnDeletedStream);
+    on<AccountsHomeOnUpdatedStream>(_onAccountsHomeOnUpdatedStream);
+    on<AccountsHomeStreamUpdated>(_onAccountsHomeStreamUpdated);
+    on<AccountsHomeFetched>(_onAccountsHomeLoaded);
+    on<AccountDisplayChanged>(_onAccountDisplayChanged);
+    on<AccountsHomeRefreshed>(_onAccountsHomeRefreshed);
+  }
 
   Future<void> _onAccountsHomeLoaded(AccountsHomeFetched event, Emitter<AccountsHomeState> emit) async {
     await _fetchDataAndRefreshState(emit);
@@ -44,14 +48,19 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   // change account display
   Future<void> _onAccountDisplayChanged(AccountDisplayChanged event, Emitter<AccountsHomeState>  emit) async {
     // save by [account type]
-    await _hiveRepository.addAccountNumber(uid: '${event.account.accountType}', accountNumber: event.account.accountNumber);
+    await _sqfliteRepositories.insertAccount(
+      Accounts(
+        id: '${event.account.accountType}',
+        accountNumber: event.account.accountNumber
+      )
+    );
     await _fetchDataAndRefreshState(emit);
   }
 
   // listening on create
   FutureOr<void> _onAccountsHomeOnCreatedStream(AccountsHomeOnCreatedStream event, Emitter<AccountsHomeState> emit) async {
-    final authUser = await Amplify.Auth.getCurrentUser();
-    final request = ModelSubscriptions.onCreate(Account.classType, where: Account.OWNER.eq(authUser.userId));
+    final user = await _secureStorageRepository.getUsername() ?? '';
+    final request = ModelSubscriptions.onCreate(Account.classType, where: Account.OWNER.eq(user));
     final operation = Amplify.API.subscribe(request);
     
     subscriptionOnCreate = operation.listen(
@@ -62,8 +71,8 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
 
   // listening on update
   FutureOr<void> _onAccountsHomeOnUpdatedStream(AccountsHomeOnUpdatedStream event, Emitter<AccountsHomeState> emit) async {
-    final authUser = await Amplify.Auth.getCurrentUser();
-    final request = ModelSubscriptions.onUpdate(Account.classType, where: Account.OWNER.eq(authUser.userId));
+    final user = await _secureStorageRepository.getUsername() ?? '';
+    final request = ModelSubscriptions.onUpdate(Account.classType, where: Account.OWNER.eq(user));
     final operation = Amplify.API.subscribe(request);
     
     subscriptionOnUpdate = operation.listen(
@@ -74,8 +83,8 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
 
   // listening on delete
   FutureOr<void> _onAccountsHomeOnDeletedStream(AccountsHomeOnDeletedStream event, Emitter<AccountsHomeState> emit) async {
-    final authUser = await Amplify.Auth.getCurrentUser();
-    final request = ModelSubscriptions.onDelete(Account.classType, where: Account.OWNER.eq(authUser.userId));
+    final user = await _secureStorageRepository.getUsername() ?? '';
+    final request = ModelSubscriptions.onDelete(Account.classType, where: Account.OWNER.eq(user));
     final operation = Amplify.API.subscribe(request);
     
     subscriptionOnDelete = operation.listen(
@@ -118,8 +127,8 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   Future<void> _fetchDataAndRefreshState(Emitter<AccountsHomeState> emit) async {
     emit(state.copyWith(status: Status.loading));
     try {
-      final user = await Amplify.Auth.getCurrentUser();
-      final request = ModelQueries.list(Account.classType, where: Account.OWNER.eq(user.userId));
+      final user = await _secureStorageRepository.getUsername() ?? '';
+      final request = ModelQueries.list(Account.classType, where: Account.OWNER.eq(user));
       final response = await Amplify.API.query(request: request).response;
       final items = response.data?.items;
 
@@ -180,9 +189,9 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   Future<Account> _getAccount(List<Account> accountList, String type) async {
     final account = accountList.where((e) => e.accountType!.toLowerCase() == type);
     if (account.isNotEmpty) {
-      final accountNumber = await _hiveRepository.getAccountNumber(type); // get accountNumber saved from local storage [hive]
-      return accountNumber.isNotEmpty
-      ? accountList.firstWhere((e) => e.accountNumber == accountNumber) // if id is not empty, locate the account equals to the id
+      final accountNumber = await _sqfliteRepositories.getAccountById(type); // get accountNumber saved from local storage [hive]
+      return accountNumber != null && accountNumber == Accounts.empty
+      ? accountList.firstWhere((e) => e.accountNumber == accountNumber.accountNumber) // if id is not empty, locate the account equals to the id
       : _getLatestAccount(accountList, type); // if id is empty get the latest account
     }
     return emptyAccount;

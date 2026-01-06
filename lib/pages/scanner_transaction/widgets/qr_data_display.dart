@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_repository/hive_repository.dart';
 
+import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 import '../scanner_transaction.dart';
 
@@ -89,7 +89,7 @@ class QrDataDisplay extends StatelessWidget {
   }
   // widgets
   // display row text
-  Widget displayText(QRModel data) {
+  Widget displayText(QrData data) {
     return Column(
       children: [
         CustomRowText(
@@ -108,7 +108,7 @@ class QrDataDisplay extends StatelessWidget {
     );
   }
   // textfield
-  Widget textFields(BuildContext context, QRModel data) {
+  Widget textFields(BuildContext context, QrData data) {
     return Padding(
       padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
       child: CustomTextFormField(
@@ -128,7 +128,7 @@ class QrDataDisplay extends StatelessWidget {
     );
   }
   // tip or convenience indicator
-  Widget main55Widget(BuildContext context, ScannerTransactionState state, QRModel qr) {
+  Widget main55Widget(BuildContext context, ScannerTransactionState state, QrData qr) {
     if(qr.data == '01') {
       return Padding(
         padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
@@ -180,7 +180,7 @@ class QrDataDisplay extends StatelessWidget {
     }
   }
   // Additional Consumer Data Request
-  Widget additionalDataRequest(BuildContext context, ScannerTransactionState state, QRModel qr) {
+  Widget additionalDataRequest(BuildContext context, ScannerTransactionState state, QrData qr) {
     if(qr.data.contains('A')) {
       return Padding(
         padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),

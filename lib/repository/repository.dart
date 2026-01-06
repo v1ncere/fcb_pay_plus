@@ -1,1 +1,0 @@
-export 'amplify_data.dart';

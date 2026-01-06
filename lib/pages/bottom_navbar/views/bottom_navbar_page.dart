@@ -1,8 +1,8 @@
 // Amplify graphql
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_repository/hive_repository.dart';
 
+import '../../../data/data.dart';
 import '../../home/home.dart';
 import '../../payments/payments.dart';
 import '../../transfers/transfers.dart';
@@ -16,7 +16,12 @@ class BottomNavbarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AccountsHomeBloc(hiveRepository: HiveRepository())
+        BlocProvider(create: (context) => AccountsHomeBloc(
+          sqfliteRepositories: SqfliteRepositories(sqfliteService: SqfliteService()),
+          secureStorageRepository: SecureStorageRepository(
+            storageService: SecureStorageService()
+          )  
+        )
         ..add(UserAttributesFetched())
         ..add(AccountsHomeFetched())
         ..add(AccountsHomeOnCreatedStream())
@@ -28,6 +33,8 @@ class BottomNavbarPage extends StatelessWidget {
         BlocProvider(create: (context) => TransferButtonsBloc()
         ..add(TransferButtonUserIdFetched())
         ..add(TransferButtonsFetched())),
+        BlocProvider(create: (context) => HomeButtonsBloc()
+        ..add(HomeButtonsFetched())),
         BlocProvider(create: (context) => BottomNavbarCubit()),
       ],
       child: const BottomNavbarView()

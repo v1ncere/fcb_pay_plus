@@ -3,24 +3,24 @@ import 'dart:async';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_repository/hive_repository.dart';
 
+import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 
 part 'merchant_add_event.dart';
 part 'merchant_add_state.dart';
 
 class MerchantAddBloc extends Bloc<MerchantAddEvent, MerchantAddState> {
+  final SqfliteRepositories _sqfliteRepositories;
   MerchantAddBloc({ 
-    required HiveRepository hiveRepository 
-  }) : _hiveRepository = hiveRepository,
+    required SqfliteRepositories sqfliteRepositories,
+  }) : _sqfliteRepositories = sqfliteRepositories,
   super(MerchantAddState()) {
     on<MerchantIsScannerChanged>(_onMerchantIsScannerChanged);
     on<MerchantAddCreated>(_onMerchantAddCreated);
     on<MerchantAddFetched>(_onMerchantAddFetched);
     on<MerchantAddDeleted>(_onMerchantAddDeleted);
   }
-  final HiveRepository _hiveRepository;
 
   void _onMerchantIsScannerChanged(MerchantIsScannerChanged event, Emitter<MerchantAddState> emit) {
     emit(state.copyWith(scanner: event.scanner));
@@ -40,16 +40,16 @@ class MerchantAddBloc extends Bloc<MerchantAddEvent, MerchantAddState> {
           final merchId = getMerchant(qrObjectList, 'subs2803');
           final merchSubsName = getMerchant(qrObjectList, 'main60');
           
-          if (merchName != QRModel.empty && merchId != QRModel.empty && merchSubsName != QRModel.empty) {
+          if (merchName != QrData.empty && merchId != QrData.empty && merchSubsName != QrData.empty) {
             final authUser = await Amplify.Auth.getCurrentUser();
-            final allMerchants = await _hiveRepository.getMerchants();
+            final allMerchants = await _sqfliteRepositories.getAllMerchants();
             final myMerchants = allMerchants.where((e) => e.owner == authUser.userId).toList();
             final index = myMerchants.indexWhere((e) => e.id == merchId.data);
 
             if (index != -1) {
               emit(state.copyWith(createStatus: Status.failure, message: TextString.merchantExists));
             } else {
-              _hiveRepository.addMerchant(MerchantModel(
+              _sqfliteRepositories.insertMerchant(Merchant(
                 id: merchId.data, 
                 name: merchName.data, 
                 qrCode: event.data, 
@@ -79,7 +79,7 @@ class MerchantAddBloc extends Bloc<MerchantAddEvent, MerchantAddState> {
     emit(state.copyWith(fetchStatus: Status.loading));
     try {
       final authUser = await Amplify.Auth.getCurrentUser();
-      final allMerchants = await _hiveRepository.getMerchants();
+      final allMerchants = await _sqfliteRepositories.getAllMerchants();
       final myMerchants = allMerchants.where((e) => e.owner == authUser.userId).toList();
       
       if (myMerchants.isNotEmpty) {
@@ -95,7 +95,7 @@ class MerchantAddBloc extends Bloc<MerchantAddEvent, MerchantAddState> {
   Future<void> _onMerchantAddDeleted(MerchantAddDeleted event, Emitter<MerchantAddState> emit) async {
     emit(state.copyWith(fetchStatus: Status.loading));
     try {
-      await _hiveRepository.deleteMerchant(event.id);
+      await _sqfliteRepositories.deleteMerchant(event.id);
       emit(state.copyWith(fetchStatus: Status.success));
       add(MerchantAddFetched());
     } catch (e) {
@@ -105,8 +105,8 @@ class MerchantAddBloc extends Bloc<MerchantAddEvent, MerchantAddState> {
 
   // *** UTILITY METHODS ***
 
-  QRModel getMerchant(List<QRModel> list, String id) {
-    return list.firstWhere((e) => e.id == id, orElse: () => QRModel.empty);
+  QrData getMerchant(List<QrData> list, String id) {
+    return list.firstWhere((e) => e.id == id, orElse: () => QrData.empty);
   }
     // validate CRC
   bool _validateQRCodeCRC(String data) {
@@ -117,7 +117,7 @@ class MerchantAddBloc extends Bloc<MerchantAddEvent, MerchantAddState> {
   }
 
   // validate qr objects
-  bool _validateQRObjects(List<QRModel> qrObjectList) {
+  bool _validateQRObjects(List<QrData> qrObjectList) {
     bool id27 = false;
     bool id28 = false;
     bool id2803 = false;

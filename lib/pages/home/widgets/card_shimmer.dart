@@ -16,6 +16,40 @@ class CardShimmer extends StatelessWidget {
   }
 }
 
+class SingleCardShimmer extends StatelessWidget {
+  const SingleCardShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _shimmerCard(height: 150, width: MediaQuery.of(context).size.width);
+  }
+}
+
+class SingleCardError extends StatelessWidget {
+  const SingleCardError({super.key, required this.message});
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1,
+      clipBehavior: Clip.antiAlias,
+      color: Colors.grey[200],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      child: SizedBox(
+        height: 150,
+        width: MediaQuery.of(context).size.width,
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Center(
+            child: Text(message),
+          )
+        )
+      )
+    );
+  }
+}
+
 Card _shimmerCard({
   required double width,
   required double height

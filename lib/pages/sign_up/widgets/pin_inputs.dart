@@ -1,4 +1,6 @@
+import 'package:fcb_pay_plus/pages/sign_up/sign_up.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
 
 class PinInputs extends StatelessWidget {
@@ -21,7 +23,8 @@ class PinInputs extends StatelessWidget {
           fontWeight: FontWeight.w600,
         )
       ),
-      onCompleted: (value) {},
+      onChanged: (value) => context.read<SignUpBloc>().add(OtpCodeChanged(value)),
+      onCompleted: (value) => context.read<SignUpBloc>().add(OtpCodeVerified(value)),
       closeKeyboardWhenCompleted: true,
     );
   }

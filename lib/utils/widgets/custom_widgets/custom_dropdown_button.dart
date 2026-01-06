@@ -28,7 +28,7 @@ class CustomDropdownButton extends StatelessWidget {
       child: DropdownButtonFormField<String>(
         focusNode: focusNode,
         isExpanded: true,
-        value: value,
+        initialValue: value,
         icon: const Icon(FontAwesomeIcons.caretDown, color: Colors.green, size: 16),
         dropdownColor: Colors.white,
         borderRadius: BorderRadius.circular(10.0),

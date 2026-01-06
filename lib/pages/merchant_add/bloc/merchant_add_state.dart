@@ -3,21 +3,21 @@ part of 'merchant_add_bloc.dart';
 class MerchantAddState extends Equatable {
   const MerchantAddState({
     this.scanner = Scanner.initial,
-    this.merchants = const <MerchantModel>[],
+    this.merchants = const <Merchant>[],
     this.createStatus = Status.initial,
     this.fetchStatus = Status.initial,
     this.message = '',
   });
   
   final Scanner scanner;
-  final List<MerchantModel> merchants;
+  final List<Merchant> merchants;
   final Status createStatus;
   final Status fetchStatus;
   final String message;
 
   MerchantAddState copyWith({
     Scanner? scanner,
-    List<MerchantModel>? merchants,
+    List<Merchant>? merchants,
     Status? createStatus,
     Status? fetchStatus,
     String? message,

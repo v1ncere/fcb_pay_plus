@@ -1,5 +1,6 @@
 import { defineAuth } from '@aws-amplify/backend';
 import { postConfirmation } from './post-confirmation/resource';
+import { AuthType } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 /**
  * Define and configure your auth resource
  * @see https://docs.amplify.aws/gen2/build-a-backend/auth
@@ -30,5 +31,5 @@ export const auth = defineAuth({
   },
   triggers: {
     postConfirmation
-  }
+  },
 });

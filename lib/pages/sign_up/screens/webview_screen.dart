@@ -4,12 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../utils/utils.dart';
-import '../cubit/top_stepper_cubit.dart';
 import '../sign_up.dart';
 
 class WebViewScreen extends StatefulWidget {
@@ -97,15 +95,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SignUpBloc, SignUpState>(
-      listener: (context, state) {
-        if (state.webBridgeStatus.isSuccess) {
-          context.read<TopStepperCubit>().goNext();
-        }
-        if (state.webBridgeStatus.isFailure) {
-          _showFailureSnackbar(context, state.message);
-        }
-      },
+    return BlocBuilder<SignUpBloc, SignUpState>(
+      buildWhen: (previous, current) => previous.webviewStatus != current.webviewStatus
+      || previous.message != current.message,
       builder: (context, state) {
         if (state.webviewStatus.isLoading) {
           return Center(child: SpinKitFadingCircle(
@@ -131,12 +123,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
             children: [
               const Icon(Icons.error_outline, size: 64, color: Colors.red),
               const SizedBox(height: 16),
-              Text(
-                "Oops! Something went wrong.",
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
+              // Text(
+              //   "Oops! Something went wrong.",
+              //   style: Theme.of(context).textTheme.titleMedium,
+              //   textAlign: TextAlign.center,
+              // ),
+              // const SizedBox(height: 8),
               Text(
                 message,
                 style: Theme.of(context).textTheme.bodyMedium,
@@ -153,17 +145,5 @@ class _WebViewScreenState extends State<WebViewScreen> {
         )
       )
     );
-  }
-
-  // show failure snackbar
-  void _showFailureSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(customSnackBar(
-      text: message,
-      icon: FontAwesomeIcons.triangleExclamation,
-      backgroundColor: ColorString.guardsmanRed,
-      foregroundColor: ColorString.white
-    ));
   }
 }
