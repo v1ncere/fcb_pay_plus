@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:form_inputs/form_inputs.dart';
 
+import '../../../data/data.dart';
 import '../bloc/forgot_password_bloc.dart';
 
 class ConfirmationCodeTextfield extends StatelessWidget {

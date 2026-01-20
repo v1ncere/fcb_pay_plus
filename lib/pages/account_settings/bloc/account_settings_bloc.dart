@@ -15,9 +15,9 @@ class AccountSettingsBloc extends Bloc<AccountSettingsEvent, AccountSettingsStat
   AccountSettingsBloc({
     required SqfliteRepositories sqfliteRepositories
   }) : _sqfliteRepositories = sqfliteRepositories,
-        super(const AccountSettingsState()) {
-          on<AccountEventPressed>(_onAccountEventPressed);
-        }
+  super(const AccountSettingsState()) {
+    on<AccountEventPressed>(_onAccountEventPressed);
+  }
 
   Future<void> _onAccountEventPressed(AccountEventPressed event, Emitter<AccountSettingsState> emit) async {
     emit(state.copyWith(status: Status.loading));

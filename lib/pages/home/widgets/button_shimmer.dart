@@ -13,7 +13,7 @@ class ButtonShimmer extends StatelessWidget {
         mainAxisSpacing: 10
       ),
       shrinkWrap: true,
-      itemCount: 7,
+      itemCount: 4,
       padding: const EdgeInsets.only(left: 15.0, right: 15.0),
       itemBuilder: (context, index) {
         return Shimmer.fromColors(

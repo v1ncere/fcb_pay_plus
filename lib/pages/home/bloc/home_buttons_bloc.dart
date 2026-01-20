@@ -22,7 +22,7 @@ class HomeButtonsBloc extends Bloc<HomeButtonsEvent, HomeButtonsState> {
       final request = ModelQueries.list(Button.classType, where: Button.TYPE.eq('dashboard'));
       final response = await Amplify.API.query(request: request).response;
       final items = response.data?.items;
-
+      
       if (items != null && !response.hasErrors) {
         final buttonList = items.whereType<Button>().toList();
         

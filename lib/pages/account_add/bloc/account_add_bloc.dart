@@ -4,9 +4,9 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
+import '../../../data/data.dart';
 import '../../../models/ModelProvider.dart' hide AccountType;
 import '../../../utils/utils.dart';
 
@@ -52,6 +52,7 @@ class AccountAddBloc extends Bloc<AccountAddEvent, AccountAddState> {
       emit(state.copyWith(formStatus: FormzSubmissionStatus.inProgress));
       try {
         if (!await isAccountExists()) {
+          // TODO: change the getCurrentUser into secureStorage.getUsername
           final authUser = await Amplify.Auth.getCurrentUser();
           final acctNumber = state.accountNumber.value.replaceAll(RegExp(r'\s+'), '');
           final request = ModelMutations.create(

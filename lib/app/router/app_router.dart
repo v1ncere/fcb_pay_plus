@@ -186,8 +186,11 @@ class AppRouter {
       ],
       refreshListenable: StreamToListenable(appBloc.stream),
       redirect: (context, state) {
-        final authBloc = appBloc.state.status;
-        final onSplashPage = state.matchedLocation == '/splash';
+        final status = appBloc.state.status;
+        final location = state.matchedLocation;
+        
+        final isSplash = location == '/splash';
+        // final isLogin = location == '/login';
 
         // Define protected routes
         // final protectedPaths = ['/dashboard', '/profile', '/settings'];
@@ -200,16 +203,16 @@ class AppRouter {
         //   return '/login?redirect=${state.matchedLocation}';
         // }
 
-        // unauthenticated
-        if (authBloc.isUnauthenticated && onSplashPage) {
-          return '/bottomNavbar';
-          // TODO: temporary disabled login
-          // return '/login';
+        // ❌ Not logged in
+        if (status.isUnauthenticated && isSplash) {
+          return '/login';
         }
-        // authenticated
-        if (authBloc.isAuthenticated && onSplashPage) {
+
+        // ✅ Logged in
+        if (status.isAuthenticated && isSplash) {
           return '/';
         }
+        
         return null;
       },
       observers: [MyNavigatorObserver()]

@@ -18,10 +18,11 @@ class AppState extends Equatable {
   List<Object> get props => [status];
 }
 
-enum LogStatus { initial, unauthenticated, authenticated, unknown }
+enum LogStatus { initial, loading, unauthenticated, authenticated, unknown }
 
 extension LogStausX on LogStatus {
   bool get isInitial => this == LogStatus.initial;
+  bool get isLoading => this == LogStatus.loading;
   bool get isUnauthenticated => this == LogStatus.unauthenticated;
   bool get isAuthenticated => this == LogStatus.authenticated;
   bool get isFailure => this == LogStatus.unknown;

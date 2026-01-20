@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:form_inputs/form_inputs.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
@@ -22,8 +21,7 @@ part 'sign_up_event.dart';
 part 'sign_up_state.dart';
 
 class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
-  final SecureStorageRepository repository;
-  SignUpBloc(this.repository) : super(SignUpState(
+  SignUpBloc() : super(SignUpState(
     accountNumberController: TextEditingController(),
     accountAliasController: TextEditingController(),
     emailController: TextEditingController(),

@@ -10,18 +10,18 @@ import { livenessResult } from '../functions/liveness-result/resource';
 const schema = a.schema({
   // Account
   Account: a.model({
-    accountNumber: a.string().required(), // account number (identifier, primary key)
-    accountType: a.string(),              // options: WALLET(default)|PITAKARD|PLC|SA|DD|LOANS
-    creditLimit: a.float(),               // credit limit of the account type (WALLET, PLC)
-    expiry: a.datetime(),                 // expiry of the (PLC)
-    status: a.string(),                   // options: NA(new)(default)|AC(active)|LC(locked)|CL(closed)|BL(blocked)
-    owner: a.string().required(),         // owner id of the account
-    // relationships
+    accountNumber: a.string().required(),   // account number (identifier, primary key)
+    accountType: a.string(),                // options: WALLET(default)|PITAKARD|PLC|SA|DD|LOANS
+    creditLimit: a.float(),                 // credit limit of the account type (WALLET, PLC)
+    expiry: a.datetime(),                   // expiry of the (PLC)
+    status: a.string(),                     // options: NA(new)(default)|AC(active)|LC(locked)|CL(closed)|BL(blocked)
+    owner: a.string().required(),           // owner id of the account
+    // relationships 
     transactions: a.hasMany('Transaction', 'accountId'), // one to many
     transferableUser: a.hasOne('TransferableUser', 'accountId')
   }).identifier(['accountNumber']) // [accountNumber]
   .authorization((allow) => [
-    allow.guest()
+    allow.guest().to(['read', 'create']),
   ]),
 
   // Fund Transfer Accounts
@@ -32,9 +32,7 @@ const schema = a.schema({
     // relationships
     accountId: a.id(),
     account: a.belongsTo('Account', 'accountId')
-  }).authorization((allow) => [
-    allow.guest()
-  ]),
+  }).authorization((allow) => [allow.guest()]),
   
   // Account Action Button
   AccountButton: a.model({
@@ -43,9 +41,7 @@ const schema = a.schema({
     // relationships
     buttons: a.hasMany('Button', 'accountButtonId'), // one to many
   }).identifier(['type'])
-  .authorization((allow) => [
-    allow.guest()
-  ]),
+  .authorization((allow) => [allow.guest()]),
 
   // Button
   Button: a.model({
@@ -62,18 +58,14 @@ const schema = a.schema({
     dynamicRouteId: a.id(), // foreign key to link with DynamicWidget Viewer
     dynamicRoute: a.belongsTo('DynamicRoute', 'dynamicRouteId'), // relationship to DynamicWidget Viewer
     widgets: a.hasMany('DynamicWidget', 'buttonId'), // one to many
-  }).authorization((allow) => [
-    allow.guest()
-  ]),
+  }).authorization((allow) => [allow.guest()]),
 
   // Dynamic Viewer
   DynamicRoute: a.model({ // can be the parent of the button, dynamic page or category
     title: a.string(),
     category: a.string(),
     buttons: a.hasMany('Button', 'dynamicRouteId'), // one to many
-  }).authorization((allow) => [
-    allow.guest()
-  ]),
+  }).authorization((allow) => [allow.guest()]),
   
   // Dynamic Widget 
   DynamicWidget: a.model({
@@ -91,9 +83,7 @@ const schema = a.schema({
     merchantWidget: a.belongsTo('Merchant', 'merchantWidgetId'),
     merchantExtraId: a.id(), // foreign key to link with Merchant
     merchantExtraWidget: a.belongsTo('Merchant', 'merchantExtraId'),
-  }).authorization((allow) => [
-    allow.guest()
-  ]),
+  }).authorization((allow) => [allow.guest()]),
   
   // Merchant(latest)
   Merchant: a.model({
@@ -103,17 +93,13 @@ const schema = a.schema({
     // relationships
     widget: a.hasMany('DynamicWidget', 'merchantWidgetId'),
     extraWidget: a.hasMany('DynamicWidget', 'merchantExtraId'),
-  }).authorization((allow) => [
-    allow.guest()
-  ]),
+  }).authorization((allow) => [allow.guest()]),
 
   //* ACCOUNT VERIFICATION **/
   VerifyAccount: a.model({
     accountNumber: a.string(),
     accountAlias: a.string(),
-  }).authorization((allow) => [
-    allow.guest(),
-  ]),
+  }).authorization((allow) => [allow.guest()]),
   
   //* SIGNUP **/
   SignupRequest: a.model({
@@ -124,9 +110,7 @@ const schema = a.schema({
     details: a.json(),
     profileRef: a.string(),
     validIdRef: a.string(),
-  }).authorization((allow) => [
-    allow.guest(),
-  ]),
+  }).authorization((allow) => [allow.guest()]),
 
   // Notification
   Notification: a.model({
@@ -134,9 +118,7 @@ const schema = a.schema({
     isRead: a.boolean(),
     sender: a.string(),
     owner: a.string(),
-  }).authorization((allow) => [
-    allow.guest(),
-  ]),
+  }).authorization((allow) => [allow.guest()]),
 
   TransactionTransactionDetail: a.model({
     accountNumber: a.string().required(),
@@ -146,9 +128,7 @@ const schema = a.schema({
     // relationships
     transaction: a.belongsTo('Transaction', ['transDate', 'referenceId', 'transCode', 'accountNumber']),
     transactionDetail: a.belongsTo('TransactionDetail', ['transDate', 'referenceId', 'transCode']),
-  }).authorization((allow) => [
-    allow.guest()
-  ]),
+  }).authorization((allow) => [allow.guest()]),
 
   // Transaction History
   Transaction: a.model({
@@ -173,9 +153,7 @@ const schema = a.schema({
     .sortKeys(['updatedAt'])
     .queryField('transactionsByAccountUpdatedAt'),
   ])
-  .authorization((allow) => [
-    allow.guest()
-  ]),
+  .authorization((allow) => [allow.guest()]),
 
   TransactionDetail: a.model({
     transDate: a.date().required(),
@@ -188,9 +166,7 @@ const schema = a.schema({
     // relationships
     transactions: a.hasMany('TransactionTransactionDetail', ['transDate', 'referenceId', 'transCode']), // has many transaction
   }).identifier(['transDate', 'referenceId', 'transCode']) //
-  .authorization((allow => [
-    allow.guest()
-  ])),
+  .authorization((allow => [allow.guest()])),
 
   OtpSmsEmail: a.model({
     target: a.string().required(), // email | phone
@@ -200,17 +176,13 @@ const schema = a.schema({
     verified: a.boolean(),
     attempts: a.integer(),
   }).identifier(['target'])
-  .authorization((allow => [
-    allow.guest(),
-  ])),
+  .authorization((allow => [allow.guest()])),
 
   DeviceId: a.model({
     deviceId: a.string().required(),
     owner: a.string().required(),
     deviceModel: a.string().required(),
-  }).authorization((allow => [
-    allow.guest(),
-  ])),
+  }).authorization((allow => [allow.guest()])),
 
   // AccountType
   AccountType: a.enum([
@@ -302,6 +274,5 @@ export const data = defineData({
   schema,
   authorizationModes: {
     defaultAuthorizationMode: 'identityPool',
-    apiKeyAuthorizationMode: { expiresInDays: 30 },
   },
 });

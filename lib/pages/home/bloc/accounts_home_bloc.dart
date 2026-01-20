@@ -17,21 +17,21 @@ final Account emptyAccount = Account(accountNumber: '', owner: '');
 class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   final SecureStorageRepository _secureStorageRepository;
   final SqfliteRepositories _sqfliteRepositories;
-  StreamSubscription<GraphQLResponse<Account>>? subscriptionOnCreate;
-  StreamSubscription<GraphQLResponse<Account>>? subscriptionOnUpdate;
-  StreamSubscription<GraphQLResponse<Account>>? subscriptionOnDelete;
   
   AccountsHomeBloc({
     required SqfliteRepositories sqfliteRepositories,
     required SecureStorageRepository secureStorageRepository,
   }) : _sqfliteRepositories = sqfliteRepositories, 
   _secureStorageRepository = secureStorageRepository,
-  super(AccountsHomeState(credit: emptyAccount, payroll: emptyAccount, savings: emptyAccount, wallet: emptyAccount)) {
+  super(AccountsHomeState(
+    plc: emptyAccount,
+    pitakard: emptyAccount,
+    sa: emptyAccount, 
+    wallet: emptyAccount,
+    dd: emptyAccount,
+    loans: emptyAccount,
+  )) {
     on<UserAttributesFetched>(_onUserAttributesFetched);
-    on<AccountsHomeOnCreatedStream>(_onAccountsHomeOnCreatedStream);
-    on<AccountsHomeOnDeletedStream>(_onAccountsHomeOnDeletedStream);
-    on<AccountsHomeOnUpdatedStream>(_onAccountsHomeOnUpdatedStream);
-    on<AccountsHomeStreamUpdated>(_onAccountsHomeStreamUpdated);
     on<AccountsHomeFetched>(_onAccountsHomeLoaded);
     on<AccountDisplayChanged>(_onAccountDisplayChanged);
     on<AccountsHomeRefreshed>(_onAccountsHomeRefreshed);
@@ -45,74 +45,13 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
     await _fetchUserDetails(emit);
   }
 
-  // change account display
+  // change account display, user management (save by [account type])
   Future<void> _onAccountDisplayChanged(AccountDisplayChanged event, Emitter<AccountsHomeState>  emit) async {
-    // save by [account type]
-    await _sqfliteRepositories.insertAccount(
-      Accounts(
-        id: '${event.account.accountType}',
-        accountNumber: event.account.accountNumber
-      )
-    );
+    await _sqfliteRepositories.insertAccount(Accounts(
+      id: '${event.account.accountType}',
+      accountNumber: event.account.accountNumber,
+    ));
     await _fetchDataAndRefreshState(emit);
-  }
-
-  // listening on create
-  FutureOr<void> _onAccountsHomeOnCreatedStream(AccountsHomeOnCreatedStream event, Emitter<AccountsHomeState> emit) async {
-    final user = await _secureStorageRepository.getUsername() ?? '';
-    final request = ModelSubscriptions.onCreate(Account.classType, where: Account.OWNER.eq(user));
-    final operation = Amplify.API.subscribe(request);
-    
-    subscriptionOnCreate = operation.listen(
-      (event) => add(AccountsHomeStreamUpdated(event.data, false)),
-      onError: (error) => safePrint(error.toString()),
-    );
-  }
-
-  // listening on update
-  FutureOr<void> _onAccountsHomeOnUpdatedStream(AccountsHomeOnUpdatedStream event, Emitter<AccountsHomeState> emit) async {
-    final user = await _secureStorageRepository.getUsername() ?? '';
-    final request = ModelSubscriptions.onUpdate(Account.classType, where: Account.OWNER.eq(user));
-    final operation = Amplify.API.subscribe(request);
-    
-    subscriptionOnUpdate = operation.listen(
-      (event) => add(AccountsHomeStreamUpdated(event.data, false)),
-      onError: (error) => safePrint(error.toString()),
-    );
-  }
-
-  // listening on delete
-  FutureOr<void> _onAccountsHomeOnDeletedStream(AccountsHomeOnDeletedStream event, Emitter<AccountsHomeState> emit) async {
-    final user = await _secureStorageRepository.getUsername() ?? '';
-    final request = ModelSubscriptions.onDelete(Account.classType, where: Account.OWNER.eq(user));
-    final operation = Amplify.API.subscribe(request);
-    
-    subscriptionOnDelete = operation.listen(
-      (event) => add(AccountsHomeStreamUpdated(event.data, true)),
-      onError: (error) => safePrint(error.toString()),
-    );
-  }
-
-  FutureOr<void> _onAccountsHomeStreamUpdated(AccountsHomeStreamUpdated event, Emitter<AccountsHomeState> emit) async {
-    final account = event.account;
-    if (account != null) {
-      final newList = List<Account>.from(state.accountList);
-      final index = newList.indexWhere((e) => e.accountNumber == account.accountNumber);
-      
-      if (event.isDelete) {
-        if (index != -1) {
-          newList.removeAt(index);
-          await _accountHomeCardDisplay(newList, emit);
-        }
-      } else {
-        if (index != -1) {
-          newList[index] = account;
-        } else {
-          newList.add(account);
-        }
-        await _accountHomeCardDisplay(newList, emit);
-      }
-    }
   }
 
   // refresh the state
@@ -127,11 +66,15 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   Future<void> _fetchDataAndRefreshState(Emitter<AccountsHomeState> emit) async {
     emit(state.copyWith(status: Status.loading));
     try {
-      final user = await _secureStorageRepository.getUsername() ?? '';
-      final request = ModelQueries.list(Account.classType, where: Account.OWNER.eq(user));
+      final user = await _secureStorageRepository.getUsername(); // username as owner of the account
+      final request = ModelQueries.list(
+        Account.classType,
+        where: Account.OWNER.eq(user),
+        // authorizationMode: APIAuthorizationType.iam
+      );
       final response = await Amplify.API.query(request: request).response;
       final items = response.data?.items;
-
+      
       if (items != null && !response.hasErrors) {
         final accounts = items.whereType<Account>().toList();
         
@@ -157,16 +100,26 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
     final sa = await _getAccount(accounts, AccountType.sa.name); // locate savings account
     final pitakard = await _getAccount(accounts, AccountType.pitakard.name); // locate payroll account
     final plc = await _getAccount(accounts, AccountType.plc.name); // locate credit account
-    emit(state.copyWith(status: Status.success, accountList: accounts, wallet: wallet, savings: sa, payroll: pitakard, credit: plc));
+    final dd = await _getAccount(accounts, AccountType.plc.name);
+    final loans = await _getAccount(accounts, AccountType.plc.name);
+
+    emit(state.copyWith(
+      status: Status.success,
+      accountList: accounts,
+      wallet: wallet,
+      sa: sa,
+      pitakard: pitakard,
+      plc: plc,
+      dd: dd,
+      loans: loans,
+    ));
   }
 
   Future<void> _fetchUserDetails(Emitter<AccountsHomeState> emit) async {
     emit(state.copyWith(userStatus: Status.loading));
     try {
-      final result = await Amplify.Auth.fetchUserAttributes();
-      final sub = result.firstWhere((e) => e.userAttributeKey == AuthUserAttributeKey.sub);
-      final givenName = result.firstWhere((e) => e.userAttributeKey == AuthUserAttributeKey.givenName);
-      emit(state.copyWith(userStatus: Status.success, username: givenName.value, uid: sub.value));
+      final userName = await _secureStorageRepository.getUsername(); // get the username and make the  username the id
+      emit(state.copyWith(userStatus: Status.success, username: userName, uid: userName));
     } on AuthException catch (e) {
       emit(state.copyWith(userStatus: Status.failure, message: e.message));
     } catch (_) {
@@ -174,7 +127,7 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
     }
   }
 
-  // get Account by type
+  // get Account by type (note: type needs to be lower case so it will equals to lowercase enum)
   Account _getAccountOfType(List<Account> accountList, String type) {
     return accountList.firstWhere((e) => e.accountType!.toLowerCase() == type, orElse: () => emptyAccount);
   }
@@ -188,23 +141,13 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   // get account by specific type 
   Future<Account> _getAccount(List<Account> accountList, String type) async {
     final account = accountList.where((e) => e.accountType!.toLowerCase() == type);
+
     if (account.isNotEmpty) {
-      final accountNumber = await _sqfliteRepositories.getAccountById(type); // get accountNumber saved from local storage [hive]
-      return accountNumber != null && accountNumber == Accounts.empty
-      ? accountList.firstWhere((e) => e.accountNumber == accountNumber.accountNumber) // if id is not empty, locate the account equals to the id
+      final accountType = await _sqfliteRepositories.getAccountById(type); // get accountNumber saved from local storage [hive]
+      return accountType != null && accountType == Accounts.empty
+      ? accountList.firstWhere((e) => e.accountNumber == accountType.accountNumber) // if id is not empty, locate the account equals to the id
       : _getLatestAccount(accountList, type); // if id is empty get the latest account
     }
     return emptyAccount;
-  }
-
-  @override
-  Future<void> close() async {
-    subscriptionOnCreate?.cancel();
-    subscriptionOnCreate = null;
-    subscriptionOnUpdate?.cancel();
-    subscriptionOnUpdate = null;
-    subscriptionOnDelete?.cancel();
-    subscriptionOnDelete = null;
-    return super.close();
   }
 }

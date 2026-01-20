@@ -17,7 +17,8 @@ class LoginView extends StatelessWidget {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status.isSuccess) {
-          context.goNamed(RouteName.authPin);
+          context.goNamed(RouteName.bottomNavbar);
+          // context.goNamed(RouteName.authPin);
           // context.read<AppBloc>().add(LoginChecked());
         }
         if (state.status.isCanceled) {

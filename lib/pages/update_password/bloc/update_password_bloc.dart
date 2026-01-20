@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
+
+import '../../../data/data.dart';
 
 part 'update_password_event.dart';
 part 'update_password_state.dart';

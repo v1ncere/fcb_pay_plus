@@ -12,7 +12,7 @@ import { livenessResult } from './functions/liveness-result/resource';
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
  */
-const backend = defineBackend({
+defineBackend({
   auth,
   data,
   storage,
@@ -23,6 +23,3 @@ const backend = defineBackend({
   livenessSessionId,
   livenessResult,
 });
-
-const { cfnIdentityPool } = backend.auth.resources.cfnResources;
-cfnIdentityPool.allowUnauthenticatedIdentities = true;

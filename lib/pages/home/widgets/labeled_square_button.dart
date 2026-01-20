@@ -20,46 +20,55 @@ class LabeledSquareButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          height: 60,
-          width: 60,
-          decoration:  BoxDecoration(
+          height: 70,
+          width: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadiusGeometry.circular(10),
             shape: BoxShape.rectangle,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.2), // Shadow color
                 spreadRadius: 1,
-                blurRadius: 3,
+                blurRadius: 2,
                 offset: const Offset(0, 2)
               )
             ]
           ),
           child: ClipRRect(
+            borderRadius: BorderRadiusGeometry.circular(10),
             clipBehavior: Clip.antiAlias,
             child: Material(
               color: const Color(0xFF25C166),
               child: InkWell(
                 splashColor: Colors.white60,
                 onTap: onTap,
-                child: Icon(icon, color: color)
-              )
-            )
-          )
-        ),
-        const SizedBox(height: 2),
-        FittedBox(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: Colors.green,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              shadows: <Shadow>[
-                Shadow(
-                  color: Colors.black.withValues(alpha: 0.15), // Shadow color
-                  blurRadius: 1,
-                  offset: const Offset(0, 1)
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(icon, color: color),
+                      const SizedBox(height: 2),
+                      Text(
+                        text,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          shadows: <Shadow>[
+                            Shadow(
+                              color: Colors.black.withValues(alpha: 0.15), // Shadow color
+                              blurRadius: 1,
+                              offset: const Offset(0, 1)
+                            )
+                          ]
+                        )
+                      )
+                    ]
+                  )
                 )
-              ]
+              )
             )
           )
         )

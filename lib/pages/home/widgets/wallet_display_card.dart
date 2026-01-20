@@ -1,7 +1,7 @@
-import 'package:fcb_pay_plus/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../utils/utils.dart';
 import '../home.dart';
 import 'widgets.dart';
 
@@ -21,13 +21,12 @@ class WalletDisplayCard extends StatelessWidget {
             ? walletCard(
                 context: context,
                 account: state.wallet
-              ) 
+              )
             : const SizedBox(height: 150);
           }
         }
         if (state.status.isFailure) {
-          return SingleCardError(message: state.message);
-          // return _ErrorMessageView(message: state.message);
+          return SingleCardError();
         }
         // default
         return const SizedBox.shrink();

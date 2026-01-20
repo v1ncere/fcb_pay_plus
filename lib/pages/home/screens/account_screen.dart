@@ -27,23 +27,23 @@ class AccountScreen extends StatelessWidget {
                   context: context,
                   account: state.wallet
                 ),
-              if (state.savings != emptyAccount) 
+              if (state.sa != emptyAccount) 
                 savingsCard(
                   context: context,
                   accountList: state.accountList,
-                  account: state.savings
+                  account: state.sa
                 ),
-              if (state.payroll != emptyAccount) 
+              if (state.pitakard != emptyAccount) 
                 savingsCard(
                   context: context,
                   accountList: state.accountList,
-                  account: state.payroll
+                  account: state.pitakard
                 ),
-              if (state.credit != emptyAccount)
+              if (state.plc != emptyAccount)
                 creditCard(
                   context: context,
                   accountList: state.accountList,
-                  account: state.credit
+                  account: state.plc
                 ),
               const SizedBox(height: 150),
             ]

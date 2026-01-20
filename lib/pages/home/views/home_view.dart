@@ -1,89 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../utils/utils.dart';
-import '../../notifications/notifications.dart';
 import '../home.dart';
 import '../screens/screens.dart';
+import '../widgets/widgets.dart';
 
 class AccountHomeView extends StatelessWidget {
   const AccountHomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccountsHomeBloc, AccountsHomeState>(
-      builder: (context, state) {
-        return DefaultTabController( 
-          length: 2,
-          child: Scaffold(
-            extendBody: true,
-            appBar: AppBar(
-              leading: IconButton(
-                onPressed: () => Scaffold.of(context).openDrawer(),
-                icon: const Icon(FontAwesomeIcons.bars, color: Colors.black45)
-              ),
-              title: Text('Hello, ${state.username}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: ColorString.eucalyptus,
-                  fontSize: 18
-                )
-              ),
-              actions: [
-                IconButton(
-                  splashRadius: 25,
-                  icon: BlocBuilder<NotificationsBloc, NotificationsState>(
-                    builder: (context, state) {
-                      final isRead = state.notifications.every((e) => e.isRead == true);
-                      return isRead 
-                      ? Icon(
-                          FontAwesomeIcons.solidBell,
-                          color: ColorString.eucalyptus
-                        )
-                      : Badge(
-                          child: Icon(
-                            FontAwesomeIcons.solidBell,
-                            color: ColorString.eucalyptus
-                          )
-                        );
-                    }
-                  ),
-                  onPressed: () => context.pushNamed(RouteName.notification),
-                ),
-                IconButton(
-                  splashRadius: 25,
-                  icon: Icon(
-                    FontAwesomeIcons.circleQuestion,
-                    color: ColorString.eucalyptus
-                  ),
-                  onPressed: () {}
-                ),
-              ],
-              bottom: TabBar(
-                indicatorColor: ColorString.eucalyptus,
-                labelColor: ColorString.eucalyptus,
-                unselectedLabelColor: Colors.black45,
-                tabs: const [
-                  Tab(text: 'Dashboard'),
-                  Tab(text: 'Accounts'),
-                ]
-              ),
-            ),
-            body: RefreshIndicator(
-              onRefresh: () async => context.read<AccountsHomeBloc>().add(AccountsHomeRefreshed()),
-              child: TabBarView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  DashboardScreen(),
-                  AccountScreen(),
-                ]
-              )
-            )
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        extendBody: true,
+        appBar: homeAppBar(context),
+        body: RefreshIndicator(
+          onRefresh: () async => context.read<AccountsHomeBloc>().add(AccountsHomeRefreshed()),
+          child: TabBarView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: const [
+              DashboardScreen(),
+              AccountScreen(),
+            ]
           )
-        );
-      }
+        )
+      )
     );
   }
 }
