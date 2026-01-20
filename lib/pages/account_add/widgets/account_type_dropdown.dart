@@ -8,7 +8,7 @@ class AccountTypeDropdown extends StatelessWidget {
   AccountTypeDropdown({super.key});
   
   final List<AccountType> visibleAccountTypes = AccountType.values.where((type) {
-    return type == AccountType.sa || type == AccountType.pitakard || type == AccountType.plc;
+    return type == AccountType.card || type == AccountType.deposit;
   }).toList();
 
   @override

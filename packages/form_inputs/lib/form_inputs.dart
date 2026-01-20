@@ -2,6 +2,7 @@ library;
 
 export 'src/account_dropdown.dart';
 export 'src/account_number.dart';
+export 'src/card_number.dart';
 export 'src/amount.dart';
 export 'src/confirmed_password.dart';
 export 'src/dropdown_data.dart';

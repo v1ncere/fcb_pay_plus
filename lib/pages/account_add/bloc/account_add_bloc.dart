@@ -19,6 +19,7 @@ class AccountAddBloc extends Bloc<AccountAddEvent, AccountAddState> {
   AccountAddBloc() : super(AccountAddState()) {
     on<AccountTypeDropdownChanged>(_onAccountTypeDropdownChanged);
     on<AccountNumberChanged>(_onAccountNumberChanged);
+    on<CardNumberChanged>(_onCardNumberChanged);
     on<FirstNameChanged>(_onFirstNameChanged);
     on<LastNameChanged>(_onLastNameChanged);
     // on<BirthdateChanged>(_onBirthdateChanged);
@@ -33,6 +34,10 @@ class AccountAddBloc extends Bloc<AccountAddEvent, AccountAddState> {
     emit(state.copyWith(accountNumber: AccountNumber.dirty(event.accountNumber)));
   }
 
+  void _onCardNumberChanged(CardNumberChanged event, Emitter<AccountAddState> emit) {
+    emit(state.copyWith(cardNumber: CardNumber.dirty(event.cardNumber)));
+  }
+  
   void _onFirstNameChanged(FirstNameChanged event, Emitter<AccountAddState> emit) {
     emit(state.copyWith(firstName: Name.dirty(event.firstName)));
   }
@@ -114,7 +119,7 @@ class AccountAddBloc extends Bloc<AccountAddEvent, AccountAddState> {
 
   bool isAccountNumberValid() {
     final accountNumber = state.accountNumber.value;
-    final isMatch = RegExp(r'^\d{4} \d{4} \d{4} \d{4}$').hasMatch(accountNumber);
+    final isMatch = RegExp(r'^\d{3}-\d{4}-\d{6}-\d{1}$').hasMatch(accountNumber);
     return accountNumber.isNotEmpty && isMatch;
   }
   

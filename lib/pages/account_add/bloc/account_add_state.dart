@@ -4,6 +4,7 @@ class AccountAddState extends Equatable with FormzMixin {
   const AccountAddState({
     this.accountType = AccountType.unknown,
     this.accountNumber = const AccountNumber.pure(),
+    this.cardNumber = const CardNumber.pure(),
     this.firstName = const Name.pure(),
     this.lastName = const Name.pure(),
     this.formStatus = FormzSubmissionStatus.initial,
@@ -12,6 +13,7 @@ class AccountAddState extends Equatable with FormzMixin {
 
   final AccountType accountType;
   final AccountNumber accountNumber;
+  final CardNumber cardNumber;
   final Name firstName;
   final Name lastName;
   final FormzSubmissionStatus formStatus;
@@ -21,6 +23,7 @@ class AccountAddState extends Equatable with FormzMixin {
     AccountType? accountType,
     List<AccountType>? typeList,
     AccountNumber? accountNumber,
+    CardNumber? cardNumber,
     Name? firstName,
     Name? lastName,
     FormzSubmissionStatus? formStatus,
@@ -29,6 +32,7 @@ class AccountAddState extends Equatable with FormzMixin {
     return AccountAddState(
       accountType: accountType ?? this.accountType,
       accountNumber: accountNumber ?? this.accountNumber,
+      cardNumber: cardNumber ?? this.cardNumber,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       formStatus: formStatus ?? this.formStatus,
@@ -40,6 +44,7 @@ class AccountAddState extends Equatable with FormzMixin {
   List<Object> get props => [
     accountType,
     accountNumber,
+    cardNumber,
     firstName,
     lastName,
     formStatus,
@@ -50,6 +55,7 @@ class AccountAddState extends Equatable with FormzMixin {
   @override
   List<FormzInput> get inputs => [
     accountNumber,
+    cardNumber,
     firstName,
     lastName
   ];

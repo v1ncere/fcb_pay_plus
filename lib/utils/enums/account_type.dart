@@ -1,4 +1,4 @@
-enum AccountType { unknown, wallet, pitakard, plc, sa, dd, loans }
+enum AccountType { unknown, wallet, pitakard, plc, sa, dd, loans, card, deposit }
 
 extension AccountTypeX on AccountType {
   bool get isUnknown => this == AccountType.unknown;
@@ -8,6 +8,8 @@ extension AccountTypeX on AccountType {
   bool get isPLC => this == AccountType.plc;
   bool get isDD => this == AccountType.dd;
   bool get isLoans => this == AccountType.loans;
+  bool get isCard => this == AccountType.card;
+  bool get isDeposit => this == AccountType.deposit;
 }
 
 String accountTypeName(AccountType type) {
@@ -24,6 +26,10 @@ String accountTypeName(AccountType type) {
       return 'Demand Draft';
     case AccountType.loans:
       return 'Loans';
+    case AccountType.card:
+      return 'PITAKArd (Card)';
+    case AccountType.deposit:
+      return 'Regular Deposit';
     case AccountType.unknown:
       return '';
   }
@@ -43,6 +49,10 @@ String accountTypeNameString(String type) {
       return 'Demand Draft';
     case 'loans':
       return 'Loans';
+    case 'card':
+      return 'PITAKArd (Card)';
+    case 'deposit':
+      return 'Regular Deposit';
     default:
       return type;
   }

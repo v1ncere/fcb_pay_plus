@@ -18,9 +18,17 @@ final class AccountTypeDropdownChanged extends AccountAddEvent {
 final class AccountNumberChanged extends AccountAddEvent {
   const AccountNumberChanged(this.accountNumber);
   final String accountNumber;
-
+  
   @override
   List<Object> get props => [accountNumber];
+}
+
+final class CardNumberChanged extends AccountAddEvent {
+  const CardNumberChanged(this.cardNumber);
+  final String cardNumber;
+
+  @override
+  List<Object> get props => [cardNumber];
 }
 
 final class FirstNameChanged extends AccountAddEvent {
