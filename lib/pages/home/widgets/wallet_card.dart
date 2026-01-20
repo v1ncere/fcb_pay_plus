@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../models/Account.dart';
 import '../../../utils/utils.dart';
+import '../home.dart';
 import 'widgets.dart';
 
 Card walletCard({
   required BuildContext context,
   required Account account
 }) {
-  final bal = 0.0; // TODO: get this from Transaction model running balance
   return Card(
     elevation: 2.0,
     color: ColorString.eucalyptus,
@@ -44,16 +45,36 @@ Card walletCard({
             Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'WALLET',
+                      'My Wallet',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: ColorString.white
                       )
                     ),
-                  ],
+                    Padding(
+                      padding: EdgeInsetsGeometry.zero,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size.zero, // const Size(50, 30),
+                          padding: EdgeInsets.only(left: 13, right: 13, top: 3, bottom: 3),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        onPressed: () {},
+                        child: Row(
+                          children: [
+                            Text('Top Up',
+                              style: TextStyle(fontSize: 12)
+                            ),
+                            SizedBox(width: 2),
+                            Icon(FontAwesomeIcons.anglesUp, size: 12),
+                          ]
+                        )
+                      )
+                    )
+                  ]
                 ),
                 const Divider(color: Colors.white30)
               ]
@@ -71,10 +92,11 @@ Card walletCard({
                       Icon(FontAwesomeIcons.chevronRight, size: 18, color: ColorString.white)
                     ]
                   ),
+                  SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      buildDetailsBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(bal))
+                      buildDetailsBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(context.select((TransactionBloc bloc) => bloc.state.transactions.first.balanceCleared) ?? 0.0))
                     ]
                   )
                 ]

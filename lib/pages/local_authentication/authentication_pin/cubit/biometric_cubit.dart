@@ -2,29 +2,29 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_pin_repository/hive_pin_repository.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../../../../data/data.dart';
 import '../../../../utils/utils.dart';
 
 part 'biometric_state.dart';
 
 class BiometricCubit extends Cubit<BiometricState> {
+  final LocalAuthentication _localAuth;
+  final SecureStorageRepository _secureStorageRepository;
   BiometricCubit({
     required LocalAuthentication localAuth,
-    required HivePinRepository hivePinRepository,
+    required SecureStorageRepository secureStorageRepository,
   }) : _localAuth = localAuth, 
-  _hivePinRepository = hivePinRepository,
+  _secureStorageRepository = secureStorageRepository,
   super(const BiometricState());
-  final LocalAuthentication _localAuth;
-  final HivePinRepository _hivePinRepository;
 
   Future<void> isBiometricUserEnabled() async {
     try {
-      final fingerprint = await _hivePinRepository.getBiometricStatus();
-      emit(state.copyWith(biometricsEnabled: fingerprint));
+      final fingerprint = await _secureStorageRepository.getBiometricStatus();
+      emit(state.copyWith(biometricsEnabled: fingerprint == 1));
       
-      if (fingerprint) {
+      if (fingerprint == 1) {
         authenticationBiometricsRequested();
       }
     } catch (e) {

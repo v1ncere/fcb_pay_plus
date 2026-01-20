@@ -6,6 +6,7 @@ class AssetString {
   static const String fcbPayPlusLogo = 'assets/image/fcbpay-plus-logo.png';
   static const String mobileProblem = 'assets/image/mobile-problem.png';
   static const String mobileSuccess = 'assets/image/mobile-success.png';
+  static const String inboxEmptyPng = 'assets/image/inbox_empty.png';
 
   static const String otpSVG  = 'assets/svg/otp.svg';
   static const String loginLogo  = 'assets/svg/login.svg';

@@ -1,9 +1,7 @@
-import 'package:fcb_pay_plus/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
 
-import '../login.dart';
+import '../../../utils/utils.dart';
 
 class PinInputs extends StatelessWidget {
   const PinInputs({super.key});
@@ -28,7 +26,8 @@ class PinInputs extends StatelessWidget {
           fontWeight: FontWeight.w600,
         )
       ),
-      onCompleted: (value) => context.read<LoginBloc>().add(ConfirmSubmitted(code: value)),
+      onCompleted: (value) {},
+      // onCompleted: (value) => context.read<LoginBloc>().add(ConfirmSubmitted(code: value)),
       closeKeyboardWhenCompleted: true,
     );
   }

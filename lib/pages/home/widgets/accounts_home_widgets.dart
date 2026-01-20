@@ -24,7 +24,7 @@ Row buildLogosBlock() {
 
 Column buildAccountNumber({
   required String value,
-  required String type
+  required String type,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,13 +33,7 @@ Column buildAccountNumber({
       CustomText(
         text: maskedNum(value),
         color: ColorString.white,
-        fontSize: 21
-      ),
-      CustomText(
-        text: accountTypeNameString(type),
-        color: ColorString.white,
-        fontSize: 9,
-        fontWeight: FontWeight.bold
+        fontSize: 16,
       )
     ]
   );
@@ -48,7 +42,7 @@ Column buildAccountNumber({
 // Build Column containing the cardholder and expiration information
 Column buildDetailsBlock({
   required String label, 
-  required String value
+  required String value,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,

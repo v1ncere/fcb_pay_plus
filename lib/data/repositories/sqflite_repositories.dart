@@ -7,6 +7,42 @@ class SqfliteRepositories {
 
   SqfliteRepositories({required SqfliteService sqfliteService}) : _db = sqfliteService;
 
+  //* PINAUTH ====================
+  Future<void> insertPinAuth(PinAuth pinAuth) async {
+    final db = await _db.database;
+    await db.insert(
+      'pin_auth',
+      pinAuth.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<PinAuth?> getPinAuthById(String id) async {
+    final db = await _db.database;
+    final result = await db.query(
+      'pin_auth',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    if (result.isEmpty) return null;
+    return PinAuth.fromMap(result.first);
+  }
+
+  Future<List<PinAuth>> getAllPinAuth() async {
+    final db = await _db.database;
+    final result = await db.query('pin_auth');
+    return result.map(PinAuth.fromMap).toList();
+  }
+
+  Future<void> deletePinAuth(String id) async {
+    final db = await _db.database;
+    await db.delete(
+      'pin_auth',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   //* MERCHANTS ====================
   Future<void> insertMerchant(Merchant merchant) async {
     final db = await _db.database;
@@ -64,6 +100,7 @@ class SqfliteRepositories {
   }
 
   //* ACCOUNT ====================
+  // save account type which be displayed first in the accounts tab
   Future<void> insertAccount(Accounts account) async {
     final db = await _db.database;
     await db.insert(
@@ -73,7 +110,7 @@ class SqfliteRepositories {
     );
   }
 
-  Future<Accounts?> getAccountById(String id) async {
+  Future<Accounts?> getAccountById(String id) async { // get the account by [type]
     final db = await _db.database;
     final result = await db.query(
       'accounts',
@@ -94,6 +131,42 @@ class SqfliteRepositories {
     final db = await _db.database;
     await db.delete(
       'accounts',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // FAVORITE BUTTONS
+  Future<void> insertFavoriteButton(FavoriteButton favorite) async {
+    final db = await _db.database;
+    await db.insert(
+      'favorite_buttons',
+      favorite.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<FavoriteButton?> getFavoritesById(String id) async {
+    final db = await _db.database;
+    final result = await db.query(
+      'favorite_buttons',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    if (result.isEmpty) return null;
+    return FavoriteButton.fromMap(result.first);
+  }
+
+  Future<List<FavoriteButton>> getAllFavorites() async {
+    final db = await _db.database;
+    final result = await db.query('favorite_buttons');
+    return result.map(FavoriteButton.fromMap).toList();
+  }
+
+  Future<void> deleteFavorite(String id) async {
+    final db = await _db.database;
+    await db.delete(
+      'favorite_buttons',
       where: 'id = ?',
       whereArgs: [id],
     );

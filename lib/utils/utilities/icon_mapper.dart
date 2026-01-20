@@ -3825,8 +3825,6 @@ IconData iconMapper(String iconName) {
       return FontAwesomeIcons.vanShuttle;
     case 'vault':
       return FontAwesomeIcons.vault;
-    case 'vectorSquare':
-      return FontAwesomeIcons.vectorSquare;
     case 'venus':
       return FontAwesomeIcons.venus;
     case 'venusDouble':

@@ -1,4 +1,3 @@
-import 'package:fcb_pay_plus/data/data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -28,9 +27,7 @@ class SignUpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => SignUpBloc(
-          SecureStorageRepository(storageService: SecureStorageService())
-        )
+        BlocProvider(create: (context) => SignUpBloc()
         ..add(LostDataRetrieved())
         ..add(BridgeTokenGenerated())),
         BlocProvider(create: (context) => FaceLivenessBloc()),

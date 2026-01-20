@@ -1,30 +1,32 @@
-import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:hive_pin_repository/hive_pin_repository.dart';
+import '../../../../data/data.dart';
 
 part 'auth_pin_event.dart';
 part 'auth_pin_state.dart';
 
 class AuthPinBloc extends Bloc<AuthPinEvent, AuthPinState> {
+  final SqfliteRepositories _sqfliteRepositories;
+  final SecureStorageRepository _secureStorageRepository;
   AuthPinBloc({
-    required  HivePinRepository hivePinRepository,
-  })  : _hivePinRepository = hivePinRepository,
+    required SecureStorageRepository secureStorageRepository,
+    required SqfliteRepositories sqfliteRepositories
+  }) : _secureStorageRepository = secureStorageRepository,
+  _sqfliteRepositories = sqfliteRepositories,
   super(const AuthPinState(status: AuthPinStatus.enterPin)) {
     on<AuthPinAdded>(_onAuthPinAdded);
     on<AuthPinErased>(_onAuthPinErased);
     on<AuthPinNulled>(_onAuthPinNulled);
   }
-  final HivePinRepository _hivePinRepository;
 
   void _onAuthPinAdded(AuthPinAdded event, Emitter<AuthPinState> emit) async {
-    final user = await Amplify.Auth.getCurrentUser();
-    final uid = user.userId;
+    final user = await _secureStorageRepository.getUsername();
     String pin = '${state.pin}${event.pinNum}';
-    if(pin.length < 6) {
+    
+    if (pin.length < 6) {
       emit(state.copyWith(status: AuthPinStatus.enterPin, pin: pin));
-    } else if (await _hivePinRepository.pinAuthEquals(uid: uid, pin: pin)) {
+    } else if (await _isEquals(id: user!, pin: pin)) {
       emit(state.copyWith(status: AuthPinStatus.equals, pin: pin));
       await Future.delayed(Duration.zero, () => add(AuthPinNulled()));
     } else {
@@ -46,9 +48,9 @@ class AuthPinBloc extends Bloc<AuthPinEvent, AuthPinState> {
     emit(state.copyWith(status: AuthPinStatus.enterPin, pin: ''));
   }
 
-  @override
-  Future<void> close() async {
-    _hivePinRepository.closePinAuthBox();
-    return super.close();
+  // HELPERS
+  Future<bool> _isEquals({required String id, required String pin}) async {
+    final pinAuth = await _sqfliteRepositories.getPinAuthById(id);
+    return pinAuth!.pin == pin;
   }
 }

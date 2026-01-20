@@ -15,18 +15,18 @@ class BottomNavbarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
+      providers: [ // we put providers here to load instead of every page
         BlocProvider(create: (context) => AccountsHomeBloc(
           sqfliteRepositories: SqfliteRepositories(sqfliteService: SqfliteService()),
-          secureStorageRepository: SecureStorageRepository(
-            storageService: SecureStorageService()
-          )  
+          secureStorageRepository: SecureStorageRepository(storageService: SecureStorageService()),
         )
         ..add(UserAttributesFetched())
-        ..add(AccountsHomeFetched())
-        ..add(AccountsHomeOnCreatedStream())
-        ..add(AccountsHomeOnDeletedStream())
-        ..add(AccountsHomeOnUpdatedStream())),
+        ..add(AccountsHomeFetched())),
+        BlocProvider(create: (context) => FavoriteButtonsBloc(
+          sqfliteRepositories: SqfliteRepositories(sqfliteService: SqfliteService()),
+        )..add(FavoriteButtonsFetched())),
+        BlocProvider(create: (context) => HomeButtonsBloc()
+        ..add(HomeButtonsFetched())),
         BlocProvider(create: (context) => PaymentButtonsBloc()
         ..add(PaymentButtonsUserIdFetched())
         ..add(PaymentButtonsFetched())),

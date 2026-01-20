@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:form_inputs/form_inputs.dart';
 
+import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 import '../sign_up.dart';
 import 'custom_textformfield.dart';

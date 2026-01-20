@@ -1,23 +1,24 @@
-import 'package:amplify_flutter/amplify_flutter.dart' hide Emitter;
 import 'package:equatable/equatable.dart';
+import 'package:fcb_pay_plus/data/data.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:hive_pin_repository/hive_pin_repository.dart';
 
 part 'create_pin_event.dart';
 part 'create_pin_state.dart';
 
 class CreatePinBloc extends Bloc<CreatePinEvent, CreatePinState> {
+  final SqfliteRepositories _sqfliteRepositories;
+  final SecureStorageRepository _secureStorageRepository;
   CreatePinBloc({
-    required HivePinRepository hivePinRepository
-  })  : _hivePinRepository = hivePinRepository,
+    required SecureStorageRepository secureStorageRepository,
+    required SqfliteRepositories sqfliteRepositories
+  })  : _sqfliteRepositories = sqfliteRepositories,
+  _secureStorageRepository = secureStorageRepository,
   super(const CreatePinState(status: PinStatus.enterNew)) {
     on<CreatePinAdded>(_onCreatePinAdded);
     on<CreatePinErased>(_onCreatePinErased);
     on<CreatePinNulled>(_onCreatePinNulled);
   }
-  final HivePinRepository _hivePinRepository;
 
   void _onCreatePinAdded(CreatePinAdded event, Emitter<CreatePinState> emit) async {
     try {
@@ -42,7 +43,7 @@ class CreatePinBloc extends Bloc<CreatePinEvent, CreatePinState> {
           emit(state.copyWith(status: PinStatus.enterConfirm, confirmedPin: confirmPin));
         } else if (confirmPin == state.newPin) {
           // If secondPin matches firstPin, add the PIN to the repository, set pinStatus to "equals"
-          _hivePinRepository.addPinAuth(uid: await getUserId(), pin: confirmPin);
+          _sqfliteRepositories.insertPinAuth(PinAuth(id: await getUserId(), pin: confirmPin));
           emit(state.copyWith(status: PinStatus.equals, confirmedPin: confirmPin));
           // Delay for 1 second and then add CreatePinNulled event
           await Future.delayed(Duration.zero, () => add(CreatePinNulled()));
@@ -88,13 +89,7 @@ class CreatePinBloc extends Bloc<CreatePinEvent, CreatePinState> {
   }
 
   Future<String> getUserId() async {
-    final user = await Amplify.Auth.getCurrentUser();
-    return user.userId;
-  }
-
-  @override
-  Future<void> close() async {
-    _hivePinRepository.closePinAuthBox();
-    return super.close();
+    final user = await _secureStorageRepository.getUsername(); 
+    return user!;
   }
 }

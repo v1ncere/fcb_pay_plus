@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/data.dart';
 import '../login.dart';
 
 class LoginPage extends StatelessWidget {
@@ -9,7 +10,9 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginBloc(),
+      create: (context) => LoginBloc(
+        secureStorageRepository: SecureStorageRepository(storageService: SecureStorageService())
+      ),
       child: const LoginView(),
     );
   }

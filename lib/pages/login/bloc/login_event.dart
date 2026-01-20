@@ -46,40 +46,40 @@ final class PinCodeChanged extends LoginEvent {
 
 final class LoggedInWithCredentials extends LoginEvent {}
 
-final class ConfirmSubmitted extends LoginEvent {
-  const ConfirmSubmitted({this.code});
-  final String? code;
+// final class ConfirmSubmitted extends LoginEvent {
+//   const ConfirmSubmitted({this.code});
+//   final String? code;
 
-  @override
-  List<Object> get props => [code!];
-}
+//   @override
+//   List<Object> get props => [code!];
+// }
 
-final class SignInResults extends LoginEvent {
-  const SignInResults(this.result);
-  final SignInResult result;
+// final class SignInResults extends LoginEvent {
+//   const SignInResults(this.result);
+//   final SignInResult result;
 
-  @override
-  List<Object> get props => [result];
-}
+//   @override
+//   List<Object> get props => [result];
+// }
 
-final class ConfirmSignUp extends LoginEvent {}
+// final class ConfirmSignUp extends LoginEvent {}
 
-final class SignUpConfirmed extends LoginEvent {
-  const SignUpConfirmed(this.code);
-  final String code;
+// final class SignUpConfirmed extends LoginEvent {
+//   const SignUpConfirmed(this.code);
+//   final String code;
 
-  @override
-  List<Object> get props => [code];
-}
+//   @override
+//   List<Object> get props => [code];
+// }
 
-final class SignInConfirmed extends LoginEvent {
-  const SignInConfirmed(this.code);
-  final String code;
+// final class SignInConfirmed extends LoginEvent {
+//   const SignInConfirmed(this.code);
+//   final String code;
 
-  @override
-  List<Object> get props => [code]; 
-}
+//   @override
+//   List<Object> get props => [code]; 
+// }
 
-final class AuthSignInStepDone extends LoginEvent {}
+// final class AuthSignInStepDone extends LoginEvent {}
 
 final class MobilePhoneDataSaved extends LoginEvent {}

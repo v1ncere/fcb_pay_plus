@@ -9,21 +9,6 @@ sealed class AccountsHomeEvent extends Equatable {
 
 final class AccountsHomeFetched extends AccountsHomeEvent {}
 
-final class AccountsHomeOnCreatedStream extends AccountsHomeEvent {}
-
-final class AccountsHomeOnUpdatedStream extends AccountsHomeEvent {}
-
-final class AccountsHomeOnDeletedStream extends AccountsHomeEvent {}
-
-final class AccountsHomeStreamUpdated extends AccountsHomeEvent {
-  const AccountsHomeStreamUpdated(this.account, this.isDelete);
-  final Account? account;
-  final bool isDelete;
-
-  @override
-  List<Object?> get props => [account, isDelete];
-}
-
 final class AccountDisplayChanged extends AccountsHomeEvent {
   const AccountDisplayChanged(this.account);
   final Account account;
