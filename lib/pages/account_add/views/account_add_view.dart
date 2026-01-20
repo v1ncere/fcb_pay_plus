@@ -44,7 +44,7 @@ class AccountAddView extends StatelessWidget {
                   children: [
                     AccountTypeDropdown(),
                     state.accountType.isUnknown ? shrink : const SizedBox(height: 20),
-                    state.accountType.isUnknown ? shrink : const AccountNumberInput(),
+                    state.accountType.isUnknown ? shrink : state.accountType.isCard ? const CardNumberInput() : const AccountNumberInput(),
                     state.accountType.isUnknown ? shrink : const SizedBox(height: 20),
                     state.accountType.isUnknown ? shrink : const FullName(),
                     state.accountType.isUnknown ? shrink : const SizedBox(height: 20),

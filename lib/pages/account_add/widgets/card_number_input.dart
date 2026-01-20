@@ -6,8 +6,8 @@ import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 import '../bloc/account_add_bloc.dart';
 
-class AccountNumberInput extends StatelessWidget {
-  const AccountNumberInput({super.key});
+class CardNumberInput extends StatelessWidget {
+  const CardNumberInput({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,21 +17,20 @@ class AccountNumberInput extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Account Number',
+              'Card Number',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 10),
             TextFormField(
               inputFormatters: [
-                //NumberSeparatorFormatter(),
-                CardNumberSeparatorFormatter(),
-                LengthLimitingTextInputFormatter(17)
+                NumberSeparatorFormatter(),
+                LengthLimitingTextInputFormatter(19)
               ],
               keyboardType: TextInputType.number,
-              maxLength: 17,
+              maxLength: 19,
               decoration: InputDecoration(
                 filled: true,
-                labelText: '000-0000-000000-0',
+                labelText: '6064 2900 0000 0000',
                 errorText: state.accountNumber.displayError?.text(),  
               ),
               style: const TextStyle(height: 1.5),

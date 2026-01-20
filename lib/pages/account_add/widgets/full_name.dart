@@ -15,40 +15,30 @@ class FullName extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Your Full Name',
+              'Full Name',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                Flexible(
-                  flex: 1,
-                  child: TextFormField(
-                    keyboardType: TextInputType.name,
-                    decoration: InputDecoration(
-                      filled: true,
-                      label: const Text('First Name'),
-                      errorText: state.firstName.displayError?.text()
-                    ),
-                    style: const TextStyle(height: 1.5),
-                    onChanged: (value) => context.read<AccountAddBloc>().add(FirstNameChanged(value)),
-                  )
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 1,
-                  child: TextFormField(
-                    keyboardType: TextInputType.name,
-                    decoration: InputDecoration(
-                      filled: true,
-                      label: const Text('Last Name'),
-                      errorText: state.lastName.displayError?.text()
-                    ),
-                    style: const TextStyle(height: 1.5),
-                    onChanged: (value) => context.read<AccountAddBloc>().add(LastNameChanged(value)),
-                  )
-                )
-              ]
+            TextFormField(
+              keyboardType: TextInputType.name,
+              decoration: InputDecoration(
+                filled: true,
+                label: const Text('First Name'),
+                errorText: state.firstName.displayError?.text()
+              ),
+              style: const TextStyle(height: 1.5),
+              onChanged: (value) => context.read<AccountAddBloc>().add(FirstNameChanged(value)),
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              keyboardType: TextInputType.name,
+              decoration: InputDecoration(
+                filled: true,
+                label: const Text('Last Name'),
+                errorText: state.lastName.displayError?.text()
+              ),
+              style: const TextStyle(height: 1.5),
+              onChanged: (value) => context.read<AccountAddBloc>().add(LastNameChanged(value)),
             )
           ]
         );
