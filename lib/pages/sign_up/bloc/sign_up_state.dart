@@ -8,7 +8,7 @@ class SignUpState extends Equatable {
   final TextEditingController mobileController;
   //
   final bool isPitakardExist;
-  final AccountNumber accountNumber;
+  final CardNumber cardNumber;
   final Name accountAlias;
   final Email email;
   final MobileNumber mobile;
@@ -43,7 +43,7 @@ class SignUpState extends Equatable {
     required this.emailController,
     required this.mobileController,
     this.isPitakardExist = true,
-    this.accountNumber = const AccountNumber.pure(),
+    this.cardNumber = const CardNumber.pure(),
     this.accountAlias = const Name.pure(),
     this.email = const Email.pure(),
     this.mobile = const MobileNumber.pure(),
@@ -75,7 +75,7 @@ class SignUpState extends Equatable {
     TextEditingController? emailController,
     TextEditingController? mobileController,
     bool? isPitakardExist,
-    AccountNumber? accountNumber,
+    CardNumber? cardNumber,
     Name? accountAlias,
     Email? email,
     MobileNumber? mobile,
@@ -106,7 +106,7 @@ class SignUpState extends Equatable {
       emailController: emailController ?? this.emailController,
       mobileController: mobileController ?? this.mobileController,
       isPitakardExist: isPitakardExist ?? this.isPitakardExist,
-      accountNumber: accountNumber ?? this.accountNumber,
+      cardNumber: cardNumber ?? this.cardNumber,
       accountAlias: accountAlias ?? this.accountAlias,
       email: email ?? this.email,
       mobile: mobile ?? this.mobile,
@@ -141,7 +141,7 @@ class SignUpState extends Equatable {
       emailController,
       mobileController,
       isPitakardExist,
-      accountNumber,
+      cardNumber,
       accountAlias,
       email,
       mobile,

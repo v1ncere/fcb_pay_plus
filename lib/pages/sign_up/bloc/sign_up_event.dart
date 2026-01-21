@@ -8,7 +8,7 @@ sealed class SignUpEvent extends Equatable {
 }
 
 // TEXTFEILD CLEARED
-final class AccountNumberErased extends SignUpEvent {}
+final class CardNumberErased extends SignUpEvent {}
 
 final class AccountAliasErased extends SignUpEvent {}
 
@@ -26,8 +26,8 @@ final class PitakardChecked extends SignUpEvent {
   List<Object> get props => [pitakardCheck];
 }
 
-final class AccountNumberChanged extends SignUpEvent {
-  const AccountNumberChanged(this.accountNumber);
+final class CardNumberChanged extends SignUpEvent {
+  const CardNumberChanged(this.accountNumber);
   final String accountNumber;
 
   @override

@@ -56,6 +56,39 @@ class SingleCardError extends StatelessWidget {
   }
 }
 
+class TwoLineShimmer extends StatelessWidget {
+  const TwoLineShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            width: width * 0.4,
+            height: 10.0,
+            color: Colors.grey, // Placeholder line color
+          )
+        ),
+        const SizedBox(height: 10),
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            width: width * 0.2,
+            height: 10.0,
+            color: Colors.grey,
+          )
+        )
+      ],
+    );
+  }
+}
+
 Card _shimmerCard({
   required double width,
   required double height

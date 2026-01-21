@@ -12,7 +12,7 @@ import '../../../utils/utils.dart';
 part 'accounts_home_event.dart';
 part 'accounts_home_state.dart';
 
-final Account emptyAccount = Account(accountNumber: '', owner: '');
+final Account empty = Account(accountNumber: '', owner: '');
 
 class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
   final SecureStorageRepository _secureStorageRepository;
@@ -23,14 +23,7 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
     required SecureStorageRepository secureStorageRepository,
   }) : _sqfliteRepositories = sqfliteRepositories, 
   _secureStorageRepository = secureStorageRepository,
-  super(AccountsHomeState(
-    plc: emptyAccount,
-    pitakard: emptyAccount,
-    sa: emptyAccount, 
-    wallet: emptyAccount,
-    dd: emptyAccount,
-    loans: emptyAccount,
-  )) {
+  super(AccountsHomeState(plc: empty, pitakard: empty, sa: empty,  wallet: empty, dd: empty, loans: empty)) {
     on<UserAttributesFetched>(_onUserAttributesFetched);
     on<AccountsHomeFetched>(_onAccountsHomeLoaded);
     on<AccountDisplayChanged>(_onAccountDisplayChanged);
@@ -70,7 +63,6 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
       final request = ModelQueries.list(
         Account.classType,
         where: Account.OWNER.eq(user),
-        // authorizationMode: APIAuthorizationType.iam
       );
       final response = await Amplify.API.query(request: request).response;
       final items = response.data?.items;
@@ -129,13 +121,13 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
 
   // get Account by type (note: type needs to be lower case so it will equals to lowercase enum)
   Account _getAccountOfType(List<Account> accountList, String type) {
-    return accountList.firstWhere((e) => e.accountType!.toLowerCase() == type, orElse: () => emptyAccount);
+    return accountList.firstWhere((e) => e.accountType!.toLowerCase() == type, orElse: () => empty);
   }
 
   // sort the list of Accounts and return the  latest
   Account _getLatestAccount(List<Account> accountList, String type) {
     accountList.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
-    return accountList.firstWhere((e) => e.accountType!.toLowerCase() == type, orElse: () => emptyAccount);
+    return accountList.firstWhere((e) => e.accountType!.toLowerCase() == type, orElse: () => empty);
   }
 
   // get account by specific type 
@@ -148,6 +140,6 @@ class AccountsHomeBloc extends Bloc<AccountsHomeEvent, AccountsHomeState> {
       ? accountList.firstWhere((e) => e.accountNumber == accountType.accountNumber) // if id is not empty, locate the account equals to the id
       : _getLatestAccount(accountList, type); // if id is empty get the latest account
     }
-    return emptyAccount;
+    return empty;
   }
 }

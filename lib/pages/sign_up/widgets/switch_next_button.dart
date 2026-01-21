@@ -19,7 +19,7 @@ class SwitchNextButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 PitakardCheckbox(),
-                NextButton(isValid: (state.accountNumber.isValid && state.accountAlias.isValid) || !state.isPitakardExist),
+                NextButton(isValid: (state.cardNumber.isValid && state.accountAlias.isValid) || !state.isPitakardExist),
               ]
             );
           case 2: return !stepState.isOtp

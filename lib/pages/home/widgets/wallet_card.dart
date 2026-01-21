@@ -21,15 +21,19 @@ Card walletCard({
       decoration: BoxDecoration(
         image: DecorationImage(
           image: const AssetImage(AssetString.splashLogo),
-          colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.05), BlendMode.dstATop),
-          fit: BoxFit.cover
+          colorFilter: ColorFilter.mode(
+            Colors.black.withValues(alpha: 0.05),
+            BlendMode.dstATop
+          ),
+          fit: BoxFit.cover,
         ),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomCenter,
           colors: [
+            ColorString.jewel,
             ColorString.mountainMeadow,
-            ColorString.zombie,
+            // ColorString.zombie,
           ],
           stops: const [
             0.5,
@@ -96,7 +100,20 @@ Card walletCard({
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      buildDetailsBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(context.select((TransactionBloc bloc) => bloc.state.transactions.first.balanceCleared) ?? 0.0))
+                      BlocBuilder<TransactionBloc, TransactionState>(
+                        builder: (context, state) {
+                          if (state.status.isLoading) {
+                            return TwoLineShimmer();
+                          }
+                          if (state.status.isSuccess) {
+                            return buildDetailsBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(state.transactions.first.balanceCleared ?? 0.0));
+                          }
+                          if (state.status.isFailure) {
+                            return buildDetailsBlock(label: 'AVAILABLE BALANCE', value: Currency.fmt.format(0.0));
+                          }
+                          return SizedBox.shrink();
+                        },
+                      )
                     ]
                   )
                 ]

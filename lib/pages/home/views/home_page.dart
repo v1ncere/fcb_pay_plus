@@ -10,20 +10,23 @@ class HomePage extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(providers: [
-      BlocProvider(
-        create: (context) => NotificationsBloc(
-          secureStorageRepository: SecureStorageRepository(
-            storageService: SecureStorageService()
-          ),
+    final accountNumber = context.select((AccountsHomeBloc bloc) => bloc.state.wallet.accountNumber);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => NotificationsBloc(
+          secureStorageRepository: SecureStorageRepository(storageService: SecureStorageService())
         )
         ..add(NotificationsOnCreateStreamed())
         ..add(NotificationsOnUpdateStreamed())
         ..add(NotificationsOnDeleteStreamed())
-        ..add(NotificationsFetched()),
-      ),
-      BlocProvider(create: (context) => TransactionBloc()),
-    ],
+        ..add(NotificationsFetched())),
+        BlocProvider(create: (context) => TransactionBloc()
+        ..add(TransactionFetched(accountNumber))
+        ..add(TransactionOnCreatedStream(accountNumber))
+        ..add(TransactionOnUpdatedStream(accountNumber))
+        ..add(TransactionOnDeletedStream(accountNumber))),
+        BlocProvider(create: (context) => HomeWebviewBloc())
+      ],
       child: const AccountHomeView(),
     );
   }
