@@ -69,8 +69,8 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(isPitakardExist: event.pitakardCheck));
   }
 
-  void _onAccountNumberChanged(AccountNumberChanged event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(accountNumber: AccountNumber.dirty(event.accountNumber)));
+  void _onAccountNumberChanged(CardNumberChanged event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(cardNumber: CardNumber.dirty(event.accountNumber)));
   }
 
   void _onCardNumberChanged(CardNumberChanged event, Emitter<SignUpState> emit) {
@@ -124,9 +124,9 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(validIDTitle: DropdownData.dirty(event.validID)));
   }
 
-  void _onAccountNumberErased(AccountNumberErased event, Emitter<SignUpState> emit) {
+  void _onAccountNumberErased(CardNumberErased event, Emitter<SignUpState> emit) {
     state.accountNumberController.clear();
-    emit(state.copyWith(accountNumber: const AccountNumber.pure()));
+    emit(state.copyWith(cardNumber: const CardNumber.pure()));
   }
 
   void _onCardNumberErased(CardNumberErased event, Emitter<SignUpState> emit) {
@@ -339,7 +339,7 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
     
     try {
       final signup = SignupRequest(
-        accountNumber: state.accountNumber.value,
+        accountNumber: state.cardNumber.value,
         accountAlias: state.accountAlias.value,
         email: state.email.value,
         mobileNumber: state.mobile.value,

@@ -19,7 +19,7 @@ class AccountCardTextfield extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Account Number',
+              'Card Number',
               style: TextStyle(
                 color: state.isPitakardExist ? ColorString.jewel : Colors.grey.shade600,
                 fontWeight: FontWeight.w700,
@@ -34,20 +34,20 @@ class AccountCardTextfield extends StatelessWidget {
               enabled: state.isPitakardExist,
               controller: state.accountNumberController,
               keyboardType: TextInputType.number,
-              hintText: '14-16 digit account number',
-              errorText: state.accountNumber.displayError?.text(),
-              suffixIcon: !state.accountNumber.isPure
+              hintText: '16 digit card number',
+              errorText: state.cardNumber.displayError?.text(),
+              suffixIcon: !state.cardNumber.isPure
               ? IconButton(
                   icon: const Icon(FontAwesomeIcons.xmark),
                   iconSize: 18,
-                  onPressed: () => context.read<SignUpBloc>().add(AccountNumberErased())
+                  onPressed: () => context.read<SignUpBloc>().add(CardNumberErased())
                 )
               : null,
-              onChanged: (value) => context.read<SignUpBloc>().add(AccountNumberChanged(value)),
+              onChanged: (value) => context.read<SignUpBloc>().add(CardNumberChanged(value)),
             ),
             SizedBox(height: 2.0),
             Text(
-              'This can either be your 14-digit account number or 16-digit PITAKArd number.',
+              'This is your 16-digit PITAKArd number.',
               style: TextStyle(
                 color: state.isPitakardExist ? ColorString.jewel : Colors.grey.shade600,
                 fontSize: 12

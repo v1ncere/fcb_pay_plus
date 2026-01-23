@@ -16,8 +16,8 @@ class WalletDisplayCard extends StatelessWidget {
           return const _CardPadding(child: SingleCardShimmer());
         }
         if (state.status.isSuccess) {
-          if (state.wallet != emptyAccount) {
-            return (state.wallet != emptyAccount)
+          if (state.wallet != empty) {
+            return (state.wallet != empty)
             ? walletCard(
                 context: context,
                 account: state.wallet
