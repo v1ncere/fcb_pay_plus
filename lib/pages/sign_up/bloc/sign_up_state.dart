@@ -3,11 +3,13 @@ part of 'sign_up_bloc.dart';
 class SignUpState extends Equatable {
   // TextEditingController
   final TextEditingController accountNumberController;
+  final TextEditingController cardNumberController;
   final TextEditingController accountAliasController;
   final TextEditingController emailController;
   final TextEditingController mobileController;
   //
   final bool isPitakardExist;
+  final AccountNumber accountNumber;
   final CardNumber cardNumber;
   final Name accountAlias;
   final Email email;
@@ -39,10 +41,12 @@ class SignUpState extends Equatable {
 
   const SignUpState({
     required this.accountNumberController,
+    required this.cardNumberController,
     required this.accountAliasController,
     required this.emailController,
     required this.mobileController,
     this.isPitakardExist = true,
+    this.accountNumber = const AccountNumber.pure(),
     this.cardNumber = const CardNumber.pure(),
     this.accountAlias = const Name.pure(),
     this.email = const Email.pure(),
@@ -71,10 +75,12 @@ class SignUpState extends Equatable {
 
   SignUpState copyWith({
     TextEditingController? accountNumberController,
+    TextEditingController? cardNumberController,
     TextEditingController? accountAliasController,
     TextEditingController? emailController,
     TextEditingController? mobileController,
     bool? isPitakardExist,
+    AccountNumber? accountNumber,
     CardNumber? cardNumber,
     Name? accountAlias,
     Email? email,
@@ -102,6 +108,7 @@ class SignUpState extends Equatable {
   }) {
     return SignUpState(
       accountNumberController: accountNumberController ?? this.accountNumberController,
+      cardNumberController: cardNumberController ?? this.cardNumberController,
       accountAliasController: accountAliasController ?? this.accountAliasController,
       emailController: emailController ?? this.emailController,
       mobileController: mobileController ?? this.mobileController,
@@ -137,6 +144,7 @@ class SignUpState extends Equatable {
   List<Object?> get props {
     return [
       accountNumberController,
+      cardNumberController,
       accountAliasController,
       emailController,
       mobileController,

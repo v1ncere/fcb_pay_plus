@@ -23,8 +23,8 @@ class AccountNumberInput extends StatelessWidget {
             const SizedBox(height: 10),
             TextFormField(
               inputFormatters: [
-                //NumberSeparatorFormatter(),
-                CardNumberSeparatorFormatter(),
+                NumberSeparatorFormatter(),
+                //CardNumberSeparatorFormatter(),
                 LengthLimitingTextInputFormatter(17)
               ],
               keyboardType: TextInputType.number,
@@ -32,7 +32,7 @@ class AccountNumberInput extends StatelessWidget {
               decoration: InputDecoration(
                 filled: true,
                 labelText: '000-0000-000000-0',
-                errorText: state.accountNumber.displayError?.text(),  
+                errorText: state.accountNumber.displayError?.text(),   
               ),
               style: const TextStyle(height: 1.5),
               onChanged: (value) => context.read<AccountAddBloc>().add(AccountNumberChanged(value))

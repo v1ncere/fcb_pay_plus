@@ -6,15 +6,16 @@ class Name extends FormzInput<String, NameValidationError> {
   const Name.pure() : super.pure('');
   const Name.dirty([super.value = '']) : super.dirty();
 
-  static final _noDigits = RegExp(r'^(?!.*\d).+$');
+  //static final _noDigits = RegExp(r'^(?!.*\d).+$');
   
   @override
   NameValidationError? validator(String? value) {
     return value?.isEmpty == true
       ? NameValidationError.required
-      : _noDigits.hasMatch(value!)
-        ? null
-        : NameValidationError.invalid;
+      : null;
+      //: _noDigits.hasMatch(value!)
+      //  ? null
+      //  : NameValidationError.invalid;
   }
 }
 
