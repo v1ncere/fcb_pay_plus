@@ -23,32 +23,39 @@ part 'sign_up_state.dart';
 class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(SignUpState(
     accountNumberController: TextEditingController(),
+    cardNumberController: TextEditingController(),
     accountAliasController: TextEditingController(),
     emailController: TextEditingController(),
     mobileController: TextEditingController(),
   )) {
+    //Erased
     on<AccountNumberErased>(_onAccountNumberErased);
+    on<CardNumberErased>(_onCardNumberErased);
     on<AccountAliasErased>(_onAccountAliasErased);
     on<EmailTextErased>(_onEmailTextErased);
     on<MobileTextErased>(_onMobileTextErased);
+
+    //Checked
     on<PitakardChecked>(_onPitakardChecked);
     on<AccountNumberChanged>(_onAccountNumberChanged);
+    on<CardNumberChanged>(_onCardNumberChanged);
     on<AccountAliasChanged>(_onAccountAliasChanged);
     on<EmailChanged>(_onEmailChanged);
     on<OtpCodeChanged>(_onOtpCodeChanged);
     on<MobileNumberChanged>(_onMobileNumberChanged);
+    on<UserImageChanged>(_onUserImageChanged);
+    on<LivenessImageBytesChanged>(_onLivenessImageBytesChanged);
+    on<ValidIDTitleChanged>(_onValidIDChanged);
+    on<HydrateStateChanged>(_onHydrateStateChanged);
+    
     on<OtpCodeSent>(_onOtpCodeSent);
     on<OtpCodeVerified>(_onOtpCodeVerified);
     on<OtpCodeResent>(_onOtpCodeResent);
-    on<UserImageChanged>(_onUserImageChanged);
     on<LostDataRetrieved>(_onLostDataRetrieved);
-    on<LivenessImageBytesChanged>(_onLivenessImageBytesChanged);
-    on<ValidIDTitleChanged>(_onValidIDChanged);
     on<FaceComparisonFetched>(_onFaceComparisonFetched);
     on<UploadImageToS3>(_onUploadImageToS3);
     on<HandleSignUp>(_onHandleSignUp);
     on<ImageUploadProgressed>(_onImageUploadProgressed);
-    on<HydrateStateChanged>(_onHydrateStateChanged);
     on<WebviewMessageReceived>(_onWebviewMessageReceived);
     on<WebviewMessageSent>(_onWebviewMessageSent);
     on<BridgeTokenGenerated>(_onBridgeTokenGenerated);
@@ -64,6 +71,10 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
 
   void _onAccountNumberChanged(AccountNumberChanged event, Emitter<SignUpState> emit) {
     emit(state.copyWith(accountNumber: AccountNumber.dirty(event.accountNumber)));
+  }
+
+  void _onCardNumberChanged(CardNumberChanged event, Emitter<SignUpState> emit) {
+    emit(state.copyWith(cardNumber: CardNumber.dirty(event.cardNumber)));
   }
 
   void _onAccountAliasChanged(AccountAliasChanged event, Emitter<SignUpState> emit) {
@@ -116,6 +127,11 @@ class SignUpBloc extends HydratedBloc<SignUpEvent, SignUpState> {
   void _onAccountNumberErased(AccountNumberErased event, Emitter<SignUpState> emit) {
     state.accountNumberController.clear();
     emit(state.copyWith(accountNumber: const AccountNumber.pure()));
+  }
+
+  void _onCardNumberErased(CardNumberErased event, Emitter<SignUpState> emit) {
+    state.cardNumberController.clear();
+    emit(state.copyWith(cardNumber: const CardNumber.pure()));
   }
 
   void _onAccountAliasErased(AccountAliasErased event, Emitter<SignUpState> emit) {

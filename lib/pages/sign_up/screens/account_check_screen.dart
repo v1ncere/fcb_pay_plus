@@ -21,7 +21,7 @@ class AccountCheckScreen extends StatelessWidget {
             )
           ),
           SizedBox(height: 20),
-          AccountCardTextfield(),
+          CardTextfield(),
           SizedBox(height: 30),
           AccountAliasTextfield(),
         ]

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 import '../sign_up.dart';
-import 'custom_textformfield.dart';
+import 'widgets.dart';
 
-class AccountAliasTextfield extends StatelessWidget {
-  const AccountAliasTextfield({super.key});
+class CardTextfield extends StatelessWidget {
+  const CardTextfield({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class AccountAliasTextfield extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Account Alias',
+              'Card Number',
               style: TextStyle(
                 color: state.isPitakardExist ? ColorString.jewel : Colors.grey.shade600,
                 fontWeight: FontWeight.w700,
@@ -26,31 +27,35 @@ class AccountAliasTextfield extends StatelessWidget {
             ),
             SizedBox(height: 2.0),
             CustomTextformfield(
+              inputFormatters: [
+                NumberSeparatorFormatter(),
+                LengthLimitingTextInputFormatter(19)
+              ],
               enabled: state.isPitakardExist,
-              controller: state.accountAliasController,
-              keyboardType: TextInputType.name,
-              hintText: 'Example: My Savings',
-              errorText: state.accountAlias.displayError?.text(),
-              suffixIcon: !state.accountAlias.isPure
+              controller: state.cardNumberController,
+              keyboardType: TextInputType.number,
+              hintText: '0000 0000 0000 0000',
+              errorText: state.cardNumber.displayError?.text(),
+              suffixIcon: !state.cardNumber.isPure
               ? IconButton(
                   icon: const Icon(FontAwesomeIcons.xmark),
                   iconSize: 18,
-                  onPressed: () => context.read<SignUpBloc>().add(AccountAliasErased())
+                  onPressed: () => context.read<SignUpBloc>().add(AccountNumberErased())
                 )
               : null,
-              onChanged: (value) => context.read<SignUpBloc>().add(AccountAliasChanged(value))
+              onChanged: (value) => context.read<SignUpBloc>().add(AccountNumberChanged(value)),
             ),
             SizedBox(height: 2.0),
             Text(
-              'Assign an alias for your linked account.',
+              'Enter the 16-digit card number.',
               style: TextStyle(
                 color: state.isPitakardExist ? ColorString.jewel : Colors.grey.shade600,
                 fontSize: 12
-              )
-            )
-          ]
+              ),
+            ),
+          ],
         );
-      }
+      },
     );
   }
 }
